@@ -59,16 +59,19 @@ public class SwerveModule {
   private final PIDController m_drivePIDController = new PIDController(0.2, 0, 0);
 
   // Gains are for example purposes only - must be determined for your own robot!
-  private final ProfiledPIDController m_turningPIDController =
+  private final PIDController m_turningPIDController = new PIDController(8, 0, 0);
+  
+  /*  =
       new ProfiledPIDController(
           2,
           0,
           0.2,
           new TrapezoidProfile.Constraints(
               kModuleMaxAngularVelocity*10 , kModuleMaxAngularAcceleration * 50));
+  */
 
   // Gains are for example purposes only - must be determined for your own robot!
-  private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(2, 2);
+  private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0,3.12, 0.36);
   private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(1.5, 0.2);
 
   /**
@@ -127,6 +130,14 @@ public class SwerveModule {
   }
 
   /**
+   * Returns the current Velocity of the module in m/s
+   * @return the current Velocity of the module in m/s
+   */
+  public double getDriveVelocity() {
+    return driveEncoder.getVelocity() * 2 * Math.PI * kWheelRadius;
+  }
+
+  /**
    * Returns the current position of the module.
    *
    * @return The current position of the module.
@@ -149,7 +160,7 @@ public class SwerveModule {
 
     // Calculate the drive output from the drive PID controller.
     final double driveOutput =
-        m_drivePIDController.calculate(driveEncoder.getVelocity() * 2 * Math.PI * 0.045, state.speedMetersPerSecond);
+        m_drivePIDController.calculate(driveEncoder.getVelocity() * 2 * Math.PI * kWheelRadius, state.speedMetersPerSecond);
 
     final double driveFeedforward = m_driveFeedforward.calculate(state.speedMetersPerSecond);
 
@@ -157,8 +168,8 @@ public class SwerveModule {
     final double turnOutput =
         m_turningPIDController.calculate(Math.toRadians(turningEncoder.getPosition() % 360), state.angle.getRadians());
 
-    final double turnFeedforward =
-        m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
+    // final double turnFeedforward =
+    //     m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
 
     mainDriveOutput = driveOutput;
 
@@ -166,6 +177,6 @@ public class SwerveModule {
 
 
     driveMotor.setVoltage(driveOutput + driveFeedforward);
-    turningMotor.setVoltage(turnOutput + turnFeedforward);
+    turningMotor.setVoltage(turnOutput);
   }
 }

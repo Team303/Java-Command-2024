@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -18,6 +20,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.Timer;
 
 /** Represents a swerve drive style drivetrain. */
 public class Drivetrain extends SubsystemBase {
@@ -35,6 +38,7 @@ public class Drivetrain extends SubsystemBase {
   private final SwerveModule backRight;
 
   private final SwerveDriveOdometry odometry;
+  private final PIDController m_driftCorrectionPid = new PIDController(0.01, 0, 0);
   private Pose2d pose = new Pose2d(0.0, 0.0, new Rotation2d()); 
 
   public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drive Base");
@@ -59,16 +63,25 @@ public class Drivetrain extends SubsystemBase {
   public static final GenericEntry frontLeftAngle = DRIVEBASE_TAB.add("front left angle", 0).withPosition(0, 3).withSize(2,1).getEntry();
   public static final GenericEntry frontRightAngle = DRIVEBASE_TAB.add("front right angle", 0).withPosition(2, 3).withSize(2,1).getEntry();
 
-  public static final GenericEntry globalAngle = DRIVEBASE_TAB.add("global angle", 0).getEntry();
+  public static final GenericEntry globalAngle = DRIVEBASE_TAB.add("global angle", 0).withPosition(4, 0).getEntry();
+  public static final GenericEntry angleVelo = DRIVEBASE_TAB.add("angular velocity", 0).withPosition(4,1).getEntry();
+  public static final GenericEntry time = DRIVEBASE_TAB.add("Time", 0).withPosition(4, 2).getEntry();
 
+  public static double angularVelocity = 0; 
+  private double initialAngle = Robot.navX.getRotation2d().getDegrees(); 
+  private double initialTime = 0; 
+
+  private double m_desiredHeading = 0;
 
   private final SwerveDriveKinematics kinematics =
     new SwerveDriveKinematics(
       frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
+  private final Timer AVTimer = new Timer();
 
   public Drivetrain() {
     Robot.navX.reset();
+    AVTimer.start();
 
     frontLeft = new SwerveModule(RobotMap.Swerve.LEFT_FRONT_DRIVE_ID, RobotMap.Swerve.LEFT_FRONT_STEER_ID, RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID);
     frontRight = new SwerveModule(RobotMap.Swerve.RIGHT_FRONT_DRIVE_ID, RobotMap.Swerve.RIGHT_FRONT_STEER_ID, RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID);
@@ -96,8 +109,10 @@ public class Drivetrain extends SubsystemBase {
     odometry = new SwerveDriveOdometry(
       kinematics,
       Robot.navX.getRotation2d(),
-      getModulePositions());
-    }
+      getModulePositions()
+    );
+
+  }
 
   /**
    * Method to drive the robot using joystick info.
@@ -113,12 +128,41 @@ public class Drivetrain extends SubsystemBase {
             fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Robot.navX.getRotation2d())
                 : new ChassisSpeeds(xSpeed, ySpeed, rot));
+    
+    // swerveModuleStates = kinematics.toSwerveModuleStates(translationalDriftCorrection(kinematics.toChassisSpeeds(swerveModuleStates)));
+
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
 
     frontLeft.setDesiredState(swerveModuleStates[0]);
     frontRight.setDesiredState(swerveModuleStates[1]);
     backLeft.setDesiredState(swerveModuleStates[2]);
     backRight.setDesiredState(swerveModuleStates[3]);
+  }
+
+  /**
+  * Adds rotational velocity to the chassis speed to compensate for
+  * unwanted changes in gyroscope heading.
+  * 
+  * @param chassisSpeeds the given chassisspeeds
+  * @return the corrected chassisspeeds
+  */
+ private ChassisSpeeds translationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
+    if(!Robot.navX.isConnected())
+      return chassisSpeeds;
+    double translationalVelocity = Math.abs(frontLeft.getDriveVelocity());
+
+    if (Math.abs(Robot.navX.getRate()) > 1) {
+      m_desiredHeading = Robot.navX.getYaw();
+    } else if (translationalVelocity > 0.7) {
+
+      double calc = m_driftCorrectionPid.calculate(Robot.navX.getYaw(),
+          m_desiredHeading);
+
+      if (Math.abs(calc) >= 0.3) {
+        chassisSpeeds.omegaRadiansPerSecond -= calc;
+      }
+    }
+    return chassisSpeeds;
   }
 
   public void drive(SwerveModuleState[] state) {
@@ -138,6 +182,8 @@ public class Drivetrain extends SubsystemBase {
     rotation *= 2 / Math.hypot(0.762, 0.762);
 
     ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(translation.getX(), translation.getY(), rotation), Rotation2d.fromDegrees(-Robot.navX.getAngle()));
+
+    chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
     
     drive(kinematics.toSwerveModuleStates(chassisSpeeds));
   }
@@ -165,13 +211,13 @@ public class Drivetrain extends SubsystemBase {
 
   @Override
   public void periodic() {
+
     SmartDashboard.putNumber("Counts per revolution", frontLeft.getDriveMotor().getEncoder().getCountsPerRevolution());
 
     FRONT_LEFT_ENC.setDouble(frontLeft.getPosition().angle.getDegrees());
 		FRONT_RIGHT_ENC.setDouble(frontRight.getPosition().angle.getDegrees());
 		BACK_LEFT_ENC.setDouble(backLeft.getPosition().angle.getDegrees());
 		BACK_RIGHT_ENC.setDouble(backRight.getPosition().angle.getDegrees());
-    SmartDashboard.putNumber("Left X", Robot.controller.getLeftX());
 
     frontLeftDriveOutput.setDouble(frontLeft.getMainDriveOutput());
     backLeftDriveOutput.setDouble(backLeft.getMainDriveOutput());
@@ -183,10 +229,12 @@ public class Drivetrain extends SubsystemBase {
     frontRightTurnOutput.setDouble(frontRight.getMainTurnOutput());
     backRightTurnOutput.setDouble(backRight.getMainTurnOutput());
 
-    globalAngle.setDouble(Robot.navX.getAngle());
-    
+    globalAngle.setDouble(Robot.navX.getAngle()); 
+    angleVelo.setDouble(angularVelocity);
+    time.setDouble(AVTimer.get());
+
     updateOdometry();
-    // Robot.logger.recordOutput("Odometry", pose);
+    Logger.recordOutput("Odometry", pose);
   }
 }
 
