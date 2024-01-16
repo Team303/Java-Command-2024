@@ -37,14 +37,23 @@ public class RobotMap {
 		public static final int RIGHT_ANGLE_MOTOR_ID = 1; //NEED TO CHANGE
 		public static final int LEFT_FLYWHEEL_MOTOR_ID = 2; //NEED TO CHANGE
 		public static final int RIGHT_FLYWHEEL_MOTOR_ID = 3; //NEED TO CHANGE
+		public static final int LEFT_INDEXER_MOTOR_ID = 4; //NEED TO CHANGE
+		public static final int RIGHT_INDEXER_MOTOR_ID = 5; //NEED TO CHANGE
 
 		public static final double ANGLE_FEED_FORWARD_KS = 0.0; //NEED TO CHANGE
 		public static final double ANGLE_FEED_FORWARD_KG = 0.0; //NEED TO CHANGE
 		public static final double ANGLE_FEED_FORWARD_KV = 0.0; //NEED TO CHANGE
 		public static final double ANGLE_FEED_FORWARD_KA = 0.0; //NEED TO CHANGE
+		public static final double ANGLE_FEED_FORWARD_VEL = 2.0; //NEED TO TWEAK
 
 		public static final double FLYWHEEL_FEED_FORWARD_KS = 0.0; //NEED TO CHANGE
 		public static final double FLYWHEEL_FEED_FORWARD_KV = 0.0; //NEED TO CHANGE
 		public static final double FLYWHEEL_FEED_FORWARD_KA = 0.0; //NEED TO CHANGE
+
+		public static final double ANGLE_PID_CONTROLLER_P = 0.0; //NEED TO CHANGE
+		public static final double ANGLE_PID_CONTROLLER_I = 0.0; //NEED TO CHANGE
+		public static final double ANGLE_PID_CONTROLLER_D = 0.0; //NEED TO CHANGE
+
+		public static final int BEAM_BREAK_ID = 0;
 	}
 }

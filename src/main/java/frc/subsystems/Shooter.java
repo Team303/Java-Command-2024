@@ -15,12 +15,15 @@ import com.revrobotics.SparkLimitSwitch.Type;
 
 import frc.robot.Robot;
 import frc.robot.RobotMap;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.BangBangController;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -35,24 +38,33 @@ public class Shooter extends SubsystemBase {
     */
 
 
-    private final CANSparkMax leftAngleMotor;
-    private final CANSparkMax rightAngleMotor;
-    private final CANSparkMax leftFlywheelMotor;
-    private final CANSparkMax rightFlywheelMotor;
+    public final CANSparkMax leftAngleMotor;
+    public final CANSparkMax rightAngleMotor;
+    public final CANSparkMax leftFlywheelMotor;
+    public final CANSparkMax rightFlywheelMotor;
 
-    private final SparkLimitSwitch switchReverse;
+    public final CANSparkMax leftIndexerMotor;
+    public final CANSparkMax rightIndexerMotor;
 
-    private final RelativeEncoder angleEncoder;
-    private final RelativeEncoder flywheelEncoder;
+    public final SparkLimitSwitch switchReverse;
 
-    private final BangBangController flywheelController;
-    private final SimpleMotorFeedforward flywheelFeedForward;
+    public final RelativeEncoder angleEncoder;
+    public final RelativeEncoder flywheelEncoder;
+    public final RelativeEncoder indexerEncoder;
 
-    private final ArmFeedforward shooterAngleFeedForward;
+    public final BangBangController flywheelController;
+    public final SimpleMotorFeedforward flywheelFeedForward;
+
+    public final PIDController shooterAnglePIDController;
+    public final ArmFeedforward shooterAngleFeedForward;
+
+    public final DigitalInput beamBreak;
+    
 
     public static final ShuffleboardTab SHOOTER_TAB = Shuffleboard.getTab("Turret"); //Shuffleboard tab
     public static final GenericEntry ANGLE_POSITION_ENTRY = SHOOTER_TAB.add("Angle Position", 0.0).withPosition(0, 0).getEntry();
     public static final GenericEntry FLYWHEEL_SPEED_ENTRY = SHOOTER_TAB.add("Flywheel Speed", 0.0).withPosition(1, 0).getEntry();
+    public static final GenericEntry INDEXER_POSITION_ENTRY = SHOOTER_TAB.add("Indexer Position", 0.0).withPosition(2, 0).getEntry();
 
     public Shooter() {
         /* -------------Kraken Code------------
@@ -71,6 +83,8 @@ public class Shooter extends SubsystemBase {
         rightAngleMotor = new CANSparkMax(RobotMap.Shooter.RIGHT_ANGLE_MOTOR_ID, MotorType.kBrushless);
         leftFlywheelMotor = new CANSparkMax(RobotMap.Shooter.LEFT_FLYWHEEL_MOTOR_ID, MotorType.kBrushless);
         rightFlywheelMotor = new CANSparkMax(RobotMap.Shooter.RIGHT_FLYWHEEL_MOTOR_ID, MotorType.kBrushless);
+        leftIndexerMotor = new CANSparkMax(RobotMap.Shooter.LEFT_INDEXER_MOTOR_ID, MotorType.kBrushless);
+        rightIndexerMotor = new CANSparkMax(RobotMap.Shooter.RIGHT_INDEXER_MOTOR_ID, MotorType.kBrushless);
 
         leftAngleMotor.setIdleMode(IdleMode.kBrake);
         rightAngleMotor.setIdleMode(IdleMode.kBrake);
@@ -84,6 +98,7 @@ public class Shooter extends SubsystemBase {
 
         angleEncoder = leftAngleMotor.getEncoder();
         flywheelEncoder = leftFlywheelMotor.getEncoder();
+        indexerEncoder = leftIndexerMotor.getEncoder();
 
         switchReverse = leftAngleMotor.getReverseLimitSwitch(Type.kNormallyOpen);
 
@@ -98,20 +113,41 @@ public class Shooter extends SubsystemBase {
                                                      RobotMap.Shooter.ANGLE_FEED_FORWARD_KV, 
                                                      RobotMap.Shooter.ANGLE_FEED_FORWARD_KA);
 
+        shooterAnglePIDController = new PIDController(RobotMap.Shooter.ANGLE_PID_CONTROLLER_P, 
+                                                      RobotMap.Shooter.ANGLE_PID_CONTROLLER_I,
+                                                      RobotMap.Shooter.ANGLE_PID_CONTROLLER_D);
+
+        beamBreak = new DigitalInput(RobotMap.Shooter.BEAM_BREAK_ID);
+
     }
 
-    public void setSpeed(double speed) {
+
+
+    public double calculateAngleSpeed(double angle) {
+        final double angleOutput = shooterAnglePIDController.calculate(angleEncoder.getVelocity() * 2 * Math.PI * 0.045, angle);
+        final double angleFeedforward = shooterAngleFeedForward.calculate(angle, RobotMap.Shooter.ANGLE_FEED_FORWARD_VEL);
+        return angleOutput + angleFeedforward;
+    }
+
+    public double calculateFlywheelSpeed(double speed) {
+        final double bangOutput = flywheelController.calculate(flywheelEncoder.getCountsPerRevolution(), speed);
+        final double flywheelFeedForwardOutput = flywheelFeedForward.calculate(speed);
+        return (bangOutput * 12.0) + (flywheelFeedForwardOutput * 0.9);
+    }
+
+    public void setAngleSpeed(double speed) {
         leftAngleMotor.set(speed);
         rightAngleMotor.set(speed);
-    }
-
-    public void calculateAngleSpeed(double angle) {
-
     }
 
     public void setFlywheelSpeed(double speed) {
         leftFlywheelMotor.set(speed);
         rightFlywheelMotor.set(speed);
+    }
+
+    public void setIndexerSpeed(double speed) {
+        leftIndexerMotor.set(speed);
+        rightIndexerMotor.set(speed);
     }
 
     public double getShooterAngle() {
@@ -126,6 +162,10 @@ public class Shooter extends SubsystemBase {
         return switchReverse.isPressed();
     }
 
+    public boolean getBeamBreak() {
+        return beamBreak.get();
+    }
+
     public void resetEncoders() {
         angleEncoder.setPosition(0);
         flywheelEncoder.setPosition(0);
@@ -135,6 +175,7 @@ public class Shooter extends SubsystemBase {
     public void periodic() {
         ANGLE_POSITION_ENTRY.setDouble(angleEncoder.getPosition());
         FLYWHEEL_SPEED_ENTRY.setDouble(flywheelEncoder.getVelocity());
+        INDEXER_POSITION_ENTRY.setDouble(indexerEncoder.getPosition());
     }
     
 }

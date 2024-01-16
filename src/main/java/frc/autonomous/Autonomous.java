@@ -14,7 +14,7 @@ import static frc.autonomous.AutonomousProgram.create;
  * SequentialComandGroup:
  * Will run all comands in order within it's parentheses
  * Note: If a comand does not have a isFinshed statment the code will be stuck
- * on that command forever
+ * on that command foreverk
  *
  * ParallelCommandGroup:
  * Will run commands in parallel if they use diffrent SubSystems

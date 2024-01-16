@@ -13,25 +13,34 @@ import edu.wpi.first.math.controller.BangBangController;
 import static frc.robot.Robot.shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class HardcodedSetAngle extends Command {    
+public class ManualSetAngle extends Command {    
+    double desiredAngle;
+    double desiredVelocity;
 
-    public HardcodedSetAngle(double angle) {
+    public ManualSetAngle(double angle) {
         addRequirements(shooter);
+        desiredAngle = angle;
+        //Calculate Speed here;
+        desiredVelocity = 0.0;
     }
 
 
     @Override
     public void execute() {
-        shooter.setSpeed(-0.2);
+        shooter.leftAngleMotor.setVoltage(shooter.calculateAngleSpeed(desiredAngle));
+        shooter.rightAngleMotor.setVoltage(shooter.calculateAngleSpeed(desiredAngle));
+        shooter.leftFlywheelMotor.setVoltage(shooter.calculateFlywheelSpeed(desiredVelocity));
+        shooter.rightFlywheelMotor.setVoltage(shooter.calculateFlywheelSpeed(desiredVelocity));
     } 
 
     @Override
     public boolean isFinished() {
-        return 0;
+        return shooter.getShooterAngle() == desiredAngle && shooter.getVelocitySpeed() == desiredVelocity;
     }
 
     @Override
     public void end(boolean interrupted) {
+         shooter.setAngleSpeed(0);
     }
 
 }

@@ -23,7 +23,7 @@ public class HomeShooter extends Command {
 
     @Override
     public void execute() {
-        shooter.setSpeed(-0.2);
+        shooter.setAngleSpeed(-0.2);
     } 
 
     @Override
@@ -33,7 +33,7 @@ public class HomeShooter extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        shooter.setSpeed(0);
+        shooter.setAngleSpeed(0);
         shooter.resetEncoders();
         timer.stop();
     }
