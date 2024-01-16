@@ -29,13 +29,14 @@ import frc.commands.DefaultDrive;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.commands.DriveWait;
+import frc.subsystems.Drivetrain;
+import frc.subsystems.Shooter;
 
 public class Robot extends TimedRobot {
   public static final CommandXboxController controller = new CommandXboxController(0);
   public static final AHRS navX = new AHRS(); 
   public static final Drivetrain swerve = new Drivetrain();
-  // public static Logger logger; 
-
+  public static final Shooter shooter = new Shooter();
 
   @Override
   public void robotInit() {
