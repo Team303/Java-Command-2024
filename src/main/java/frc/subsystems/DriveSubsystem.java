@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot;
+package frc.subsystems;
 
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.controller.PIDController;
@@ -22,8 +22,12 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 
+import frc.robot.SwerveModule;
+import frc.robot.Robot;
+import frc.robot.RobotMap;
+
 /** Represents a swerve drive style drivetrain. */
-public class Drivetrain extends SubsystemBase {
+public class DriveSubsystem extends SubsystemBase {
   public static final double kMaxSpeed = 3.9; // 3.9 meters per second
   public static final double kMaxAngularSpeed = kMaxSpeed / (Math.hypot(0.381, 0.381)); // radians per second
 
@@ -79,7 +83,7 @@ public class Drivetrain extends SubsystemBase {
 
   private final Timer AVTimer = new Timer();
 
-  public Drivetrain() {
+  public DriveSubsystem() {
     Robot.navX.reset();
     AVTimer.start();
 
