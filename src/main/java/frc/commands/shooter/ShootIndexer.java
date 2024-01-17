@@ -2,7 +2,7 @@ package frc.commands.shooter;
 
 import static frc.robot.Robot.shooter;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command; 
 
 public class ShootIndexer extends Command {
     
@@ -24,7 +24,7 @@ public class ShootIndexer extends Command {
 
     @Override
     public boolean isFinished() {
-        return    || timer.hasElapsed(2.0);
+        return  shooter.getBeamBreak() == false || timer.hasElapsed(2.0);
     }
 
     @Override

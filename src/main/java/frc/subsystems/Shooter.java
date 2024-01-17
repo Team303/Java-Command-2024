@@ -16,6 +16,7 @@ import com.revrobotics.SparkLimitSwitch.Type;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -24,9 +25,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.ExponentialProfile.Constraints;
 
 public class Shooter extends SubsystemBase {
 
@@ -48,14 +52,15 @@ public class Shooter extends SubsystemBase {
 
     public final SparkLimitSwitch switchReverse;
 
-    public final RelativeEncoder angleEncoder;
+    public final DutyCycleEncoder angleEncoder_dutyCycle;
+
     public final RelativeEncoder flywheelEncoder;
     public final RelativeEncoder indexerEncoder;
 
     public final BangBangController flywheelController;
     public final SimpleMotorFeedforward flywheelFeedForward;
 
-    public final PIDController shooterAnglePIDController;
+    public final ProfiledPIDController shooterAnglePIDController;
     public final ArmFeedforward shooterAngleFeedForward;
 
     public final DigitalInput beamBreak;
@@ -90,13 +95,17 @@ public class Shooter extends SubsystemBase {
         rightAngleMotor.setIdleMode(IdleMode.kBrake);
         leftFlywheelMotor.setIdleMode(IdleMode.kCoast);
         rightFlywheelMotor.setIdleMode(IdleMode.kCoast);
+        leftIndexerMotor.setIdleMode(IdleMode.kBrake);
+        rightIndexerMotor.setIdleMode(IdleMode.kBrake);
 
         leftAngleMotor.setInverted(false);
         rightAngleMotor.setInverted(true);
         leftFlywheelMotor.setInverted(false);
         rightFlywheelMotor.setInverted(true);
+        leftIndexerMotor.setInverted(true);
+        rightIndexerMotor.setInverted(false);
 
-        angleEncoder = leftAngleMotor.getEncoder();
+        angleEncoder_dutyCycle = new DutyCycleEncoder(8);
         flywheelEncoder = leftFlywheelMotor.getEncoder();
         indexerEncoder = leftIndexerMotor.getEncoder();
 
@@ -113,9 +122,12 @@ public class Shooter extends SubsystemBase {
                                                      RobotMap.Shooter.ANGLE_FEED_FORWARD_KV, 
                                                      RobotMap.Shooter.ANGLE_FEED_FORWARD_KA);
 
-        shooterAnglePIDController = new PIDController(RobotMap.Shooter.ANGLE_PID_CONTROLLER_P, 
+        TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(4, 2); //Change: Alan's job
+
+        shooterAnglePIDController = new ProfiledPIDController(RobotMap.Shooter.ANGLE_PID_CONTROLLER_P, 
                                                       RobotMap.Shooter.ANGLE_PID_CONTROLLER_I,
-                                                      RobotMap.Shooter.ANGLE_PID_CONTROLLER_D);
+                                                      RobotMap.Shooter.ANGLE_PID_CONTROLLER_D, 
+                                                      pidConstraints);
 
         beamBreak = new DigitalInput(RobotMap.Shooter.BEAM_BREAK_ID);
 
@@ -124,8 +136,8 @@ public class Shooter extends SubsystemBase {
 
 
     public double calculateAngleSpeed(double angle) {
-        final double angleOutput = shooterAnglePIDController.calculate(angleEncoder.getVelocity() * 2 * Math.PI * 0.045, angle);
-        final double angleFeedforward = shooterAngleFeedForward.calculate(angle, RobotMap.Shooter.ANGLE_FEED_FORWARD_VEL);
+        final double angleOutput = shooterAnglePIDController.calculate(angleEncoder_dutyCycle.getAbsolutePosition(), angle);
+        final double angleFeedforward = shooterAngleFeedForward.calculate(angle, shooterAnglePIDController.getSetpoint().velocity);
         return angleOutput + angleFeedforward;
     }
 
@@ -151,7 +163,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public double getShooterAngle() {
-        return angleEncoder.getPosition();
+        return angleEncoder_dutyCycle.getAbsolutePosition();
     }
 
     public double getVelocitySpeed() {
@@ -167,13 +179,12 @@ public class Shooter extends SubsystemBase {
     }
 
     public void resetEncoders() {
-        angleEncoder.setPosition(0);
         flywheelEncoder.setPosition(0);
     }
 
     @Override
     public void periodic() {
-        ANGLE_POSITION_ENTRY.setDouble(angleEncoder.getPosition());
+        ANGLE_POSITION_ENTRY.setDouble(angleEncoder_dutyCycle.getAbsolutePosition());
         FLYWHEEL_SPEED_ENTRY.setDouble(flywheelEncoder.getVelocity());
         INDEXER_POSITION_ENTRY.setDouble(indexerEncoder.getPosition());
     }
