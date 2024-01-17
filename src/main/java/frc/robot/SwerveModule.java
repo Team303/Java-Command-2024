@@ -21,9 +21,9 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.ctre.phoenix.sensors.CANCoder;
 
 public class SwerveModule {
-  public static final double kWheelDiameter = 0.1524;
-  private static final double kWheelRadius = kWheelDiameter / 2;
-  private static final int kEncoderResolution = 360;
+  private static final double kWheelRadius = 0.0508;
+  public static final double kWheelDiameter = kWheelRadius * 2;
+  private static final int kEncoderResolution = 42;
 
   private double mainDriveOutput;
   
@@ -97,10 +97,10 @@ public class SwerveModule {
     driveMotor.setIdleMode(IdleMode.kBrake);
     turningMotor.setIdleMode(IdleMode.kBrake);
 
-    driveEncoder.setPositionConversionFactor(2 * Math.PI * kWheelRadius / kEncoderResolution);
-    driveEncoder.setVelocityConversionFactor(2 * Math.PI * kWheelRadius / kEncoderResolution);
+    driveEncoder.setPositionConversionFactor(2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR / kEncoderResolution);
+    driveEncoder.setVelocityConversionFactor(2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR / kEncoderResolution);
 
-    m_turningPIDController.enableContinuousInput(-180, 180);
+    m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
     turningEncoder.setPositionToAbsolute();
   }
 
@@ -134,7 +134,7 @@ public class SwerveModule {
    * @return the current Velocity of the module in m/s
    */
   public double getDriveVelocity() {
-    return driveEncoder.getVelocity() * 2 * Math.PI * kWheelRadius;
+    return driveEncoder.getVelocity(); // / 60 * 2 * Math.PI * kWheelRadius;
   }
 
   /**
@@ -160,7 +160,7 @@ public class SwerveModule {
 
     // Calculate the drive output from the drive PID controller.
     final double driveOutput =
-        m_drivePIDController.calculate(driveEncoder.getVelocity() * 2 * Math.PI * kWheelRadius, state.speedMetersPerSecond);
+        m_drivePIDController.calculate(driveEncoder.getVelocity() * 2 * Math.PI * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR *  kWheelRadius, state.speedMetersPerSecond);
 
     final double driveFeedforward = m_driveFeedforward.calculate(state.speedMetersPerSecond);
 

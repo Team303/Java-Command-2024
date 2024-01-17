@@ -24,8 +24,8 @@ import edu.wpi.first.wpilibj.Timer;
 
 /** Represents a swerve drive style drivetrain. */
 public class Drivetrain extends SubsystemBase {
-  public static final double kMaxSpeed = 3.0; // 3 meters per second
-  public static final double kMaxAngularSpeed = Math.PI * 2; // 2 rotation per second
+  public static final double kMaxSpeed = 3.9; // 3.9 meters per second
+  public static final double kMaxAngularSpeed = kMaxSpeed / (Math.hypot(0.381, 0.381)); // radians per second
 
   private final Translation2d frontLeftLocation = new Translation2d(-0.381, -0.381);
   private final Translation2d frontRightLocation = new Translation2d(-0.381, 0.381);
@@ -38,7 +38,7 @@ public class Drivetrain extends SubsystemBase {
   private final SwerveModule backRight;
 
   private final SwerveDriveOdometry odometry;
-  private final PIDController m_driftCorrectionPid = new PIDController(0.01, 0, 0);
+  private final PIDController m_driftCorrectionPid = new PIDController(0.1, 0, 0);
   private Pose2d pose = new Pose2d(0.0, 0.0, new Rotation2d()); 
 
   public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drive Base");
@@ -67,9 +67,9 @@ public class Drivetrain extends SubsystemBase {
   public static final GenericEntry angleVelo = DRIVEBASE_TAB.add("angular velocity", 0).withPosition(4,1).getEntry();
   public static final GenericEntry time = DRIVEBASE_TAB.add("Time", 0).withPosition(4, 2).getEntry();
 
-  public static double angularVelocity = 0; 
-  private double initialAngle = Robot.navX.getRotation2d().getDegrees(); 
-  private double initialTime = 0; 
+  public static final GenericEntry translationalVelo = DRIVEBASE_TAB.add("transational velocity", 0).withPosition(4,3).getEntry();
+
+  public static double angularVelocity = 0;
 
   private double m_desiredHeading = 0;
 
@@ -146,20 +146,21 @@ public class Drivetrain extends SubsystemBase {
   * @param chassisSpeeds the given chassisspeeds
   * @return the corrected chassisspeeds
   */
- private ChassisSpeeds translationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
+  private ChassisSpeeds translationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
     if(!Robot.navX.isConnected())
       return chassisSpeeds;
     double translationalVelocity = Math.abs(frontLeft.getDriveVelocity());
+    Logger.recordOutput("translational velocity", translationalVelocity); 
 
-    if (Math.abs(Robot.navX.getRate()) > 1) {
+    if (Math.abs(Robot.navX.getRate()) > 0.3) {
       m_desiredHeading = Robot.navX.getYaw();
-    } else if (translationalVelocity > 0.7) {
+    } else if (translationalVelocity > 1) {
 
       double calc = m_driftCorrectionPid.calculate(Robot.navX.getYaw(),
           m_desiredHeading);
 
-      if (Math.abs(calc) >= 0.3) {
-        chassisSpeeds.omegaRadiansPerSecond -= calc;
+      if (Math.abs(calc) >= 0.55) {
+        chassisSpeeds.omegaRadiansPerSecond += calc;
       }
     }
     return chassisSpeeds;
@@ -179,7 +180,6 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
-    rotation *= 2 / Math.hypot(0.762, 0.762);
 
     ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(translation.getX(), translation.getY(), rotation), Rotation2d.fromDegrees(-Robot.navX.getAngle()));
 
@@ -206,13 +206,11 @@ public class Drivetrain extends SubsystemBase {
 
   public void resetOdometry() {
     Robot.navX.reset();
-    odometry.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), new Pose2d(0.0, 0.0, new Rotation2d()));
+    odometry.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), pose);
   }
 
   @Override
   public void periodic() {
-
-    SmartDashboard.putNumber("Counts per revolution", frontLeft.getDriveMotor().getEncoder().getCountsPerRevolution());
 
     FRONT_LEFT_ENC.setDouble(frontLeft.getPosition().angle.getDegrees());
 		FRONT_RIGHT_ENC.setDouble(frontRight.getPosition().angle.getDegrees());
@@ -230,12 +228,14 @@ public class Drivetrain extends SubsystemBase {
     backRightTurnOutput.setDouble(backRight.getMainTurnOutput());
 
     globalAngle.setDouble(Robot.navX.getAngle()); 
-    angleVelo.setDouble(angularVelocity);
+    angleVelo.setDouble(Robot.navX.getRate());
     time.setDouble(AVTimer.get());
 
     updateOdometry();
     Logger.recordOutput("Odometry", pose);
+    Logger.recordOutput("angular velocity", Robot.navX.getRate());
   }
 }
+
 
 

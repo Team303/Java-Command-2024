@@ -62,6 +62,8 @@ public class Robot extends LoggedRobot {
 		Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
 	}
 
+	Logger.start();
+
     Autonomous.init();
 	AutonomousProgram.addAutosToShuffleboard();
   }
@@ -109,7 +111,7 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void teleopPeriodic() { 
 
-	CommandScheduler.getInstance().run();
+		CommandScheduler.getInstance().run();
 		
 	}
 }
