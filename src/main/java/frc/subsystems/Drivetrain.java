@@ -31,7 +31,7 @@ import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 /** Represents a swerve drive style drivetrain. */
-public class DriveSubsystem extends SubsystemBase {
+public class Drivetrain extends SubsystemBase {
   public static final double kMaxSpeed = 3.9; // 3.9 meters per second
   public static final double kMaxAngularSpeed = kMaxSpeed / (Math.hypot(0.381, 0.381)); // radians per second
 
@@ -87,7 +87,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   private final Timer AVTimer = new Timer();
 
-  public DriveSubsystem() {
+  public Drivetrain() {
     Robot.navX.reset();
     AVTimer.start();
 

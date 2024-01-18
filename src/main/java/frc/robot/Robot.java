@@ -35,19 +35,18 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.autonomous.Autonomous;
 import frc.autonomous.AutonomousProgram;
 import frc.commands.DefaultDrive;
-import frc.subsystems.DriveSubsystem;
+import frc.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.commands.DriveWait;
-import frc.subsystems.DriveSubsystem;
+import frc.subsystems.Drivetrain;
 import frc.subsystems.Shooter;
 
 public class Robot extends LoggedRobot {
   public static final CommandXboxController controller = new CommandXboxController(0);
   public static final AHRS navX = new AHRS(); 
-  public static final DriveSubsystem swerve = new DriveSubsystem();
+  public static final Drivetrain swerve = new Drivetrain();
   public static final Shooter shooter = new Shooter();
   // public static Logger logger; 
-
 
   @Override
   public void robotInit() {

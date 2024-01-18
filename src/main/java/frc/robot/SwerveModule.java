@@ -40,7 +40,7 @@ public class SwerveModule {
   }
 
   //TODO: figure this out
-  private static final double kModuleMaxAngularVelocity = DriveSubsystem.kMaxAngularSpeed;
+  private static final double kModuleMaxAngularVelocity = Drivetrain.kMaxAngularSpeed;
   private static final double kModuleMaxAngularAcceleration =
       2 * Math.PI; // radians per second squared
 
