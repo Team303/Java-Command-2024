@@ -42,10 +42,12 @@ public class Shooter extends SubsystemBase {
     */
 
 
+    /* -----------Neo Code----------------- */
     public final CANSparkMax leftAngleMotor;
     public final CANSparkMax rightAngleMotor;
     public final CANSparkMax leftFlywheelMotor;
     public final CANSparkMax rightFlywheelMotor;
+    /* */
 
     public final CANSparkMax leftIndexerMotor;
     public final CANSparkMax rightIndexerMotor;
@@ -55,6 +57,7 @@ public class Shooter extends SubsystemBase {
     public final DutyCycleEncoder angleEncoder_dutyCycle;
 
     public final RelativeEncoder flywheelEncoder;
+
     public final RelativeEncoder indexerEncoder;
 
     public final BangBangController flywheelController;
@@ -84,17 +87,22 @@ public class Shooter extends SubsystemBase {
         rightFlywheelMotor.setNeutralMode(NeutralModeValue.Coast);
         */
 
+        /* ------------NEO Code-------------- */
         leftAngleMotor = new CANSparkMax(RobotMap.Shooter.LEFT_ANGLE_MOTOR_ID, MotorType.kBrushless);
         rightAngleMotor = new CANSparkMax(RobotMap.Shooter.RIGHT_ANGLE_MOTOR_ID, MotorType.kBrushless);
         leftFlywheelMotor = new CANSparkMax(RobotMap.Shooter.LEFT_FLYWHEEL_MOTOR_ID, MotorType.kBrushless);
         rightFlywheelMotor = new CANSparkMax(RobotMap.Shooter.RIGHT_FLYWHEEL_MOTOR_ID, MotorType.kBrushless);
-        leftIndexerMotor = new CANSparkMax(RobotMap.Shooter.LEFT_INDEXER_MOTOR_ID, MotorType.kBrushless);
-        rightIndexerMotor = new CANSparkMax(RobotMap.Shooter.RIGHT_INDEXER_MOTOR_ID, MotorType.kBrushless);
 
         leftAngleMotor.setIdleMode(IdleMode.kBrake);
         rightAngleMotor.setIdleMode(IdleMode.kBrake);
         leftFlywheelMotor.setIdleMode(IdleMode.kCoast);
         rightFlywheelMotor.setIdleMode(IdleMode.kCoast);
+        /* */
+
+
+        leftIndexerMotor = new CANSparkMax(RobotMap.Shooter.LEFT_INDEXER_MOTOR_ID, MotorType.kBrushless);
+        rightIndexerMotor = new CANSparkMax(RobotMap.Shooter.RIGHT_INDEXER_MOTOR_ID, MotorType.kBrushless);
+
         leftIndexerMotor.setIdleMode(IdleMode.kBrake);
         rightIndexerMotor.setIdleMode(IdleMode.kBrake);
 
@@ -102,6 +110,7 @@ public class Shooter extends SubsystemBase {
         rightAngleMotor.setInverted(true);
         leftFlywheelMotor.setInverted(false);
         rightFlywheelMotor.setInverted(true);
+
         leftIndexerMotor.setInverted(true);
         rightIndexerMotor.setInverted(false);
 
