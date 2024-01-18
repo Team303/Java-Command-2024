@@ -63,7 +63,5 @@ public class RobotMap {
 		public static final int LEFT_TOP_MOTOR_ID = 2; //NEED TO CHANGE
 		public static final int RIGHT_TOP_MOTOR_ID = 3; //NEED TO CHANGE
 		public static final int INTAKE_ROLLER_MOTOR_ID = 4; //NEED TO CHANGE
-
-
 	}
 }
