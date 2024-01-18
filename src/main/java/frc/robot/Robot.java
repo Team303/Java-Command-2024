@@ -46,7 +46,10 @@ public class Robot extends LoggedRobot {
   public static final AHRS navX = new AHRS(); 
   public static final Drivetrain swerve = new Drivetrain();
   public static final Shooter shooter = new Shooter();
+<<<<<<< HEAD
   // public static Logger logger; 
+=======
+>>>>>>> ae54a02cd319b4654f1f4a2b30b9acc2d86228da
 
   @Override
   public void robotInit() {
