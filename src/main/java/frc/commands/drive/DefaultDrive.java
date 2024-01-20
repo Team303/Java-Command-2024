@@ -1,4 +1,4 @@
-package frc.commands;
+package frc.commands.drive;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;

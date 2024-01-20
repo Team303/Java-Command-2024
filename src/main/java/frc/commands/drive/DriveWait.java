@@ -1,4 +1,4 @@
-package frc.commands;
+package frc.commands.drive;
 
 import frc.robot.Robot;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
