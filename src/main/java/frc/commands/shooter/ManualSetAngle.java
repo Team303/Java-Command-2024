@@ -21,8 +21,9 @@ public class ManualSetAngle extends Command {
         addRequirements(shooter);
         desiredAngle = angle;
         //Calculate Speed here;
-        desiredVelocity = 0.0;
-        desiredVelocity = Math.sqrt((2*height *9.8*(16*height * height + range * range ))/(8*height));
+        //desiredVelocity = 0.0;
+        //desiredVelocity = Math.sqrt((2*height *9.8*(16*height * height + range * range ))/(8*height));
+        desiredVelocity = Math.sqrt(2 * height * 9.8) / Math.sin(desiredAngle); //new equation
     }
 
 

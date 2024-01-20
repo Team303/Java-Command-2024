@@ -21,7 +21,8 @@ public class DynamicSetAngle extends Command {
         addRequirements(Robot.shooter);
 
         desiredAngle = Math.atan(2*height/range);
-        desiredVelocity = Math.sqrt((2*height *9.8*(16*height * height + range * range ))/(8*height));
+        //desiredVelocity = Math.sqrt((2*height *9.8*(16*height * height + range * range ))/(8*height));
+        desiredVelocity = Math.sqrt(2 * height * 9.8) / Math.sin(desiredAngle); //new equation
     }
 
 }
