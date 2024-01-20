@@ -14,8 +14,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 public class DynamicSetAngle extends Command {    
 
-    public DynamicSetAngle(double range, double height, double hood_kP) {
+    double desiredAngle = 0.0;
+    double desiredVelocity = 0.0;
+
+    public DynamicSetAngle(double range, double height) {
         addRequirements(Robot.shooter);
+
+        desiredAngle = Math.atan(2*height/range);
+        desiredVelocity = Math.sqrt((2*height *9.8*(16*height * height + range * range ))/(8*height));
     }
 
 }

@@ -17,11 +17,12 @@ public class ManualSetAngle extends Command {
     double desiredAngle;
     double desiredVelocity;
 
-    public ManualSetAngle(double angle) {
+    public ManualSetAngle(double angle, double height, double range) {
         addRequirements(shooter);
         desiredAngle = angle;
         //Calculate Speed here;
         desiredVelocity = 0.0;
+        desiredVelocity = Math.sqrt((2*height *9.8*(16*height * height + range * range ))/(8*height));
     }
 
 

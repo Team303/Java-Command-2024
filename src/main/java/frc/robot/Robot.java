@@ -38,7 +38,6 @@ import frc.commands.DefaultDrive;
 import frc.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.commands.DriveWait;
-import frc.subsystems.Drivetrain;
 import frc.subsystems.Shooter;
 
 public class Robot extends LoggedRobot {

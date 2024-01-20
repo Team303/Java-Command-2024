@@ -21,7 +21,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.ctre.phoenix.sensors.CANCoder;
-import frc.subsystems.DriveSubsystem;
+import frc.subsystems.Drivetrain;
 
 public class SwerveModule {
   private static final double kWheelRadius = 0.0508;
