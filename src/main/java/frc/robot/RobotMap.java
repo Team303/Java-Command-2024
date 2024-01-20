@@ -1,5 +1,10 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
+
 public class RobotMap {
     public static final class Swerve {
 
@@ -31,4 +36,24 @@ public class RobotMap {
 		public static final double SWERVE_CONVERSION_FACTOR = (14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0); 
 
     }
+
+	public static final class PhotonvisionConstants {
+		public static final double FRONT_CAMERA_HEIGHT_METERS = 0.171; // NOT FINAL
+		public static final double BACK_CAMERA_HEIGHT_METERS = 0.146;
+		public static final double RIGHT_CAMERA_HEIGHT_METERS = 0.146; 
+		public static final double LEFT_CAMERA_HEIGHT_METERS = 0.146;
+		public static final double GRID_TARGET_HEIGHT_METERS = 0.36;
+		public static final double DOUBLE_SUBSTATION_TARGET_HEIGHT_METERS = 0.59;
+		public static final double CAMERA_PITCH_RADIANS = 0; // NOT FINAL
+		
+		public static final Transform3d ROBOT_TO_FRONT_CAMERA= new Transform3d(new Translation3d(0.381, 0, FRONT_CAMERA_HEIGHT_METERS),new Rotation3d(0.0,0.0,0.0));
+		public static final Transform3d ROBOT_TO_BACK_CAMERA= new Transform3d(new Translation3d(-0.381,0,BACK_CAMERA_HEIGHT_METERS),new Rotation3d(0,Units.degreesToRadians(180),0));
+		public static final Transform3d ROBOT_TO_LEFT_CAMERA= new Transform3d(new Translation3d(0,0.381,LEFT_CAMERA_HEIGHT_METERS),new Rotation3d(0,Units.degreesToRadians(90),0));
+		public static final Transform3d ROBOT_TO_RIGHT_CAMERA= new Transform3d(new Translation3d(0,-0.381,RIGHT_CAMERA_HEIGHT_METERS),new Rotation3d(0,Units.degreesToRadians(270),0));
+
+	}
+	public static final class DDrive {
+		public static final double STARTING_X=0;
+		public static final double STARTING_Y=0;
+	}
 }
