@@ -49,8 +49,7 @@ public class Shooter extends SubsystemBase {
     public final CANSparkMax rightFlywheelMotor;
     /* */
 
-    public final CANSparkMax leftIndexerMotor;
-    public final CANSparkMax rightIndexerMotor;
+    public final CANSparkMax indexerMotor;
 
     public final SparkLimitSwitch switchReverse;
 
@@ -100,23 +99,20 @@ public class Shooter extends SubsystemBase {
         /* */
 
 
-        leftIndexerMotor = new CANSparkMax(RobotMap.Shooter.LEFT_INDEXER_MOTOR_ID, MotorType.kBrushless);
-        rightIndexerMotor = new CANSparkMax(RobotMap.Shooter.RIGHT_INDEXER_MOTOR_ID, MotorType.kBrushless);
+        indexerMotor = new CANSparkMax(RobotMap.Shooter.LEFT_INDEXER_MOTOR_ID, MotorType.kBrushless);
 
-        leftIndexerMotor.setIdleMode(IdleMode.kBrake);
-        rightIndexerMotor.setIdleMode(IdleMode.kBrake);
+        indexerMotor.setIdleMode(IdleMode.kBrake);
 
         leftAngleMotor.setInverted(false);
         rightAngleMotor.setInverted(true);
         leftFlywheelMotor.setInverted(false);
         rightFlywheelMotor.setInverted(true);
 
-        leftIndexerMotor.setInverted(true);
-        rightIndexerMotor.setInverted(false);
+        indexerMotor.setInverted(true);
 
         angleEncoder_dutyCycle = new DutyCycleEncoder(8);
         flywheelEncoder = leftFlywheelMotor.getEncoder();
-        indexerEncoder = leftIndexerMotor.getEncoder();
+        indexerEncoder = indexerMotor.getEncoder();
 
         switchReverse = leftAngleMotor.getReverseLimitSwitch(Type.kNormallyOpen);
 
@@ -167,8 +163,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setIndexerSpeed(double speed) {
-        leftIndexerMotor.set(speed);
-        rightIndexerMotor.set(speed);
+        indexerMotor.set(speed);
     }
 
     public double getShooterAngle() {
