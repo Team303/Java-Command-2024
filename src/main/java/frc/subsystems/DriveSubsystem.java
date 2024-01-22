@@ -103,7 +103,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   public static final GenericEntry globalAngle = DRIVEBASE_TAB.add("global angle", 0).withPosition(4, 0).getEntry();
   public static final GenericEntry angleVelo = DRIVEBASE_TAB.add("angular velocity", 0).withPosition(4, 1).getEntry();
-  // public static final GenericEntry time = DRIVEBASE_TAB.add("Time", 0).withPosition(4, 2).getEntry();
+  // public static final GenericEntry time = DRIVEBASE_TAB.add("Time",
+  // 0).withPosition(4, 2).getEntry();
 
   public static final GenericEntry translationalVelo = DRIVEBASE_TAB.add("transational velocity", 0).withPosition(4, 3)
       .getEntry();
@@ -119,10 +120,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   public final AprilTagFieldLayout aprilTagField;
   private final Field2d field2d = new Field2d();
-  private static final Vector<N3> odometryStandardDeviations = VecBuilder.fill(0, 0, 0);
+  private static final Vector<N3> odometryStandardDeviations = VecBuilder.fill(1000000, 1000000, 1000000);
   // private static final Vector<N3> photonStandardDeviations =
   // VecBuilder.fill(0.25, 0.25, 0);
-  private static final Vector<N3> photonStandardDeviations = VecBuilder.fill(100000, 1000000, 1000000);
+  private static final Vector<N3> photonStandardDeviations = VecBuilder.fill(0, 0, 0);
 
   public PhotonPoseEstimator visionPoseEstimatorFront;
   public PhotonPoseEstimator visionPoseEstimatorRight;
@@ -167,8 +168,9 @@ public class DriveSubsystem extends SubsystemBase {
       Optional<Alliance> alliance = DriverStation.getAlliance();
       // TODO: Change to make the origin position based off of station rather than
       // just based off of alliance.
-      initialLayout.setOrigin(alliance.isPresent()&&alliance.get() == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide
-          : OriginPosition.kRedAllianceWallRightSide);
+      initialLayout
+          .setOrigin(alliance.isPresent() && alliance.get() == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide
+              : OriginPosition.kRedAllianceWallRightSide);
     } catch (IOException e) {
       DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
       initialLayout = null;
@@ -282,8 +284,34 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
-    field2d.setRobotPose(getPose());
     poseEstimator.update(Robot.navX.getRotation2d(), getModulePositions());
+
+    Optional<EstimatedRobotPose> resultFront = getEstimatedGlobalPoseFront(poseEstimator.getEstimatedPosition());
+    Optional<EstimatedRobotPose> resultBack = getEstimatedGlobalPoseBack(poseEstimator.getEstimatedPosition());
+    Optional<EstimatedRobotPose> resultRight = getEstimatedGlobalPoseRight(poseEstimator.getEstimatedPosition());
+    Optional<EstimatedRobotPose> resultLeft = getEstimatedGlobalPoseLeft(poseEstimator.getEstimatedPosition());
+
+    if (resultFront.isPresent()) {
+      EstimatedRobotPose visionPoseEstimate = resultFront.get();
+      poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+          visionPoseEstimate.timestampSeconds);
+    }
+    if (resultRight.isPresent()) {
+      EstimatedRobotPose visionPoseEstimate = resultRight.get();
+      poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+          visionPoseEstimate.timestampSeconds);
+    }
+    if (resultBack.isPresent()) {
+      EstimatedRobotPose visionPoseEstimate = resultBack.get();
+      poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+          visionPoseEstimate.timestampSeconds);
+    }
+    if (resultLeft.isPresent()) {
+      EstimatedRobotPose visionPoseEstimate = resultLeft.get();
+      poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+          visionPoseEstimate.timestampSeconds);
+    }
+    field2d.setRobotPose(getPose());
     // pose = odometry.update(
     // Robot.navX.getRotation2d(),
     // getModulePositions());
@@ -301,29 +329,31 @@ public class DriveSubsystem extends SubsystemBase {
   public Pose2d getPose() {
     return poseEstimator.getEstimatedPosition();
   }
+
   public void resetOdometry() {
     Robot.navX.reset();
-    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(),poseEstimator.getEstimatedPosition());
-    // odometry.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), pose);
+    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), poseEstimator.getEstimatedPosition());
+    // odometry.resetPosition(Robot.navX.getRotation2d(), getModulePositions(),
+    // pose);
   }
 
   public Optional<EstimatedRobotPose> getEstimatedGlobalPoseFront(Pose2d prevEstimatedRobotPose) {
-    visionPoseEstimatorFront.setReferencePose(prevEstimatedRobotPose);
+    // visionPoseEstimatorFront.setReferencePose(prevEstimatedRobotPose);
     return visionPoseEstimatorFront.update();
   }
 
   public Optional<EstimatedRobotPose> getEstimatedGlobalPoseRight(Pose2d prevEstimatedRobotPose) {
-    visionPoseEstimatorRight.setReferencePose(prevEstimatedRobotPose);
+    // visionPoseEstimatorRight.setReferencePose(prevEstimatedRobotPose);
     return visionPoseEstimatorRight.update();
   }
 
   public Optional<EstimatedRobotPose> getEstimatedGlobalPoseBack(Pose2d prevEstimatedRobotPose) {
-    visionPoseEstimatorBack.setReferencePose(prevEstimatedRobotPose);
+    // visionPoseEstimatorBack.setReferencePose(prevEstimatedRobotPose);
     return visionPoseEstimatorBack.update();
   }
 
   public Optional<EstimatedRobotPose> getEstimatedGlobalPoseLeft(Pose2d prevEstimatedRobotPose) {
-    visionPoseEstimatorLeft.setReferencePose(prevEstimatedRobotPose);
+    // visionPoseEstimatorLeft.setReferencePose(prevEstimatedRobotPose);
     return visionPoseEstimatorLeft.update();
   }
 

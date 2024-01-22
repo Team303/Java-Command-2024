@@ -51,11 +51,12 @@ public class PhotonvisionModule extends SubsystemBase {
     public static final GenericEntry RIGHT_TARGET_SKEW = PHOTONVISION_TAB.add("RIGHT ID Skew", 0).getEntry();
 
 
-    private static PhotonCamera[] camera = {
+    private static PhotonCamera[] camera = 
+     {
             new PhotonCamera("android"),
             new PhotonCamera("PhotonVision2"),
             new PhotonCamera("apple"),
-            new PhotonCamera("PhotonVision4")
+            new PhotonCamera("PhotonVision4"),
     };
 
     // public static enum PhotonPipeline {

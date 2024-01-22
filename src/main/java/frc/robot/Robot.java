@@ -38,48 +38,49 @@ import frc.commands.DefaultDrive;
 import frc.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.commands.DriveWait;
-import frc.modules.PhotonvisionModule;
+ import frc.modules.PhotonvisionModule;
 
 public class Robot extends LoggedRobot {
-  public static final CommandXboxController controller = new CommandXboxController(0);
-  public static final AHRS navX = new AHRS(); 
-public static final PhotonvisionModule photonvision = new PhotonvisionModule();
-  public static final DriveSubsystem swerve = new DriveSubsystem();
-  // public static Logger logger; 
+	public static final CommandXboxController controller = new CommandXboxController(0);
+	public static final AHRS navX = new AHRS();
+	public static final PhotonvisionModule photonvision = new PhotonvisionModule();
+	public static final DriveSubsystem swerve = new DriveSubsystem();
+	// public static Logger logger;
 
+	@Override
+	public void robotInit() {
+		configureButtonBindings();
 
-  @Override
-  public void robotInit() {
-    configureButtonBindings();
+		Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
 
-	Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
+		if (isReal()) {
+			Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+			Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+			new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+		} else {
+			setUseTiming(false); // Run as fast as possible
+			String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the
+															// user)
+			Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+			Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a
+																									// new log
+		}
 
-	if (isReal()) {
-		Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
-		Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-		new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
-	} else {
-		setUseTiming(false); // Run as fast as possible
-		String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-		Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-		Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+		Logger.start();
+
+		Autonomous.init();
+		AutonomousProgram.addAutosToShuffleboard();
 	}
 
-	Logger.start();
+	private void configureButtonBindings() {
+		controller.y().onTrue(new InstantCommand(swerve::resetOdometry));
+	}
 
-    Autonomous.init();
-	AutonomousProgram.addAutosToShuffleboard();
-  }
-
-  private void configureButtonBindings() {
-    controller.y().onTrue(new InstantCommand(swerve::resetOdometry));
-  }
-
-  	/* Currently running auto routine */
+	/* Currently running auto routine */
 
 	private Command autonomousCommand;
 
-  @Override
+	@Override
 	public void autonomousInit() {
 		navX.reset();
 		swerve.resetOdometry();
@@ -102,19 +103,19 @@ public static final PhotonvisionModule photonvision = new PhotonvisionModule();
 		CommandScheduler.getInstance().schedule(this.autonomousCommand);
 	}
 
-  @Override
+	@Override
 	public void teleopInit() {
 		// This makes sure that the autonomous stops running when teleop starts running.
 		if (autonomousCommand != null) {
 			autonomousCommand.cancel();
 		}
-    	swerve.setDefaultCommand(new DefaultDrive(true));
+		swerve.setDefaultCommand(new DefaultDrive(true));
 	}
 
 	@Override
-	public void teleopPeriodic() { 
+	public void teleopPeriodic() {
 
 		CommandScheduler.getInstance().run();
-		
+
 	}
 }
