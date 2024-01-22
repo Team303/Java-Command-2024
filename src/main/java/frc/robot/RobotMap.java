@@ -58,10 +58,16 @@ public class RobotMap {
 	}
 
 	public static final class Intake {
-		public static final int LEFT_BOTTOM_MOTOR_ID = 0; //NEED TO CHANGE
-		public static final int RIGHT_BOTTOM_MOTOR_ID = 1; //NEED TO CHANGE
-		public static final int LEFT_TOP_MOTOR_ID = 2; //NEED TO CHANGE
-		public static final int RIGHT_TOP_MOTOR_ID = 3; //NEED TO CHANGE
-		public static final int INTAKE_ROLLER_MOTOR_ID = 4; //NEED TO CHANGE
+		public static final int SHOULDER_JOINT_LEFT_ID = 0; //NEED TO CHANGE
+		public static final int SHOULDER_JOINT_RIGHT_ID = 1; //NEED TO CHANGE
+		public static final int ELBOW_JOINT_LEFT_ID = 2; //NEED TO CHANGE
+		public static final int ELBOW_JOINT_RIGHT_ID = 3; //NEED TO CHANGE
+		public static final int ROLLER_MOTOR_ID = 4; //NEED TO CHANGE
+		public static final int ShoulderLimitSwitch = 5;
+		public static final int ElbowLimitSwitch = 6;
+
+		public static final double GEAR_RATIO_SHOULDER = 0.4; //change
 	}
+
+	
 }

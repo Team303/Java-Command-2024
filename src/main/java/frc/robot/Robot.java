@@ -30,11 +30,14 @@ import frc.commands.drive.DriveWait;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.subsystems.Drivetrain;
+import frc.subsystems.Intake;
 
 public class Robot extends TimedRobot {
   public static final CommandXboxController controller = new CommandXboxController(0);
   public static final AHRS navX = new AHRS(); 
   public static final Drivetrain swerve = new Drivetrain();
+  public static final Intake intake = new Intake();
+
 
   @Override
   public void robotInit() {
