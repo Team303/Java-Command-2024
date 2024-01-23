@@ -13,19 +13,18 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
-import frc.subsystems.Drivetrain;
-
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax; 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
-import com.ctre.phoenix.sensors.CANCoder;
+import frc.subsystems.Drivetrain;
+import com.ctre.phoenix6.hardware.CANcoder;
 
 public class SwerveModule {
-  public static final double kWheelDiameter = 0.1524;
-  private static final double kWheelRadius = kWheelDiameter / 2;
-  private static final int kEncoderResolution = 360;
+  private static final double kWheelRadius = 0.0508;
+  public static final double kWheelDiameter = kWheelRadius * 2;
+  private static final int kEncoderResolution = 42;
 
   private double mainDriveOutput;
   
@@ -47,9 +46,9 @@ public class SwerveModule {
   private final CANSparkMax turningMotor;
 
   private final RelativeEncoder driveEncoder;
-  private final CANCoder turningEncoder;
+  private final CANcoder turningEncoder;
 
-  public CANCoder getTurningEncoder() {
+  public CANcoder getTurningEncoder() {
     return turningEncoder;
   }
 
@@ -61,16 +60,19 @@ public class SwerveModule {
   private final PIDController m_drivePIDController = new PIDController(0.2, 0, 0);
 
   // Gains are for example purposes only - must be determined for your own robot!
-  private final ProfiledPIDController m_turningPIDController =
+  private final PIDController m_turningPIDController = new PIDController(8, 0, 0);
+  
+  /*  =
       new ProfiledPIDController(
           2,
           0,
           0.2,
           new TrapezoidProfile.Constraints(
               kModuleMaxAngularVelocity*10 , kModuleMaxAngularAcceleration * 50));
+  */
 
   // Gains are for example purposes only - must be determined for your own robot!
-  private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(2, 2);
+  private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0,3.12, 0.36);
   private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(1.5, 0.2);
 
   /**
@@ -91,16 +93,18 @@ public class SwerveModule {
     turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
 
     driveEncoder = driveMotor.getEncoder();
-    turningEncoder = new CANCoder(turningEncoderChannelA);
+    turningEncoder = new CANcoder(turningEncoderChannelA);
 
     driveMotor.setIdleMode(IdleMode.kBrake);
     turningMotor.setIdleMode(IdleMode.kBrake);
 
-    driveEncoder.setPositionConversionFactor(2 * Math.PI * kWheelRadius / kEncoderResolution);
-    driveEncoder.setVelocityConversionFactor(2 * Math.PI * kWheelRadius / kEncoderResolution);
+    driveEncoder.setPositionConversionFactor(2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR / kEncoderResolution);
+    driveEncoder.setVelocityConversionFactor(2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR / kEncoderResolution);
 
-    m_turningPIDController.enableContinuousInput(-180, 180);
-    turningEncoder.setPositionToAbsolute();
+    m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
+
+    //turningEncoder.setPosition(turningEncoder.getPosition().getValueAsDouble());
+
   }
 
   public void invertSteerMotor(boolean inversion) {
@@ -125,7 +129,15 @@ public class SwerveModule {
    */
   public SwerveModuleState getState() {
     return new SwerveModuleState(
-        driveEncoder.getVelocity(), Rotation2d.fromDegrees(turningEncoder.getPosition() % 360));
+        driveEncoder.getVelocity(), Rotation2d.fromDegrees(turningEncoder.getPosition().getValueAsDouble() % 360));
+  }
+
+  /**
+   * Returns the current Velocity of the module in m/s
+   * @return the current Velocity of the module in m/s
+   */
+  public double getDriveVelocity() {
+    return driveEncoder.getVelocity(); // / 60 * 2 * Math.PI * kWheelRadius;
   }
 
   /**
@@ -135,7 +147,7 @@ public class SwerveModule {
    */
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(
-        driveEncoder.getPosition(), Rotation2d.fromDegrees(turningEncoder.getPosition() % 360));
+        driveEncoder.getPosition(), Rotation2d.fromDegrees(turningEncoder.getAbsolutePosition().getValueAsDouble() % 360));
   }
 
 
@@ -147,20 +159,20 @@ public class SwerveModule {
   public void setDesiredState(SwerveModuleState desiredState) {
     // Optimize the reference state to avoid spinning further than 90 degrees
     SwerveModuleState state =
-        SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(turningEncoder.getPosition() % 360));
+        SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(turningEncoder.getPosition().getValueAsDouble() % 360));
 
     // Calculate the drive output from the drive PID controller.
     final double driveOutput =
-        m_drivePIDController.calculate(driveEncoder.getVelocity() * 2 * Math.PI * 0.045, state.speedMetersPerSecond);
+        m_drivePIDController.calculate(driveEncoder.getVelocity() * 2 * Math.PI * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR *  kWheelRadius, state.speedMetersPerSecond);
 
     final double driveFeedforward = m_driveFeedforward.calculate(state.speedMetersPerSecond);
 
     // Calculate the turning motor output from the turning PID controller.
     final double turnOutput =
-        m_turningPIDController.calculate(Math.toRadians(turningEncoder.getPosition() % 360), state.angle.getRadians());
+        m_turningPIDController.calculate(Math.toRadians(turningEncoder.getPosition().getValueAsDouble() % 360), state.angle.getRadians());
 
-    final double turnFeedforward =
-        m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
+    // final double turnFeedforward =
+    //     m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
 
     mainDriveOutput = driveOutput;
 
@@ -168,6 +180,6 @@ public class SwerveModule {
 
 
     driveMotor.setVoltage(driveOutput + driveFeedforward);
-    turningMotor.setVoltage(turnOutput + turnFeedforward);
+    turningMotor.setVoltage(turnOutput);
   }
 }

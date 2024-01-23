@@ -67,6 +67,9 @@ public class RobotMap {
 		public static final int ElbowLimitSwitch = 6;
 
 		public static final double GEAR_RATIO_SHOULDER = 0.4; //change
+
+		public static final double SIMULATION_SCALE = 84 / 2.54;
+
 	}
 
 	

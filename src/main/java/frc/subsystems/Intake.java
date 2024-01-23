@@ -6,6 +6,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.CANSparkBase.IdleMode;
 
+import frc.robot.Robot;
 import frc.robot.RobotMap;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -13,6 +14,8 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import java.util.List;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,8 +23,15 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.GenericEntry;
+
+import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 
 public class Intake extends SubsystemBase {
+
+    public double desiredShoulderAngle;
+    public double desiredElbowAngle;
 
     public static float[] shoulderLimits = { 50, -19.5f }; // CHANGE LATER ARAV >>>>>>>>
     public static float[] elbowLimits = { 170, 30 }; // CHANGE LATER NINJA
@@ -34,6 +44,28 @@ public class Intake extends SubsystemBase {
 
     private double shoulderReachAngle;
 	private double elbowReachAngle;
+
+    private final Mechanism2d intakeSimulation;
+
+    public static final ShuffleboardTab INTAKE_TAB = Shuffleboard.getTab("Intake");
+
+    public static final GenericEntry effectorXEntry = INTAKE_TAB.add("effectorX", 0).withSize(1, 1).withPosition(0, 0).getEntry();
+	public static final GenericEntry effectorYEntry = INTAKE_TAB.add("effectorY", 0).withSize(1, 1).withPosition(1, 0).getEntry();
+
+	public static final GenericEntry shoulderAngleEntry = INTAKE_TAB.add("Desired Shoulder Angle", 0).withSize(1, 1).withPosition(0, 1).getEntry();
+	public static final GenericEntry elbowAngleEntry = INTAKE_TAB.add("Desired Elbow Angle", 0).withSize(1, 1).withPosition(1, 1).getEntry();
+
+    public static final GenericEntry shoulderEncoderEntry = INTAKE_TAB.add("Shoulder Encoder", 0).withSize(1, 1).withPosition(0, 2).getEntry();
+	public static final GenericEntry elbowEncoderEntry = INTAKE_TAB.add("Elbow Encoder", 0).withSize(1, 1).withPosition(1, 2).getEntry();
+            
+    public static final GenericEntry shoulderEncoderErrorEntry = INTAKE_TAB.add("shoulderEncoderError", 0).withSize(1, 1).withPosition(0, 3).getEntry();
+	public static final GenericEntry elbowEncoderErrorEntry = INTAKE_TAB.add("elbowEncoderError", 0).withSize(1, 1).withPosition(1, 3).getEntry();
+
+	public static final GenericEntry shoulderAbsoluteAngleEntry = INTAKE_TAB.add("Shoulder Absolute Angle", 0).withSize(1, 1).withPosition(0, 4).getEntry();
+	public static final GenericEntry elbowAbsoluteAngleEntry = INTAKE_TAB.add("Elbow Absolute Angle", 0).withSize(1, 1).withPosition(1, 4).getEntry();
+
+	public static final GenericEntry shoulderSwitchEntry = INTAKE_TAB.add("Shoulder Limit Switch", 0).withSize(1, 1).withPosition(0, 5).getEntry();
+	public static final GenericEntry elbowSwitchEntry = INTAKE_TAB.add("Elbow Limit Switch", 0).withSize(1, 1).withPosition(1, 5).getEntry();
 
     // IDK WHAT THESE ARE CHANGE LATER
     public static final double MAX_VELOCITY = (2 * Math.PI) * 0.35;
@@ -226,6 +258,8 @@ public class Intake extends SubsystemBase {
 
     public Intake() {
         rollerMotor = new TalonFX(RobotMap.Intake.ROLLER_MOTOR_ID);
+        intakeSimulation = new Mechanism2d(300 / 33.07, 300 / 33.07);
+
     }
 	/**
 	 * Reach for a list of raw desired angles
@@ -235,8 +269,8 @@ public class Intake extends SubsystemBase {
 	 */
 	public List<Double> reach(List<Double> desiredRadianAngles) {
 		// Pull angles out of list
-		double desiredShoulderAngle = desiredRadianAngles.get(0);
-		double desiredElbowAngle = desiredRadianAngles.get(1);
+		desiredShoulderAngle = desiredRadianAngles.get(0);
+		desiredElbowAngle = desiredRadianAngles.get(1);
 
 		shoulderReachAngle = desiredShoulderAngle;
 		elbowReachAngle = desiredElbowAngle;
@@ -313,5 +347,46 @@ public class Intake extends SubsystemBase {
 		}
 
 	}
+
+    @Override
+    public void periodic() {
+        double shoulderSimAngle = desiredShoulderAngle;
+		double elbowSimAngle = desiredElbowAngle;
+
+		if (shoulderSimAngle != this.shoulderReachAngle || elbowSimAngle != this.elbowReachAngle) {
+			this.shoulderReachAngle = shoulderSimAngle;
+			this.elbowReachAngle = elbowSimAngle;
+		}
+
+		shoulderJoint.simulator.setAngle(this.shoulderReachAngle);
+		elbowJoint.simulator.setAngle(this.elbowReachAngle);
+
+		shoulderJoint.real.setAngle(-Math.toDegrees(this.shoulderJoint.getJointAngle()) + 90);
+		elbowJoint.real.setAngle(-Math.toDegrees(this.elbowJoint.getJointAngle()));
+
+
+		shoulderEncoderEntry.setDouble(shoulderJoint.getEncoderPosition());
+		elbowEncoderEntry.setDouble(elbowJoint.getEncoderPosition());
+
+		shoulderSwitchEntry.setBoolean(shoulderJoint.atHardLimit());
+		elbowSwitchEntry.setBoolean(elbowJoint.atHardLimit());
+
+		shoulderAbsoluteAngleEntry.setDouble(Math.toDegrees(shoulderJoint.getJointAngle()));
+		elbowAbsoluteAngleEntry.setDouble(Math.toDegrees(elbowJoint.getJointAngle()));
+
+		// shoulderSoftLimitEntry.setBoolean(shoulderJoint.atSoftLimit());
+		// elbowSoftLimitEntry.setBoolean(elbowJoint.atSoftLimit());
+
+		// shoulderSoftForwardLimitEntry.setBoolean(shoulderJoint.atSoftForwardLimit());
+		// elbowSoftForwardLimitEntry.setBoolean(elbowJoint.atSoftForwardLimit());
+
+		// shoulderSoftReverseLimitEntry.setBoolean(shoulderJoint.atSoftReverseLimit());
+		// elbowSoftReverseLimitEntry.setBoolean(elbowJoint.atSoftReverseLimit());
+
+		shoulderEncoderErrorEntry.setDouble(shoulderJoint.getJointAngle() - shoulderJoint.getEncoderPosition());
+		elbowEncoderErrorEntry.setDouble(elbowJoint.getJointAngle() - elbowJoint.getEncoderPosition());
+
+		Logger.recordOutput("MyMechanism", this.intakeSimulation);
+    }
 
 }
