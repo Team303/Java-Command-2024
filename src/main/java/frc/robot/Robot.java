@@ -31,7 +31,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.subsystems.Drivetrain;
 import frc.subsystems.Intake;
 
-public class Robot extends Logged {
+public class Robot extends LoggedRobot {
   public static final CommandXboxController controller = new CommandXboxController(0);
   public static final AHRS navX = new AHRS(); 
   public static final Drivetrain swerve = new Drivetrain();
