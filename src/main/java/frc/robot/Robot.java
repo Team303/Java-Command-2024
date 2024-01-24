@@ -10,6 +10,8 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import frc.commands.shooter.HomeShooter;
+import frc.commands.shooter.ManualSetAngle;
 
 // import org.littletonrobotics.junction.LoggedRobot;
 // import org.littletonrobotics.junction.Logger;
@@ -36,12 +38,13 @@ import frc.autonomous.Autonomous;
 import frc.autonomous.AutonomousProgram;
 import frc.commands.DefaultDrive;
 import frc.subsystems.Drivetrain;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import 
 import frc.commands.DriveWait;
 import frc.subsystems.Shooter;
 
 public class Robot extends LoggedRobot {
-  public static final CommandXboxController controller = new CommandXboxController(0);
+  public static final CommandXboxController driverController = new CommandXboxController(0);
+  public static final CommandXboxController operatorController = new CommandXboxController(1);
   public static final AHRS navX = new AHRS(); 
   public static final Drivetrain swerve = new Drivetrain();
   public static final Shooter shooter = new Shooter();
@@ -70,7 +73,9 @@ public class Robot extends LoggedRobot {
   }
 
   private void configureButtonBindings() {
-    controller.y().onTrue(new InstantCommand(swerve::resetOdometry));
+    driverController.y().onTrue(new InstantCommand(swerve::resetOdometry));
+	operatorController.y().whileTrue(new HomeShooter());
+	operatorController.a().whileTrue(new ManualSetAngle(78, 123));
   }
 
   	/* Currently running auto routine */
