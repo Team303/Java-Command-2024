@@ -4,8 +4,7 @@
 
 package frc.subsystems;
 
-import org.littletonrobotics.junction.Logger;
-import edu.wpi.first.math.controller.PIDController;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -24,16 +23,11 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.Timer;
-
-import frc.robot.SwerveModule;
-import frc.robot.Robot;
-import frc.robot.RobotMap;
 
 /** Represents a swerve drive style drivetrain. */
 public class Drivetrain extends SubsystemBase {
-  public static final double kMaxSpeed = 3.9; // 3.9 meters per second
-  public static final double kMaxAngularSpeed = kMaxSpeed / (Math.hypot(0.381, 0.381)); // radians per second
+  public static final double kMaxSpeed = 3.0; // 3 meters per second
+  public static final double kMaxAngularSpeed = Math.PI * 2; // 2 rotation per second
 
   private final Translation2d frontLeftLocation = new Translation2d(-0.381, -0.381);
   private final Translation2d frontRightLocation = new Translation2d(-0.381, 0.381);
@@ -46,7 +40,6 @@ public class Drivetrain extends SubsystemBase {
   private final SwerveModule backRight;
 
   private final SwerveDriveOdometry odometry;
-  private final PIDController m_driftCorrectionPid = new PIDController(0.1, 0, 0);
   private Pose2d pose = new Pose2d(0.0, 0.0, new Rotation2d()); 
 
   public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drive Base");
@@ -71,25 +64,16 @@ public class Drivetrain extends SubsystemBase {
   public static final GenericEntry frontLeftAngle = DRIVEBASE_TAB.add("front left angle", 0).withPosition(0, 3).withSize(2,1).getEntry();
   public static final GenericEntry frontRightAngle = DRIVEBASE_TAB.add("front right angle", 0).withPosition(2, 3).withSize(2,1).getEntry();
 
-  public static final GenericEntry globalAngle = DRIVEBASE_TAB.add("global angle", 0).withPosition(4, 0).getEntry();
-  public static final GenericEntry angleVelo = DRIVEBASE_TAB.add("angular velocity", 0).withPosition(4,1).getEntry();
-  public static final GenericEntry time = DRIVEBASE_TAB.add("Time", 0).withPosition(4, 2).getEntry();
+  public static final GenericEntry globalAngle = DRIVEBASE_TAB.add("global angle", 0).getEntry();
 
-  public static final GenericEntry translationalVelo = DRIVEBASE_TAB.add("transational velocity", 0).withPosition(4,3).getEntry();
-
-  public static double angularVelocity = 0;
-
-  private double m_desiredHeading = 0;
 
   private final SwerveDriveKinematics kinematics =
     new SwerveDriveKinematics(
       frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
-  private final Timer AVTimer = new Timer();
 
   public Drivetrain() {
     Robot.navX.reset();
-    AVTimer.start();
 
     frontLeft = new SwerveModule(RobotMap.Swerve.LEFT_FRONT_DRIVE_ID, RobotMap.Swerve.LEFT_FRONT_STEER_ID, RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID);
     frontRight = new SwerveModule(RobotMap.Swerve.RIGHT_FRONT_DRIVE_ID, RobotMap.Swerve.RIGHT_FRONT_STEER_ID, RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID);
@@ -117,10 +101,8 @@ public class Drivetrain extends SubsystemBase {
     odometry = new SwerveDriveOdometry(
       kinematics,
       Robot.navX.getRotation2d(),
-      getModulePositions()
-    );
-
-  }
+      getModulePositions());
+    }
 
   /**
    * Method to drive the robot using joystick info.
@@ -136,42 +118,12 @@ public class Drivetrain extends SubsystemBase {
             fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Robot.navX.getRotation2d())
                 : new ChassisSpeeds(xSpeed, ySpeed, rot));
-    
-    // swerveModuleStates = kinematics.toSwerveModuleStates(translationalDriftCorrection(kinematics.toChassisSpeeds(swerveModuleStates)));
-
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
 
     frontLeft.setDesiredState(swerveModuleStates[0]);
     frontRight.setDesiredState(swerveModuleStates[1]);
     backLeft.setDesiredState(swerveModuleStates[2]);
     backRight.setDesiredState(swerveModuleStates[3]);
-  }
-
-  /**
-  * Adds rotational velocity to the chassis speed to compensate for
-  * unwanted changes in gyroscope heading.
-  * 
-  * @param chassisSpeeds the given chassisspeeds
-  * @return the corrected chassisspeeds
-  */
-  private ChassisSpeeds translationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
-    if(!Robot.navX.isConnected())
-      return chassisSpeeds;
-    double translationalVelocity = Math.abs(frontLeft.getDriveVelocity());
-    Logger.recordOutput("translational velocity", translationalVelocity); 
-
-    if (Math.abs(Robot.navX.getRate()) > 0.3) {
-      m_desiredHeading = Robot.navX.getYaw();
-    } else if (translationalVelocity > 1) {
-
-      double calc = m_driftCorrectionPid.calculate(Robot.navX.getYaw(),
-          m_desiredHeading);
-
-      if (Math.abs(calc) >= 0.55) {
-        chassisSpeeds.omegaRadiansPerSecond += calc;
-      }
-    }
-    return chassisSpeeds;
   }
 
   public void drive(SwerveModuleState[] state) {
@@ -188,10 +140,9 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
+    rotation *= 2 / Math.hypot(0.762, 0.762);
 
     ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(translation.getX(), translation.getY(), rotation), Rotation2d.fromDegrees(-Robot.navX.getAngle()));
-
-    chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
     
     drive(kinematics.toSwerveModuleStates(chassisSpeeds));
   }
@@ -214,16 +165,18 @@ public class Drivetrain extends SubsystemBase {
 
   public void resetOdometry() {
     Robot.navX.reset();
-    odometry.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), pose);
+    odometry.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), new Pose2d(0.0, 0.0, new Rotation2d()));
   }
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("Counts per revolution", frontLeft.getDriveMotor().getEncoder().getCountsPerRevolution());
 
     FRONT_LEFT_ENC.setDouble(frontLeft.getPosition().angle.getDegrees());
 		FRONT_RIGHT_ENC.setDouble(frontRight.getPosition().angle.getDegrees());
 		BACK_LEFT_ENC.setDouble(backLeft.getPosition().angle.getDegrees());
 		BACK_RIGHT_ENC.setDouble(backRight.getPosition().angle.getDegrees());
+    SmartDashboard.putNumber("Left X", Robot.controller.getLeftX());
 
     frontLeftDriveOutput.setDouble(frontLeft.getMainDriveOutput());
     backLeftDriveOutput.setDouble(backLeft.getMainDriveOutput());
@@ -235,15 +188,11 @@ public class Drivetrain extends SubsystemBase {
     frontRightTurnOutput.setDouble(frontRight.getMainTurnOutput());
     backRightTurnOutput.setDouble(backRight.getMainTurnOutput());
 
-    globalAngle.setDouble(Robot.navX.getAngle()); 
-    angleVelo.setDouble(Robot.navX.getRate());
-    time.setDouble(AVTimer.get());
-
+    globalAngle.setDouble(Robot.navX.getAngle());
+    
     updateOdometry();
-    Logger.recordOutput("Odometry", pose);
-    Logger.recordOutput("angular velocity", Robot.navX.getRate());
+    // Robot.logger.recordOutput("Odometry", pose);
   }
 }
-
 
 

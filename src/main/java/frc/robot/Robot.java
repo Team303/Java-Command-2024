@@ -4,15 +4,6 @@
 
 package frc.robot;
 
-import org.littletonrobotics.junction.LogFileUtil;
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGReader;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-import frc.commands.shooter.HomeShooter;
-import frc.commands.shooter.ManualSetAngle;
-
 // import org.littletonrobotics.junction.LoggedRobot;
 // import org.littletonrobotics.junction.Logger;
 // import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -22,8 +13,6 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -38,7 +27,9 @@ import frc.autonomous.Autonomous;
 import frc.autonomous.AutonomousProgram;
 import frc.commands.DefaultDrive;
 import frc.subsystems.Drivetrain;
-import 
+import org.littletonrobotics.junction.LoggedRobot;
+import frc.commands.shooter.HomeShooter;
+import frc.commands.shooter.ManualSetAngle;
 import frc.commands.DriveWait;
 import frc.subsystems.Shooter;
 
@@ -53,23 +44,8 @@ public class Robot extends LoggedRobot {
   public void robotInit() {
     configureButtonBindings();
 
-	Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
-
-	if (isReal()) {
-		Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
-		Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-		new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
-	} else {
-		setUseTiming(false); // Run as fast as possible
-		String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-		Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-		Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
-	}
-
-	Logger.start();
-
     Autonomous.init();
-	AutonomousProgram.addAutosToShuffleboard();
+		AutonomousProgram.addAutosToShuffleboard();
   }
 
   private void configureButtonBindings() {
@@ -111,13 +87,13 @@ public class Robot extends LoggedRobot {
 		if (autonomousCommand != null) {
 			autonomousCommand.cancel();
 		}
-    	swerve.setDefaultCommand(new DefaultDrive(true));
+    swerve.setDefaultCommand(new DefaultDrive(true));
 	}
 
-	@Override
-	public void teleopPeriodic() { 
+  @Override
+  public void teleopPeriodic() { 
 
-		CommandScheduler.getInstance().run();
+	  CommandScheduler.getInstance().run();
 		
-	}
+  }
 }
