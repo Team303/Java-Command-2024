@@ -180,19 +180,19 @@ public class DriveSubsystem extends SubsystemBase {
       visionPoseEstimatorFront = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
           Robot.photonvision.getCamera(CameraName.CAM1),
           PhotonvisionConstants.ROBOT_TO_FRONT_CAMERA);
-      visionPoseEstimatorRight = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-          Robot.photonvision.getCamera(CameraName.CAM2),
-          PhotonvisionConstants.ROBOT_TO_RIGHT_CAMERA);
+      //visionPoseEstimatorRight = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+      //     Robot.photonvision.getCamera(CameraName.CAM2),
+          // PhotonvisionConstants.ROBOT_TO_RIGHT_CAMERA);
       visionPoseEstimatorBack = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
           Robot.photonvision.getCamera(CameraName.CAM3),
           PhotonvisionConstants.ROBOT_TO_BACK_CAMERA);
-      visionPoseEstimatorLeft = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-          Robot.photonvision.getCamera(CameraName.CAM4),
-          PhotonvisionConstants.ROBOT_TO_LEFT_CAMERA);
+      // visionPoseEstimatorLeft = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+      //     Robot.photonvision.getCamera(CameraName.CAM4),
+      //     PhotonvisionConstants.ROBOT_TO_LEFT_CAMERA);
       visionPoseEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-      visionPoseEstimatorRight.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+      // visionPoseEstimatorRight.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
       visionPoseEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-      visionPoseEstimatorLeft.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+      // visionPoseEstimatorLeft.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 
     // odometry = new SwerveDriveOdometry(
@@ -288,29 +288,29 @@ public class DriveSubsystem extends SubsystemBase {
 
     Optional<EstimatedRobotPose> resultFront = getEstimatedGlobalPoseFront(poseEstimator.getEstimatedPosition());
     Optional<EstimatedRobotPose> resultBack = getEstimatedGlobalPoseBack(poseEstimator.getEstimatedPosition());
-    Optional<EstimatedRobotPose> resultRight = getEstimatedGlobalPoseRight(poseEstimator.getEstimatedPosition());
-    Optional<EstimatedRobotPose> resultLeft = getEstimatedGlobalPoseLeft(poseEstimator.getEstimatedPosition());
+    // Optional<EstimatedRobotPose> resultRight = getEstimatedGlobalPoseRight(poseEstimator.getEstimatedPosition());
+    // Optional<EstimatedRobotPose> resultLeft = getEstimatedGlobalPoseLeft(poseEstimator.getEstimatedPosition());
 
     if (resultFront.isPresent()) {
       EstimatedRobotPose visionPoseEstimate = resultFront.get();
       poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
           visionPoseEstimate.timestampSeconds);
     }
-    if (resultRight.isPresent()) {
-      EstimatedRobotPose visionPoseEstimate = resultRight.get();
-      poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-          visionPoseEstimate.timestampSeconds);
-    }
+    // if (resultRight.isPresent()) {
+    //   EstimatedRobotPose visionPoseEstimate = resultRight.get();
+    //   poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+    //       visionPoseEstimate.timestampSeconds);
+    // }
     if (resultBack.isPresent()) {
       EstimatedRobotPose visionPoseEstimate = resultBack.get();
       poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
           visionPoseEstimate.timestampSeconds);
     }
-    if (resultLeft.isPresent()) {
-      EstimatedRobotPose visionPoseEstimate = resultLeft.get();
-      poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-          visionPoseEstimate.timestampSeconds);
-    }
+    // if (resultLeft.isPresent()) {
+    //   EstimatedRobotPose visionPoseEstimate = resultLeft.get();
+    //   poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+    //       visionPoseEstimate.timestampSeconds);
+    // }
     field2d.setRobotPose(getPose());
     // pose = odometry.update(
     // Robot.navX.getRotation2d(),
@@ -332,30 +332,30 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void resetOdometry() {
     Robot.navX.reset();
-    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), poseEstimator.getEstimatedPosition());
+    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), new Pose2d());
     // odometry.resetPosition(Robot.navX.getRotation2d(), getModulePositions(),
     // pose);
   }
 
   public Optional<EstimatedRobotPose> getEstimatedGlobalPoseFront(Pose2d prevEstimatedRobotPose) {
-    // visionPoseEstimatorFront.setReferencePose(prevEstimatedRobotPose);
+    visionPoseEstimatorFront.setReferencePose(prevEstimatedRobotPose);
     return visionPoseEstimatorFront.update();
   }
 
-  public Optional<EstimatedRobotPose> getEstimatedGlobalPoseRight(Pose2d prevEstimatedRobotPose) {
-    // visionPoseEstimatorRight.setReferencePose(prevEstimatedRobotPose);
-    return visionPoseEstimatorRight.update();
-  }
+  // public Optional<EstimatedRobotPose> getEstimatedGlobalPoseRight(Pose2d prevEstimatedRobotPose) {
+  //   // visionPoseEstimatorRight.setReferencePose(prevEstimatedRobotPose);
+  //   return visionPoseEstimatorRight.update();
+  // }
 
   public Optional<EstimatedRobotPose> getEstimatedGlobalPoseBack(Pose2d prevEstimatedRobotPose) {
-    // visionPoseEstimatorBack.setReferencePose(prevEstimatedRobotPose);
+    visionPoseEstimatorBack.setReferencePose(prevEstimatedRobotPose);
     return visionPoseEstimatorBack.update();
   }
 
-  public Optional<EstimatedRobotPose> getEstimatedGlobalPoseLeft(Pose2d prevEstimatedRobotPose) {
-    // visionPoseEstimatorLeft.setReferencePose(prevEstimatedRobotPose);
-    return visionPoseEstimatorLeft.update();
-  }
+  // public Optional<EstimatedRobotPose> getEstimatedGlobalPoseLeft(Pose2d prevEstimatedRobotPose) {
+  //   // visionPoseEstimatorLeft.setReferencePose(prevEstimatedRobotPose);
+  //   return visionPoseEstimatorLeft.update();
+  // }
 
   @Override
   public void periodic() {

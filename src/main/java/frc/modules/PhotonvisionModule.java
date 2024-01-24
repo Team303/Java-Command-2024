@@ -53,9 +53,9 @@ public class PhotonvisionModule extends SubsystemBase {
 
     private static PhotonCamera[] camera = 
      {
-            new PhotonCamera("android"),
-            new PhotonCamera("PhotonVision2"),
-            new PhotonCamera("apple"),
+           new PhotonCamera("Photonvision1"),
+        //    new PhotonCamera("PhotonVision2"),
+            // new PhotonCamera("apple"),
             new PhotonCamera("PhotonVision4"),
     };
 
@@ -68,9 +68,9 @@ public class PhotonvisionModule extends SubsystemBase {
 
     public static enum CameraName {
         CAM1,
-        CAM2,
-        CAM3,
-        CAM4
+        // CAM2,
+        // CAM4,
+        CAM3
     }
 
     // public static enum ConePosition {
@@ -177,9 +177,9 @@ public class PhotonvisionModule extends SubsystemBase {
     public void periodic() {
 
         PhotonTrackedTarget targetFront = getBestTarget(CameraName.CAM1);
-        PhotonTrackedTarget targetRight = getBestTarget(CameraName.CAM2);
+        // PhotonTrackedTarget targetRight = getBestTarget(CameraName.CAM2);
         PhotonTrackedTarget targetBack = getBestTarget(CameraName.CAM3);
-        PhotonTrackedTarget targetLeft = getBestTarget(CameraName.CAM4);
+        // PhotonTrackedTarget targetLeft = getBestTarget(CameraName.CAM4);
 
         if (targetFront != null) {
             // if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
@@ -201,27 +201,27 @@ public class PhotonvisionModule extends SubsystemBase {
             BACK_TARGET_PITCH.setDouble(targetBack.getPitch());
             BACK_TARGET_SKEW.setDouble(targetBack.getSkew());
         }
-        if (targetLeft != null) {
+        // if (targetLeft != null) {
 
-            // if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
-            LEFT_APRILTAG_ID.setInteger(targetLeft.getFiducialId());
-            // }
+        //     // if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
+        //     LEFT_APRILTAG_ID.setInteger(targetLeft.getFiducialId());
+        //     // }
 
-            LEFT_TARGET_AMBIGUITY.setDouble(targetLeft.getPoseAmbiguity());
-            LEFT_TARGET_YAW.setDouble(targetLeft.getYaw());
-            LEFT_TARGET_PITCH.setDouble(targetLeft.getPitch());
-            LEFT_TARGET_SKEW.setDouble(targetLeft.getSkew());
-        }
-        if (targetRight != null) {
+        //     LEFT_TARGET_AMBIGUITY.setDouble(targetLeft.getPoseAmbiguity());
+        //     LEFT_TARGET_YAW.setDouble(targetLeft.getYaw());
+        //     LEFT_TARGET_PITCH.setDouble(targetLeft.getPitch());
+        //     LEFT_TARGET_SKEW.setDouble(targetLeft.getSkew());
+        // }
+        // if (targetRight != null) {
 
-            // if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
-            RIGHT_APRILTAG_ID.setInteger(targetRight.getFiducialId());
-            // }
+        //     // if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
+        //     RIGHT_APRILTAG_ID.setInteger(targetRight.getFiducialId());
+        //     // }
 
-            RIGHT_TARGET_AMBIGUITY.setDouble(targetRight.getPoseAmbiguity());
-            RIGHT_TARGET_YAW.setDouble(targetRight.getYaw());
-            RIGHT_TARGET_PITCH.setDouble(targetRight.getPitch());
-            RIGHT_TARGET_SKEW.setDouble(targetRight.getSkew());
-        }
+        //     RIGHT_TARGET_AMBIGUITY.setDouble(targetRight.getPoseAmbiguity());
+        //     RIGHT_TARGET_YAW.setDouble(targetRight.getYaw());
+        //     RIGHT_TARGET_PITCH.setDouble(targetRight.getPitch());
+        //     RIGHT_TARGET_SKEW.setDouble(targetRight.getSkew());
+        // }
     }
 }
