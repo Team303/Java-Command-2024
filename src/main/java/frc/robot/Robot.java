@@ -41,6 +41,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
     configureButtonBindings();
+	Logger.start();
 
     Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();

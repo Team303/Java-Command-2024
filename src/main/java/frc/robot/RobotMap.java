@@ -33,12 +33,12 @@ public class RobotMap {
     }
 
 	public static final class Shooter {
-		public static final int LEFT_ANGLE_MOTOR_ID = 0; //NEED TO CHANGE
-		public static final int RIGHT_ANGLE_MOTOR_ID = 1; //NEED TO CHANGE
-		public static final int LEFT_FLYWHEEL_MOTOR_ID = 2; //NEED TO CHANGE
-		public static final int RIGHT_FLYWHEEL_MOTOR_ID = 3; //NEED TO CHANGE
-		public static final int LEFT_INDEXER_MOTOR_ID = 4; //NEED TO CHANGE
-		public static final int RIGHT_INDEXER_MOTOR_ID = 5; //NEED TO CHANGE
+		public static final int LEFT_ANGLE_MOTOR_ID = 14; //NEED TO CHANGE
+		public static final int RIGHT_ANGLE_MOTOR_ID = 15; //NEED TO CHANGE
+		public static final int LEFT_FLYWHEEL_MOTOR_ID = 16; //NEED TO CHANGE
+		public static final int RIGHT_FLYWHEEL_MOTOR_ID = 17; //NEED TO CHANGE
+		public static final int LEFT_INDEXER_MOTOR_ID = 18; //NEED TO CHANGE
+		public static final int RIGHT_INDEXER_MOTOR_ID = 19; //NEED TO CHANGE
 
 		public static final double ANGLE_FEED_FORWARD_KS = 0.0; //NEED TO CHANGE
 		public static final double ANGLE_FEED_FORWARD_KG = 0.0; //NEED TO CHANGE
@@ -58,11 +58,11 @@ public class RobotMap {
 	}
 
 	public static final class Intake {
-		public static final int SHOULDER_JOINT_LEFT_ID = 0; //NEED TO CHANGE
-		public static final int SHOULDER_JOINT_RIGHT_ID = 1; //NEED TO CHANGE
-		public static final int ELBOW_JOINT_LEFT_ID = 2; //NEED TO CHANGE
-		public static final int ELBOW_JOINT_RIGHT_ID = 3; //NEED TO CHANGE
-		public static final int ROLLER_MOTOR_ID = 4; //NEED TO CHANGE
+		public static final int SHOULDER_JOINT_LEFT_ID = 1; //NEED TO CHANGE
+		public static final int SHOULDER_JOINT_RIGHT_ID = 2; //NEED TO CHANGE
+		public static final int ELBOW_JOINT_LEFT_ID = 22; //NEED TO CHANGE
+		public static final int ELBOW_JOINT_RIGHT_ID = 23; //NEED TO CHANGE
+		public static final int ROLLER_MOTOR_ID = 24; //NEED TO CHANGE
 		public static final int ShoulderLimitSwitch = 5;
 		public static final int ElbowLimitSwitch = 6;
 

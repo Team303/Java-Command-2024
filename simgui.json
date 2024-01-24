@@ -1,7 +1,14 @@
 {
   "NTProvider": {
     "types": {
-      "/FMSInfo": "FMSInfo"
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Autonomous/Auto Start Delay": "String Chooser",
+      "/Shuffleboard/Autonomous/Autonomous Selector": "String Chooser"
+    }
+  },
+  "NetworkTables": {
+    "Transitory Values": {
+      "open": false
     }
   },
   "NetworkTables Info": {

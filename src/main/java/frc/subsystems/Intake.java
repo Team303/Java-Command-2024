@@ -121,7 +121,7 @@ public class Intake extends SubsystemBase {
         private final TalonFX rightMotor = new TalonFX(RobotMap.Intake.SHOULDER_JOINT_RIGHT_ID);
 
         /* Encoders */
-        private final DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(8);
+        private final DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(7);
 
         /* Limits */
 
@@ -195,7 +195,7 @@ public class Intake extends SubsystemBase {
 
         /* Limits */
 
-        private final DigitalInput shoulderLimit = new DigitalInput(RobotMap.Intake.SHOULDER_JOINT_LEFT_ID);
+        private final DigitalInput elbowLimit = new DigitalInput(RobotMap.Intake.ELBOW_JOINT_LEFT_ID);
 
         /* Controllers */
 
@@ -242,7 +242,7 @@ public class Intake extends SubsystemBase {
 
         @Override
         public boolean atHardLimit() {
-            return !shoulderLimit.get();
+            return !elbowLimit.get();
         }
 
         @Override
