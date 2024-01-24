@@ -165,7 +165,8 @@ public class Intake extends SubsystemBase {
 
         @Override
         public double getEncoderPosition() {
-            return (leftMotor.getPosition().getValueAsDouble() + rightMotor.getPosition().getValueAsDouble()) / 2;
+            return absoluteEncoder.getAbsolutePosition();
+            //return (leftMotor.getPosition().getValueAsDouble() + rightMotor.getPosition().getValueAsDouble()) / 2;
         }
 
         @Override
@@ -186,8 +187,8 @@ public class Intake extends SubsystemBase {
 
     public static class ElbowJoint implements IntakeJoint {
 
-        private final TalonFX leftMotor = new TalonFX(RobotMap.Intake.ELBOW_JOINT_LEFT_ID);
-        private final TalonFX rightMotor = new TalonFX(RobotMap.Intake.ELBOW_JOINT_RIGHT_ID);
+        private final CANSparkMax leftMotor = new CANSparkMax(RobotMap.Intake.ELBOW_JOINT_LEFT_ID, MotorType.kBrushless);
+        private final CANSparkMax rightMotor = new CANSparkMax(RobotMap.Intake.ELBOW_JOINT_RIGHT_ID, MotorType.kBrushless);
 
         /* Encoders */
         private final DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(8);
@@ -206,14 +207,14 @@ public class Intake extends SubsystemBase {
         private MechanismLigament2d real;
 
         public ElbowJoint() {
-            leftMotor.setNeutralMode(NeutralModeValue.Brake);
-            rightMotor.setNeutralMode(NeutralModeValue.Brake);
+            leftMotor.setIdleMode(IdleMode.kBrake);
+            rightMotor.setIdleMode(IdleMode.kBrake);
 
             leftMotor.setInverted(true);
             rightMotor.setInverted(false);
 
-            // leftMotor.setSmartCurrentLimit(30);
-            // rightMotor.setSmartCurrentLimit(30);
+            //leftMotor.setSmartCurrentLimit(30);
+            //rightMotor.setSmartCurrentLimit(30);
 
             // CONVERSION FACTOR NEEDED
             absoluteEncoder.setDistancePerRotation(2 * Math.PI * (1 / RobotMap.Intake.GEAR_RATIO_SHOULDER));
@@ -235,7 +236,8 @@ public class Intake extends SubsystemBase {
 
         @Override
         public double getEncoderPosition() {
-            return (leftMotor.getPosition().getValueAsDouble() + rightMotor.getPosition().getValueAsDouble()) / 2;
+            return absoluteEncoder.getAbsolutePosition();
+            //return (leftMotor.getPosition().getValueAsDouble() + rightMotor.getPosition().getValueAsDouble()) / 2;
         }
 
         @Override
