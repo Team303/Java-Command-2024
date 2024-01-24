@@ -14,11 +14,13 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType; 
+import org.littletonrobotics.junction.LogFileUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -37,6 +39,7 @@ public class Robot extends LoggedRobot {
   public static final CommandXboxController controller = new CommandXboxController(0);
   public static final AHRS navX = new AHRS(); 
   public static final DriveSubsystem swerve = new DriveSubsystem();
+  public static final Intake intake = new Intake();
   // public static Logger logger; 
 
 
@@ -105,7 +108,7 @@ public class Robot extends LoggedRobot {
 	}
 
 	@Override
-	public void teleopPeriodic() { 
+	public void robotPeriodic() { 
 
 		CommandScheduler.getInstance().run();
 		
