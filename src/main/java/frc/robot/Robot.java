@@ -13,6 +13,8 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -28,14 +30,14 @@ import frc.autonomous.AutonomousProgram;
 import frc.commands.drive.DefaultDrive;
 import frc.commands.drive.DriveWait;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.subsystems.Drivetrain;
+import frc.subsystems.DriveSubsystem;
 import frc.subsystems.Intake;
 
 public class Robot extends LoggedRobot {
   public static final CommandXboxController controller = new CommandXboxController(0);
   public static final AHRS navX = new AHRS(); 
-  public static final Drivetrain swerve = new Drivetrain();
-  public static final Intake intake = new Intake();
+  public static final DriveSubsystem swerve = new DriveSubsystem();
+  // public static Logger logger; 
 
 
   @Override
@@ -43,8 +45,23 @@ public class Robot extends LoggedRobot {
     configureButtonBindings();
 	Logger.start();
 
+	Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
+
+	if (isReal()) {
+		Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+		Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+		new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+	} else {
+		setUseTiming(false); // Run as fast as possible
+		String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
+		Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+		Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+	}
+
+	Logger.start();
+
     Autonomous.init();
-		AutonomousProgram.addAutosToShuffleboard();
+	AutonomousProgram.addAutosToShuffleboard();
   }
 
   private void configureButtonBindings() {
@@ -84,13 +101,13 @@ public class Robot extends LoggedRobot {
 		if (autonomousCommand != null) {
 			autonomousCommand.cancel();
 		}
-    swerve.setDefaultCommand(new DefaultDrive(true));
+    	swerve.setDefaultCommand(new DefaultDrive(false));
 	}
 
-  @Override
-  public void teleopPeriodic() { 
+	@Override
+	public void teleopPeriodic() { 
 
-	  CommandScheduler.getInstance().run();
+		CommandScheduler.getInstance().run();
 		
-  }
+	}
 }

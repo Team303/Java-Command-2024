@@ -3,31 +3,34 @@ package frc.commands.drive;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.subsystems.DriveSubsystem;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
-import frc.subsystems.Drivetrain;
 
 public class DefaultDrive extends Command {
-     boolean fieldOriented;
-     boolean togg = false;
+    boolean fieldOriented;
+    Translation2d translation;
+    double percentPower;
 
-     public DefaultDrive(boolean fieldOriented) {
+    public DefaultDrive(boolean fieldOriented) {
         addRequirements(Robot.swerve);
         this.fieldOriented = fieldOriented;        
-     }
+    }
 
-     @Override
-     public void execute() {
-         Translation2d translation;
-       
-         translation = new Translation2d(
-         MathUtil.applyDeadband(-Robot.controller.getLeftY(), 0.15) * Drivetrain.kMaxSpeed *  (1-(Robot.controller.getLeftTriggerAxis()*0.5)),
-         MathUtil.applyDeadband(-Robot.controller.getLeftX(), 0.15) * Drivetrain.kMaxSpeed * (1-(Robot.controller.getLeftTriggerAxis()*0.5)));
+    @Override
+    public void execute() {
+
+        percentPower = (1-(Robot.controller.getLeftTriggerAxis()*0.5));
+    
+        translation = new Translation2d(
+        MathUtil.applyDeadband(-Robot.controller.getLeftY(), 0.15) * DriveSubsystem.kMaxSpeed * percentPower,
+        MathUtil.applyDeadband(-Robot.controller.getLeftX(), 0.15) * DriveSubsystem.kMaxSpeed * percentPower);
         
-         double rotation = MathUtil.applyDeadband(Robot.controller.getRightX(), 0.15);
+        double rotation = MathUtil.applyDeadband(Robot.controller.getRightX() * percentPower, 0.15) 
+            * DriveSubsystem.kMaxAngularSpeed * percentPower;
 
-         Robot.swerve.drive(translation, rotation * 4 * (1-(Robot.controller.getLeftTriggerAxis()*0.5)), fieldOriented);
-     }
+        Robot.swerve.drive(translation, rotation, fieldOriented);
+    }
 }
 
 

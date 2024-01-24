@@ -18,7 +18,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
-import frc.subsystems.Drivetrain;
+import frc.subsystems.DriveSubsystem;
 import com.ctre.phoenix6.hardware.CANcoder;
 
 public class SwerveModule {
@@ -38,7 +38,7 @@ public class SwerveModule {
   }
 
   //TODO: figure this out
-  private static final double kModuleMaxAngularVelocity = Drivetrain.kMaxAngularSpeed;
+  private static final double kModuleMaxAngularVelocity = DriveSubsystem.kMaxAngularSpeed;
   private static final double kModuleMaxAngularAcceleration =
       2 * Math.PI; // radians per second squared
 
@@ -131,6 +131,7 @@ public class SwerveModule {
     return new SwerveModuleState(
         driveEncoder.getVelocity(), Rotation2d.fromDegrees(turningEncoder.getPosition().getValueAsDouble() % 360));
   }
+
 
   /**
    * Returns the current Velocity of the module in m/s
