@@ -447,6 +447,7 @@ public class Intake extends SubsystemBase {
         elbowEncoderErrorEntry.setDouble(elbowJoint.getJointAngle() - elbowJoint.getEncoderPosition());
 
         SmartDashboard.putData("IntakeSim", intakeSimulation);
+        Logger.recordOutput("IntakeMechanism", intakeSimulation);
     }
 
 }

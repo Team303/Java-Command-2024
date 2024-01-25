@@ -71,8 +71,8 @@ public class RobotMap {
 		public static final double SIMULATION_SCALE = 84 / 2.54;
 		public static final double SIMULATION_OFFSET = 0;
 
-		public static final double SHOULDER_LENGTH = 15;
-		public static final double ELBOW_LENGTH = 8;
+		public static final double SHOULDER_LENGTH = 22;
+		public static final double ELBOW_LENGTH = 16;
 
 	}
 
