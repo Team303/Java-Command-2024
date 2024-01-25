@@ -37,6 +37,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 import frc.robot.SwerveModule;
@@ -115,15 +116,15 @@ public class DriveSubsystem extends SubsystemBase {
 
   private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
       frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
-
-  // private final Timer AVTimer = new Timer();
+  
+  private final Timer AVTimer = new Timer();
 
   public final AprilTagFieldLayout aprilTagField;
   private final Field2d field2d = new Field2d();
-  private static final Vector<N3> odometryStandardDeviations = VecBuilder.fill(1000000, 1000000, 1000000);
+  private static final Vector<N3> odometryStandardDeviations = VecBuilder.fill(5, 5, 0);
   // private static final Vector<N3> photonStandardDeviations =
   // VecBuilder.fill(0.25, 0.25, 0);
-  private static final Vector<N3> photonStandardDeviations = VecBuilder.fill(0, 0, 0);
+  private static final Vector<N3> photonStandardDeviations = VecBuilder.fill(2.5, 2.5, 1000000);
 
   public PhotonPoseEstimator visionPoseEstimatorFront;
   public PhotonPoseEstimator visionPoseEstimatorRight;
@@ -134,7 +135,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public DriveSubsystem() {
     Robot.navX.reset();
-    // AVTimer.start();
+    AVTimer.start();
 
     frontLeft = new SwerveModule(RobotMap.Swerve.LEFT_FRONT_DRIVE_ID, RobotMap.Swerve.LEFT_FRONT_STEER_ID,
         RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID);
@@ -377,7 +378,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     globalAngle.setDouble(Robot.navX.getAngle());
     angleVelo.setDouble(Robot.navX.getRate());
-    // time.setDouble(AVTimer.get());
 
     updateOdometry();
     Logger.recordOutput("Odometry", getPose());

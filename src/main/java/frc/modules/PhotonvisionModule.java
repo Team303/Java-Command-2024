@@ -53,10 +53,10 @@ public class PhotonvisionModule extends SubsystemBase {
 
     private static PhotonCamera[] camera = 
      {
-           new PhotonCamera("Photonvision1"),
+           new PhotonCamera("PhotonVision3"),
         //    new PhotonCamera("PhotonVision2"),
             // new PhotonCamera("apple"),
-            new PhotonCamera("PhotonVision4"),
+            new PhotonCamera("PhotonVision1")
     };
 
     // public static enum PhotonPipeline {
@@ -67,10 +67,10 @@ public class PhotonvisionModule extends SubsystemBase {
     
 
     public static enum CameraName {
-        CAM1,
+        CAM3,
         // CAM2,
         // CAM4,
-        CAM3
+        CAM1
     }
 
     // public static enum ConePosition {
