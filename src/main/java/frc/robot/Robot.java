@@ -109,11 +109,11 @@ public class Robot extends LoggedRobot {
 		if (autonomousCommand != null) {
 			autonomousCommand.cancel();
 		}
-    	swerve.setDefaultCommand(new DefaultDrive(true));
+    	swerve.setDefaultCommand(new DefaultDrive(false));
 	}
 
 	@Override
-	public void teleopPeriodic() { 
+	public void robotPeriodic() { 
 
 		CommandScheduler.getInstance().run();
 		
