@@ -52,7 +52,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotInit() {
     configureButtonBindings();
-
 		Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
 
 		if (isReal()) {
