@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType; 
 import org.littletonrobotics.junction.LogFileUtil;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -40,13 +41,12 @@ public class Robot extends LoggedRobot {
   public static final AHRS navX = new AHRS(); 
   public static final DriveSubsystem swerve = new DriveSubsystem();
   public static final Intake intake = new Intake();
-  // public static Logger logger; 
 
+  private Mechanism2d mechanism = new Mechanism2d(3, 3);
 
   @Override
   public void robotInit() {
     configureButtonBindings();
-	Logger.start();
 
 	Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
 
@@ -61,10 +61,12 @@ public class Robot extends LoggedRobot {
 		Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
 	}
 
-	Logger.start();
 
     Autonomous.init();
 	AutonomousProgram.addAutosToShuffleboard();
+
+	Logger.start();
+
   }
 
   private void configureButtonBindings() {
@@ -109,7 +111,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void robotPeriodic() { 
-
+		Logger.recordOutput("Example/Mechanism", mechanism);
 		CommandScheduler.getInstance().run();
 		
 	}

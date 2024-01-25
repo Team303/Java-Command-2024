@@ -17,9 +17,14 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color8Bit;
+
 import java.util.List;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import edu.wpi.first.math.geometry.Translation3d;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
@@ -39,33 +44,45 @@ public class Intake extends SubsystemBase {
     public static final double SHOULDER_START_ANGLE = 4.0; // change por favor ninajo
     public static final double ELBOW_START_ANGLE = 2.0; // change por favor ninajo
 
-	public ShoulderJoint shoulderJoint = new ShoulderJoint();
-	public ElbowJoint elbowJoint = new ElbowJoint();
+    public ShoulderJoint shoulderJoint = new ShoulderJoint();
+    public ElbowJoint elbowJoint = new ElbowJoint();
 
-    private double shoulderReachAngle;
-	private double elbowReachAngle;
+    private double shoulderReachAngle = 0.0;
+    private double elbowReachAngle = 0.0;
 
     private final Mechanism2d intakeSimulation;
 
     public static final ShuffleboardTab INTAKE_TAB = Shuffleboard.getTab("Intake");
 
-    public static final GenericEntry effectorXEntry = INTAKE_TAB.add("effectorX", 0).withSize(1, 1).withPosition(0, 0).getEntry();
-	public static final GenericEntry effectorYEntry = INTAKE_TAB.add("effectorY", 0).withSize(1, 1).withPosition(1, 0).getEntry();
+    public static final GenericEntry effectorXEntry = INTAKE_TAB.add("effectorX", 0).withSize(1, 1).withPosition(0, 0)
+            .getEntry();
+    public static final GenericEntry effectorYEntry = INTAKE_TAB.add("effectorY", 0).withSize(1, 1).withPosition(1, 0)
+            .getEntry();
 
-	public static final GenericEntry shoulderAngleEntry = INTAKE_TAB.add("Desired Shoulder Angle", 0).withSize(1, 1).withPosition(0, 1).getEntry();
-	public static final GenericEntry elbowAngleEntry = INTAKE_TAB.add("Desired Elbow Angle", 0).withSize(1, 1).withPosition(1, 1).getEntry();
+    public static final GenericEntry shoulderAngleEntry = INTAKE_TAB.add("Desired Shoulder Angle", 0).withSize(1, 1)
+            .withPosition(0, 1).getEntry();
+    public static final GenericEntry elbowAngleEntry = INTAKE_TAB.add("Desired Elbow Angle", 0).withSize(1, 1)
+            .withPosition(1, 1).getEntry();
 
-    public static final GenericEntry shoulderEncoderEntry = INTAKE_TAB.add("Shoulder Encoder", 0).withSize(1, 1).withPosition(0, 2).getEntry();
-	public static final GenericEntry elbowEncoderEntry = INTAKE_TAB.add("Elbow Encoder", 0).withSize(1, 1).withPosition(1, 2).getEntry();
-            
-    public static final GenericEntry shoulderEncoderErrorEntry = INTAKE_TAB.add("shoulderEncoderError", 0).withSize(1, 1).withPosition(0, 3).getEntry();
-	public static final GenericEntry elbowEncoderErrorEntry = INTAKE_TAB.add("elbowEncoderError", 0).withSize(1, 1).withPosition(1, 3).getEntry();
+    public static final GenericEntry shoulderEncoderEntry = INTAKE_TAB.add("Shoulder Encoder", 0).withSize(1, 1)
+            .withPosition(0, 2).getEntry();
+    public static final GenericEntry elbowEncoderEntry = INTAKE_TAB.add("Elbow Encoder", 0).withSize(1, 1)
+            .withPosition(1, 2).getEntry();
 
-	public static final GenericEntry shoulderAbsoluteAngleEntry = INTAKE_TAB.add("Shoulder Absolute Angle", 0).withSize(1, 1).withPosition(0, 4).getEntry();
-	public static final GenericEntry elbowAbsoluteAngleEntry = INTAKE_TAB.add("Elbow Absolute Angle", 0).withSize(1, 1).withPosition(1, 4).getEntry();
+    public static final GenericEntry shoulderEncoderErrorEntry = INTAKE_TAB.add("shoulderEncoderError", 0)
+            .withSize(1, 1).withPosition(0, 3).getEntry();
+    public static final GenericEntry elbowEncoderErrorEntry = INTAKE_TAB.add("elbowEncoderError", 0).withSize(1, 1)
+            .withPosition(1, 3).getEntry();
 
-	public static final GenericEntry shoulderSwitchEntry = INTAKE_TAB.add("Shoulder Limit Switch", 0).withSize(1, 1).withPosition(0, 5).getEntry();
-	public static final GenericEntry elbowSwitchEntry = INTAKE_TAB.add("Elbow Limit Switch", 0).withSize(1, 1).withPosition(1, 5).getEntry();
+    public static final GenericEntry shoulderAbsoluteAngleEntry = INTAKE_TAB.add("Shoulder Absolute Angle", 0)
+            .withSize(1, 1).withPosition(0, 4).getEntry();
+    public static final GenericEntry elbowAbsoluteAngleEntry = INTAKE_TAB.add("Elbow Absolute Angle", 0).withSize(1, 1)
+            .withPosition(1, 4).getEntry();
+
+    public static final GenericEntry shoulderSwitchEntry = INTAKE_TAB.add("Shoulder Limit Switch", 0).withSize(1, 1)
+            .withPosition(0, 5).getEntry();
+    public static final GenericEntry elbowSwitchEntry = INTAKE_TAB.add("Elbow Limit Switch", 0).withSize(1, 1)
+            .withPosition(1, 5).getEntry();
 
     // IDK WHAT THESE ARE CHANGE LATER
     public static final double MAX_VELOCITY = (2 * Math.PI) * 0.35;
@@ -166,7 +183,8 @@ public class Intake extends SubsystemBase {
         @Override
         public double getEncoderPosition() {
             return absoluteEncoder.getAbsolutePosition();
-            //return (leftMotor.getPosition().getValueAsDouble() + rightMotor.getPosition().getValueAsDouble()) / 2;
+            // return (leftMotor.getPosition().getValueAsDouble() +
+            // rightMotor.getPosition().getValueAsDouble()) / 2;
         }
 
         @Override
@@ -187,8 +205,10 @@ public class Intake extends SubsystemBase {
 
     public static class ElbowJoint implements IntakeJoint {
 
-        private final CANSparkMax leftMotor = new CANSparkMax(RobotMap.Intake.ELBOW_JOINT_LEFT_ID, MotorType.kBrushless);
-        private final CANSparkMax rightMotor = new CANSparkMax(RobotMap.Intake.ELBOW_JOINT_RIGHT_ID, MotorType.kBrushless);
+        private final CANSparkMax leftMotor = new CANSparkMax(RobotMap.Intake.ELBOW_JOINT_LEFT_ID,
+                MotorType.kBrushless);
+        private final CANSparkMax rightMotor = new CANSparkMax(RobotMap.Intake.ELBOW_JOINT_RIGHT_ID,
+                MotorType.kBrushless);
 
         /* Encoders */
         private final DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(8);
@@ -213,8 +233,8 @@ public class Intake extends SubsystemBase {
             leftMotor.setInverted(true);
             rightMotor.setInverted(false);
 
-            //leftMotor.setSmartCurrentLimit(30);
-            //rightMotor.setSmartCurrentLimit(30);
+            // leftMotor.setSmartCurrentLimit(30);
+            // rightMotor.setSmartCurrentLimit(30);
 
             // CONVERSION FACTOR NEEDED
             absoluteEncoder.setDistancePerRotation(2 * Math.PI * (1 / RobotMap.Intake.GEAR_RATIO_SHOULDER));
@@ -237,7 +257,8 @@ public class Intake extends SubsystemBase {
         @Override
         public double getEncoderPosition() {
             return absoluteEncoder.getAbsolutePosition();
-            //return (leftMotor.getPosition().getValueAsDouble() + rightMotor.getPosition().getValueAsDouble()) / 2;
+            // return (leftMotor.getPosition().getValueAsDouble() +
+            // rightMotor.getPosition().getValueAsDouble()) / 2;
         }
 
         @Override
@@ -262,133 +283,170 @@ public class Intake extends SubsystemBase {
         rollerMotor = new TalonFX(RobotMap.Intake.ROLLER_MOTOR_ID);
         intakeSimulation = new Mechanism2d(300 / 33.07, 300 / 33.07);
 
+        MechanismRoot2d intakeRoot = intakeSimulation.getRoot(
+                "Intake",
+                (RobotMap.Intake.SIMULATION_OFFSET + 150) / RobotMap.Intake.SIMULATION_SCALE,
+                (RobotMap.Intake.SIMULATION_OFFSET) / RobotMap.Intake.SIMULATION_SCALE);
+
+        shoulderJoint.simulator = intakeRoot.append(
+                new MechanismLigament2d(
+                        "shoulder",
+                        (double) (RobotMap.Intake.SHOULDER_LENGTH) / RobotMap.Intake.SIMULATION_SCALE,
+                        0,
+                        5.0,
+                        new Color8Bit(255, 0, 0)));
+
+        elbowJoint.simulator = shoulderJoint.simulator.append(
+                new MechanismLigament2d(
+                        "elbow",
+                        (double) (RobotMap.Intake.ELBOW_LENGTH) / RobotMap.Intake.SIMULATION_SCALE,
+                        0.0,
+                        5.0,
+                        new Color8Bit(0, 255, 0)));
+
+        MechanismRoot2d intakeRootReal = intakeSimulation.getRoot(
+                "RealIntake",
+                (RobotMap.Intake.SIMULATION_OFFSET + 150) / RobotMap.Intake.SIMULATION_SCALE,
+                (RobotMap.Intake.SIMULATION_OFFSET) / RobotMap.Intake.SIMULATION_SCALE);
+
+        shoulderJoint.real = intakeRootReal.append(
+                new MechanismLigament2d(
+                        "shoulderReal",
+                        (double) (RobotMap.Intake.SHOULDER_LENGTH) / RobotMap.Intake.SIMULATION_SCALE,
+                        0,
+                        5.0,
+                        new Color8Bit(255, 0, 255)));
+
+        elbowJoint.real = shoulderJoint.real.append(
+                new MechanismLigament2d(
+                        "elbowReal",
+                        (double) (RobotMap.Intake.ELBOW_LENGTH) / RobotMap.Intake.SIMULATION_SCALE,
+                        0.0,
+                        5.0,
+                        new Color8Bit(255, 255, 0)));
+
     }
-	/**
-	 * Reach for a list of raw desired angles
-	 * <br>
-	 * <br>
-	 * Order is [shoulder, elbow]
-	 */
-	public List<Double> reach(List<Double> desiredRadianAngles) {
-		// Pull angles out of list
-		desiredShoulderAngle = desiredRadianAngles.get(0);
-		desiredElbowAngle = desiredRadianAngles.get(1);
 
-		shoulderReachAngle = desiredShoulderAngle;
-		elbowReachAngle = desiredElbowAngle;
+    /**
+     * Reach for a list of raw desired angles
+     * <br>
+     * <br>
+     * Order is [shoulder, elbow]
+     */
+    public List<Double> reach(List<Double> desiredRadianAngles) {
+        // Pull angles out of list
+        desiredShoulderAngle = desiredRadianAngles.get(0);
+        desiredElbowAngle = desiredRadianAngles.get(1);
 
-		// Compute feedforward
-		// TODO: Recompute the angles to fit the inputs wanted by the feedforward
-		// controller (relative to horizontal)
+        shoulderReachAngle = desiredShoulderAngle;
+        elbowReachAngle = desiredElbowAngle;
 
-		// elbowJoint.controller.setP(((Math.PI / 2 - (desiredShoulderAngle +
-		// desiredElbowAngle)) + Math.PI / 2) * 0.5);
-		// System.out.println(elbowJoint.controller.getP());
+        // Compute feedforward
+        // TODO: Recompute the angles to fit the inputs wanted by the feedforward
+        // controller (relative to horizontal)
 
-		double shoulderFeedForward = shoulderJoint.feedForward.calculate(Math.PI / 2 - desiredShoulderAngle, 0);
-		double elbowFeedForward = elbowJoint.feedForward
-				.calculate(Math.PI / 2 - (desiredShoulderAngle + desiredElbowAngle), 0);
+        // elbowJoint.controller.setP(((Math.PI / 2 - (desiredShoulderAngle +
+        // desiredElbowAngle)) + Math.PI / 2) * 0.5);
+        // System.out.println(elbowJoint.controller.getP());
 
-		// Compute feedback
-		double shoulderFeedback = shoulderJoint.controller.calculate(
-				shoulderJoint.getJointAngle(),
-				desiredShoulderAngle);
-		double elbowFeedback = elbowJoint.controller.calculate(
-				elbowJoint.getJointAngle(),
-				desiredElbowAngle);
+        double shoulderFeedForward = shoulderJoint.feedForward.calculate(Math.PI / 2 - desiredShoulderAngle, 0);
+        double elbowFeedForward = elbowJoint.feedForward
+                .calculate(Math.PI / 2 - (desiredShoulderAngle + desiredElbowAngle), 0);
 
-		// Compute joint speeds based on feedback and feedforward while limiting
-		// movement based on hard and soft limits
+        // Compute feedback
+        double shoulderFeedback = shoulderJoint.controller.calculate(
+                shoulderJoint.getJointAngle(),
+                desiredShoulderAngle);
+        double elbowFeedback = elbowJoint.controller.calculate(
+                elbowJoint.getJointAngle(),
+                desiredElbowAngle);
 
-		final double BOUNCE_FORCE = -0.125;
+        // Compute joint speeds based on feedback and feedforward while limiting
+        // movement based on hard and soft limits
 
-		double shoulderSpeed = shoulderFeedback;
-		double elbowSpeed = elbowFeedback;
+        final double BOUNCE_FORCE = -0.125;
 
-		boolean forwardShoulderLimit = Math.signum(shoulderSpeed) > 0
-				&& shoulderJoint.atSoftForwardLimit();
-		boolean reverseShoulderLimit = Math.signum(shoulderSpeed) < 0
-				&& shoulderJoint.atSoftReverseLimit();
+        double shoulderSpeed = shoulderFeedback;
+        double elbowSpeed = elbowFeedback;
 
-	
+        boolean forwardShoulderLimit = Math.signum(shoulderSpeed) > 0
+                && shoulderJoint.atSoftForwardLimit();
+        boolean reverseShoulderLimit = Math.signum(shoulderSpeed) < 0
+                && shoulderJoint.atSoftReverseLimit();
 
-		boolean forwardElbowLimit = Math.signum(elbowSpeed) > 0
-				&& elbowJoint.atSoftForwardLimit();
-		boolean reverseElbowLimit = Math.signum(elbowSpeed) < 0
-				&& elbowJoint.atSoftReverseLimit();
+        boolean forwardElbowLimit = Math.signum(elbowSpeed) > 0
+                && elbowJoint.atSoftForwardLimit();
+        boolean reverseElbowLimit = Math.signum(elbowSpeed) < 0
+                && elbowJoint.atSoftReverseLimit();
 
-		
-	
-		move(shoulderSpeed, elbowSpeed);
+        move(shoulderSpeed, elbowSpeed);
 
-	
-		return desiredRadianAngles;
-	}
+        return desiredRadianAngles;
+    }
 
     public void move(double shoulderSpeed, double elbowSpeed) {
-		/* Shoulder */
+        /* Shoulder */
 
-		boolean forwardShoulderLimit = Math.signum(shoulderSpeed) > 0
-				&& shoulderJoint.atSoftForwardLimit();
-		boolean reverseShoulderLimit = Math.signum(shoulderSpeed) < 0
-				&& (shoulderJoint.atHardLimit() || shoulderJoint.atSoftReverseLimit());
+        boolean forwardShoulderLimit = Math.signum(shoulderSpeed) > 0
+                && shoulderJoint.atSoftForwardLimit();
+        boolean reverseShoulderLimit = Math.signum(shoulderSpeed) < 0
+                && (shoulderJoint.atHardLimit() || shoulderJoint.atSoftReverseLimit());
 
-		if (!forwardShoulderLimit && !reverseShoulderLimit) {
-			shoulderJoint.setSpeed(shoulderSpeed);
-		}
+        if (!forwardShoulderLimit && !reverseShoulderLimit) {
+            shoulderJoint.setSpeed(shoulderSpeed);
+        }
 
-		/* Elbow */
+        /* Elbow */
 
-		boolean forwardElbowLimit = Math.signum(elbowSpeed) > 0
-				&& (elbowJoint.atHardLimit() || elbowJoint.atSoftForwardLimit());
-		boolean reverseElbowLimit = Math.signum(elbowSpeed) < 0
-				&& (elbowJoint.atSoftReverseLimit());
+        boolean forwardElbowLimit = Math.signum(elbowSpeed) > 0
+                && (elbowJoint.atHardLimit() || elbowJoint.atSoftForwardLimit());
+        boolean reverseElbowLimit = Math.signum(elbowSpeed) < 0
+                && (elbowJoint.atSoftReverseLimit());
 
-		if (!forwardElbowLimit && !reverseElbowLimit) {
-			elbowJoint.setSpeed(elbowSpeed);
-		}
+        if (!forwardElbowLimit && !reverseElbowLimit) {
+            elbowJoint.setSpeed(elbowSpeed);
+        }
 
-	}
+    }
 
     @Override
     public void periodic() {
         double shoulderSimAngle = desiredShoulderAngle;
-		double elbowSimAngle = desiredElbowAngle;
+        double elbowSimAngle = desiredElbowAngle;
 
-		if (shoulderSimAngle != this.shoulderReachAngle || elbowSimAngle != this.elbowReachAngle) {
-			this.shoulderReachAngle = shoulderSimAngle;
-			this.elbowReachAngle = elbowSimAngle;
-		}
+        if (shoulderSimAngle != this.shoulderReachAngle || elbowSimAngle != this.elbowReachAngle) {
+            this.shoulderReachAngle = shoulderSimAngle;
+            this.elbowReachAngle = elbowSimAngle;
+        }
 
-		shoulderJoint.simulator.setAngle(this.shoulderReachAngle);
-		elbowJoint.simulator.setAngle(this.elbowReachAngle);
+        shoulderJoint.simulator.setAngle(this.shoulderReachAngle);
+        elbowJoint.simulator.setAngle(this.elbowReachAngle);
 
-		shoulderJoint.real.setAngle(-Math.toDegrees(this.shoulderJoint.getJointAngle()) + 90);
-		elbowJoint.real.setAngle(-Math.toDegrees(this.elbowJoint.getJointAngle()));
+        shoulderJoint.real.setAngle(-Math.toDegrees(this.shoulderJoint.getJointAngle()) + 90);
+        elbowJoint.real.setAngle(-Math.toDegrees(this.elbowJoint.getJointAngle()));
 
+        shoulderEncoderEntry.setDouble(shoulderJoint.getEncoderPosition());
+        elbowEncoderEntry.setDouble(elbowJoint.getEncoderPosition());
 
-		shoulderEncoderEntry.setDouble(shoulderJoint.getEncoderPosition());
-		elbowEncoderEntry.setDouble(elbowJoint.getEncoderPosition());
+        shoulderSwitchEntry.setBoolean(shoulderJoint.atHardLimit());
+        elbowSwitchEntry.setBoolean(elbowJoint.atHardLimit());
 
-		shoulderSwitchEntry.setBoolean(shoulderJoint.atHardLimit());
-		elbowSwitchEntry.setBoolean(elbowJoint.atHardLimit());
+        shoulderAbsoluteAngleEntry.setDouble(Math.toDegrees(shoulderJoint.getJointAngle()));
+        elbowAbsoluteAngleEntry.setDouble(Math.toDegrees(elbowJoint.getJointAngle()));
 
-		shoulderAbsoluteAngleEntry.setDouble(Math.toDegrees(shoulderJoint.getJointAngle()));
-		elbowAbsoluteAngleEntry.setDouble(Math.toDegrees(elbowJoint.getJointAngle()));
+        // shoulderSoftLimitEntry.setBoolean(shoulderJoint.atSoftLimit());
+        // elbowSoftLimitEntry.setBoolean(elbowJoint.atSoftLimit());
 
-		// shoulderSoftLimitEntry.setBoolean(shoulderJoint.atSoftLimit());
-		// elbowSoftLimitEntry.setBoolean(elbowJoint.atSoftLimit());
+        // shoulderSoftForwardLimitEntry.setBoolean(shoulderJoint.atSoftForwardLimit());
+        // elbowSoftForwardLimitEntry.setBoolean(elbowJoint.atSoftForwardLimit());
 
-		// shoulderSoftForwardLimitEntry.setBoolean(shoulderJoint.atSoftForwardLimit());
-		// elbowSoftForwardLimitEntry.setBoolean(elbowJoint.atSoftForwardLimit());
+        // shoulderSoftReverseLimitEntry.setBoolean(shoulderJoint.atSoftReverseLimit());
+        // elbowSoftReverseLimitEntry.setBoolean(elbowJoint.atSoftReverseLimit());
 
-		// shoulderSoftReverseLimitEntry.setBoolean(shoulderJoint.atSoftReverseLimit());
-		// elbowSoftReverseLimitEntry.setBoolean(elbowJoint.atSoftReverseLimit());
+        shoulderEncoderErrorEntry.setDouble(shoulderJoint.getJointAngle() - shoulderJoint.getEncoderPosition());
+        elbowEncoderErrorEntry.setDouble(elbowJoint.getJointAngle() - elbowJoint.getEncoderPosition());
 
-		shoulderEncoderErrorEntry.setDouble(shoulderJoint.getJointAngle() - shoulderJoint.getEncoderPosition());
-		elbowEncoderErrorEntry.setDouble(elbowJoint.getJointAngle() - elbowJoint.getEncoderPosition());
-
-		Logger.recordOutput("MyMechanism", this.intakeSimulation);
+        SmartDashboard.putData("IntakeSim", intakeSimulation);
     }
 
 }

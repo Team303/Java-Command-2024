@@ -4,16 +4,16 @@ public class RobotMap {
     public static final class Swerve {
 
         /* CAN IDs of Drive Motors */
-		public static final int LEFT_FRONT_DRIVE_ID = 6;
-		public static final int LEFT_BACK_DRIVE_ID = 3;
-		public static final int RIGHT_FRONT_DRIVE_ID = 9;
-		public static final int RIGHT_BACK_DRIVE_ID = 12;
+		public static final int LEFT_FRONT_DRIVE_ID = 32;
+		public static final int LEFT_BACK_DRIVE_ID = 33;
+		public static final int RIGHT_FRONT_DRIVE_ID = 39;
+		public static final int RIGHT_BACK_DRIVE_ID = 34;
 
 		/* CAN IDs of steer Motors turning*/
-		public static final int LEFT_FRONT_STEER_ID = 4;
-		public static final int LEFT_BACK_STEER_ID = 13;
-		public static final int RIGHT_FRONT_STEER_ID = 7;
-		public static final int RIGHT_BACK_STEER_ID = 10;
+		public static final int LEFT_FRONT_STEER_ID = 35;
+		public static final int LEFT_BACK_STEER_ID = 36;
+		public static final int RIGHT_FRONT_STEER_ID = 37;
+		public static final int RIGHT_BACK_STEER_ID = 38;
 
 		/* Steer Encoder CAN IDs  */
 		public static final int LEFT_FRONT_STEER_CANCODER_ID = 5;
@@ -60,8 +60,8 @@ public class RobotMap {
 	public static final class Intake {
 		public static final int SHOULDER_JOINT_LEFT_ID = 1; //NEED TO CHANGE
 		public static final int SHOULDER_JOINT_RIGHT_ID = 2; //NEED TO CHANGE
-		public static final int ELBOW_JOINT_LEFT_ID = 22; //NEED TO CHANGE
-		public static final int ELBOW_JOINT_RIGHT_ID = 23; //NEED TO CHANGE
+		public static final int ELBOW_JOINT_LEFT_ID = 30; //NEED TO CHANGE
+		public static final int ELBOW_JOINT_RIGHT_ID = 31; //NEED TO CHANGE
 		public static final int ROLLER_MOTOR_ID = 24; //NEED TO CHANGE
 		public static final int ShoulderLimitSwitch = 5;
 		public static final int ElbowLimitSwitch = 6;
@@ -69,6 +69,10 @@ public class RobotMap {
 		public static final double GEAR_RATIO_SHOULDER = 0.4; //change
 
 		public static final double SIMULATION_SCALE = 84 / 2.54;
+		public static final double SIMULATION_OFFSET = 0;
+
+		public static final double SHOULDER_LENGTH = 15;
+		public static final double ELBOW_LENGTH = 8;
 
 	}
 
