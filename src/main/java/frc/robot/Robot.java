@@ -4,24 +4,22 @@
 
 package frc.robot;
 
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+// import org.littletonrobotics.junction.LoggedRobot;
+// import org.littletonrobotics.junction.Logger;
+// import org.littletonrobotics.junction.networktables.NT4Publisher;
+// import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType; 
-import org.littletonrobotics.junction.LogFileUtil;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -31,13 +29,20 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.autonomous.Autonomous;
 import frc.autonomous.AutonomousProgram;
 import frc.commands.drive.DefaultDrive;
-import frc.commands.drive.DriveWait;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.subsystems.DriveSubsystem;
+
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import frc.subsystems.Intake;
+import frc.commands.drive.DriveWait;
 
 public class Robot extends LoggedRobot {
-  public static final CommandXboxController controller = new CommandXboxController(0);
+  public static final CommandXboxController driverController = new CommandXboxController(0);
+  public static final CommandXboxController operatorController = new CommandXboxController(1);
   public static final AHRS navX = new AHRS(); 
   public static final DriveSubsystem swerve = new DriveSubsystem();
   public static final Intake intake = new Intake();
@@ -48,18 +53,22 @@ public class Robot extends LoggedRobot {
   public void robotInit() {
     configureButtonBindings();
 
-	Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
+		Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
 
-	if (isReal()) {
-		Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
-		Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-		new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
-	} else {
-		setUseTiming(false); // Run as fast as possible
-		String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-		Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-		Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
-	}
+		if (isReal()) {
+			Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+			Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+			new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+		} else {
+			setUseTiming(false); // Run as fast as possible
+			String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the
+															// user)
+			Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+			Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a
+																									// new log
+		}
+
+		Logger.start();
 
 
     Autonomous.init();
@@ -70,7 +79,7 @@ public class Robot extends LoggedRobot {
   }
 
   private void configureButtonBindings() {
-    controller.y().onTrue(new InstantCommand(swerve::resetOdometry));
+    driverController.y().onTrue(new InstantCommand(swerve::resetOdometry));
   }
 
   	/* Currently running auto routine */
@@ -106,7 +115,7 @@ public class Robot extends LoggedRobot {
 		if (autonomousCommand != null) {
 			autonomousCommand.cancel();
 		}
-    	swerve.setDefaultCommand(new DefaultDrive(false));
+    swerve.setDefaultCommand(new DefaultDrive(true));
 	}
 
 	@Override
@@ -114,5 +123,5 @@ public class Robot extends LoggedRobot {
 		Logger.recordOutput("Example/Mechanism", mechanism);
 		CommandScheduler.getInstance().run();
 		
-	}
+  }
 }
