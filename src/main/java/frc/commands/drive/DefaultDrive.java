@@ -20,13 +20,13 @@ public class DefaultDrive extends Command {
     @Override
     public void execute() {
 
-        percentPower = (1-(Robot.controller.getLeftTriggerAxis()*0.5));
+        percentPower = (1-(Robot.driverController.getLeftTriggerAxis()*0.5));
     
         translation = new Translation2d(
-        MathUtil.applyDeadband(-Robot.controller.getLeftY(), 0.15) * DriveSubsystem.kMaxSpeed * percentPower,
-        MathUtil.applyDeadband(-Robot.controller.getLeftX(), 0.15) * DriveSubsystem.kMaxSpeed * percentPower);
+        MathUtil.applyDeadband(-Robot.driverController.getLeftY(), 0.15) * DriveSubsystem.kMaxSpeed * percentPower,
+        MathUtil.applyDeadband(-Robot.driverController.getLeftX(), 0.15) * DriveSubsystem.kMaxSpeed * percentPower);
         
-        double rotation = MathUtil.applyDeadband(Robot.controller.getRightX() * percentPower, 0.15) 
+        double rotation = MathUtil.applyDeadband(Robot.driverController.getRightX() * percentPower, 0.15) 
             * DriveSubsystem.kMaxAngularSpeed * percentPower;
 
         Robot.swerve.drive(translation, rotation, fieldOriented);
