@@ -47,6 +47,6 @@ public class Autonomous {
 
         public static void init() {
             create("Test", () -> new InstantCommand(() -> System.out.println("TEST")));
-            create("pathplanner test", () -> Robot.swerve.followPathFromFile("test.path"));
+            create("pathplanner test", () -> Robot.swerve.getAutonomousCommand("testAuto"));
         }
 }

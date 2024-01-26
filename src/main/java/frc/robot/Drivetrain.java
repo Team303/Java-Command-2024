@@ -7,6 +7,7 @@ package frc.robot;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -50,8 +51,8 @@ public class Drivetrain extends SubsystemBase {
   private final PIDController m_driftCorrectionPid = new PIDController(0.1, 0, 0);
   private Pose2d pose = new Pose2d(0.0, 0.0, new Rotation2d()); 
 
-  private ChassisSpeeds chassisSpeeds;
-  private ChassisSpeeds relativeSpeeds; 
+  private ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
+  private ChassisSpeeds relativeSpeeds = new ChassisSpeeds(); 
 
   public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drive Base");
 
@@ -130,7 +131,7 @@ public class Drivetrain extends SubsystemBase {
             this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             this::robotRelativeDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                    new PIDConstants(0.2, 0.0, 0.0), // Translation PID constants
+                    new PIDConstants(5, 0.0, 0.0), // Translation PID constants
                     new PIDConstants(8, 0, 0), // Rotation PID constants
                     3.9, // Max module speed, in m/s
                     0.381, // Drive base radius in meters. Distance from robot center to furthest module.
@@ -205,7 +206,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void drive(SwerveModuleState[] state) {
-    
+
     frontLeftAngle.setDouble(state[0].angle.getDegrees());
     frontRightAngle.setDouble(state[1].angle.getDegrees());
     backLeftAngle.setDouble(state[2].angle.getDegrees());
@@ -215,6 +216,7 @@ public class Drivetrain extends SubsystemBase {
     frontRight.setDesiredState(state[1]);
     backLeft.setDesiredState(state[2]);
     backRight.setDesiredState(state[3]);
+    
   }
 
   public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
@@ -236,11 +238,28 @@ public class Drivetrain extends SubsystemBase {
     chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
 
     drive(kinematics.toSwerveModuleStates(chassisSpeeds));
+
+    // SwerveModuleState[] state = kinematics.toSwerveModuleStates(chassisSpeeds);
+
+    // frontLeftAngle.setDouble(state[0].angle.getDegrees());
+    // frontRightAngle.setDouble(state[1].angle.getDegrees());
+    // backLeftAngle.setDouble(state[2].angle.getDegrees());
+    // backRightAngle.setDouble(state[3].angle.getDegrees());
+
+    // frontLeft.setDesiredState(state[0]);
+    // frontRight.setDesiredState(state[1]);
+    // backLeft.setDesiredState(state[2]);
+    // backRight.setDesiredState(state[3]);
+    // System.out.println("Should be driving!");
   }
 
   public Command followPathFromFile(String pathToFile) {
     PathPlannerPath path = PathPlannerPath.fromPathFile(pathToFile);
     return AutoBuilder.followPath(path);
+  }
+
+  public Command getAutonomousCommand(String autoName) {
+    return new PathPlannerAuto(autoName);
   }
 
   /** Updates the field relative position of the robot. */
@@ -266,15 +285,24 @@ public class Drivetrain extends SubsystemBase {
 
   public void resetPose(Pose2d pose) {
     Robot.navX.reset();
-    odometry.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), pose);
+    odometry.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), new Pose2d());
   }
 
   public Pose2d getPose() {
     return pose; 
   }
 
+  public SwerveModuleState[] getModuleStates() {
+    return new SwerveModuleState[] {
+      frontLeft.getState(),
+      frontRight.getState(),
+      backLeft.getState(),
+      backRight.getState()
+    };
+  }
+
   public ChassisSpeeds getRobotRelativeSpeeds() {
-    return relativeSpeeds;
+    return kinematics.toChassisSpeeds(getModuleStates());
   }
 
   @Override
