@@ -98,8 +98,8 @@ public class SwerveModule {
     driveMotor.setIdleMode(IdleMode.kBrake);
     turningMotor.setIdleMode(IdleMode.kBrake);
 
-    driveEncoder.setPositionConversionFactor(2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR / kEncoderResolution);
-    driveEncoder.setVelocityConversionFactor(2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR / kEncoderResolution);
+    driveEncoder.setPositionConversionFactor(2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR);
+    driveEncoder.setVelocityConversionFactor(2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR);
 
     m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
     turningEncoder.setPositionToAbsolute();

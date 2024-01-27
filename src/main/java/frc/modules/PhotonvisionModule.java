@@ -50,21 +50,21 @@ public class PhotonvisionModule extends SubsystemBase {
     public static final GenericEntry RIGHT_TARGET_PITCH = PHOTONVISION_TAB.add("RIGHT ID Pitch", 0).getEntry();
     public static final GenericEntry RIGHT_TARGET_SKEW = PHOTONVISION_TAB.add("RIGHT ID Skew", 0).getEntry();
 
+    private PhotonCamera[] camera;
 
-    private static PhotonCamera[] camera = 
-     {
-           new PhotonCamera("PhotonVision3"),
-        //    new PhotonCamera("PhotonVision2"),
-            // new PhotonCamera("apple"),
-            new PhotonCamera("PhotonVision1")
-    };
+    public PhotonvisionModule() {
+        PhotonCamera[] photonCamera={new PhotonCamera("PhotonVision3"),
+        // new PhotonCamera("PhotonVision2"),
+        // new PhotonCamera("apple"),
+        new PhotonCamera("PhotonVision1")};
+        camera=photonCamera;
+    }
 
     // public static enum PhotonPipeline {
     // AprilTag,
     // VCone,
     // CubePipline,
     // }
-    
 
     public static enum CameraName {
         CAM3,
@@ -182,46 +182,46 @@ public class PhotonvisionModule extends SubsystemBase {
         // PhotonTrackedTarget targetLeft = getBestTarget(CameraName.CAM4);
 
         if (targetFront != null) {
-            // if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
-            FRONT_APRILTAG_ID.setInteger(targetFront.getFiducialId());
-            // }
+        // if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
+        FRONT_APRILTAG_ID.setInteger(targetFront.getFiducialId());
+        // }
 
-            FRONT_TARGET_AMBIGUITY.setDouble(targetFront.getPoseAmbiguity());
-            FRONT_TARGET_YAW.setDouble(targetFront.getYaw());
-            FRONT_TARGET_PITCH.setDouble(targetFront.getPitch());
-            FRONT_TARGET_SKEW.setDouble(targetFront.getSkew());
+        FRONT_TARGET_AMBIGUITY.setDouble(targetFront.getPoseAmbiguity());
+        FRONT_TARGET_YAW.setDouble(targetFront.getYaw());
+        FRONT_TARGET_PITCH.setDouble(targetFront.getPitch());
+        FRONT_TARGET_SKEW.setDouble(targetFront.getSkew());
         }
         if (targetBack != null) {
-            // if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
-            BACK_APRILTAG_ID.setInteger(targetBack.getFiducialId());
-            // }
+        // if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
+        BACK_APRILTAG_ID.setInteger(targetBack.getFiducialId());
+        // }
 
-            BACK_TARGET_AMBIGUITY.setDouble(targetBack.getPoseAmbiguity());
-            BACK_TARGET_YAW.setDouble(targetBack.getYaw());
-            BACK_TARGET_PITCH.setDouble(targetBack.getPitch());
-            BACK_TARGET_SKEW.setDouble(targetBack.getSkew());
+        BACK_TARGET_AMBIGUITY.setDouble(targetBack.getPoseAmbiguity());
+        BACK_TARGET_YAW.setDouble(targetBack.getYaw());
+        BACK_TARGET_PITCH.setDouble(targetBack.getPitch());
+        BACK_TARGET_SKEW.setDouble(targetBack.getSkew());
         }
         // if (targetLeft != null) {
 
-        //     // if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
-        //     LEFT_APRILTAG_ID.setInteger(targetLeft.getFiducialId());
-        //     // }
+        // // if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
+        // LEFT_APRILTAG_ID.setInteger(targetLeft.getFiducialId());
+        // // }
 
-        //     LEFT_TARGET_AMBIGUITY.setDouble(targetLeft.getPoseAmbiguity());
-        //     LEFT_TARGET_YAW.setDouble(targetLeft.getYaw());
-        //     LEFT_TARGET_PITCH.setDouble(targetLeft.getPitch());
-        //     LEFT_TARGET_SKEW.setDouble(targetLeft.getSkew());
+        // LEFT_TARGET_AMBIGUITY.setDouble(targetLeft.getPoseAmbiguity());
+        // LEFT_TARGET_YAW.setDouble(targetLeft.getYaw());
+        // LEFT_TARGET_PITCH.setDouble(targetLeft.getPitch());
+        // LEFT_TARGET_SKEW.setDouble(targetLeft.getSkew());
         // }
         // if (targetRight != null) {
 
-        //     // if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
-        //     RIGHT_APRILTAG_ID.setInteger(targetRight.getFiducialId());
-        //     // }
+        // // if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
+        // RIGHT_APRILTAG_ID.setInteger(targetRight.getFiducialId());
+        // // }
 
-        //     RIGHT_TARGET_AMBIGUITY.setDouble(targetRight.getPoseAmbiguity());
-        //     RIGHT_TARGET_YAW.setDouble(targetRight.getYaw());
-        //     RIGHT_TARGET_PITCH.setDouble(targetRight.getPitch());
-        //     RIGHT_TARGET_SKEW.setDouble(targetRight.getSkew());
+        // RIGHT_TARGET_AMBIGUITY.setDouble(targetRight.getPoseAmbiguity());
+        // RIGHT_TARGET_YAW.setDouble(targetRight.getYaw());
+        // RIGHT_TARGET_PITCH.setDouble(targetRight.getPitch());
+        // RIGHT_TARGET_SKEW.setDouble(targetRight.getSkew());
         // }
     }
 }

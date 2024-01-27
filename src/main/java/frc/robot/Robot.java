@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.rmi.server.ServerCloneException;
+
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -38,12 +40,14 @@ import frc.commands.DriveWait;
 public class Robot extends LoggedRobot {
 	public static final CommandXboxController controller = new CommandXboxController(0);
 	public static final AHRS navX = new AHRS();
-	public static final PhotonvisionModule photonvision = new PhotonvisionModule();
-	public static final DriveSubsystem swerve = new DriveSubsystem();
+	public static PhotonvisionModule photonvision;
+	public static DriveSubsystem swerve;
 	// public static Logger logger;
 
 	@Override
 	public void robotInit() {
+		photonvision = new PhotonvisionModule();
+		swerve = new DriveSubsystem();
 		configureButtonBindings();
 
 		Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
@@ -62,6 +66,8 @@ public class Robot extends LoggedRobot {
 		}
 
 		Logger.start();
+
+
 
 		Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();
