@@ -56,7 +56,7 @@ public class SwerveModule {
   }
 
   // Gains are for example purposes only - must be determined for your own robot!
-  private final PIDController m_drivePIDController = new PIDController(0.2, 0, 0);
+  private final PIDController m_drivePIDController = new PIDController(2, 0, 0);
 
   // Gains are for example purposes only - must be determined for your own robot!
   private final PIDController m_turningPIDController = new PIDController(8, 0, 0);
@@ -97,11 +97,21 @@ public class SwerveModule {
     driveMotor.setIdleMode(IdleMode.kBrake);
     turningMotor.setIdleMode(IdleMode.kBrake);
 
-    driveEncoder.setPositionConversionFactor(2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR / kEncoderResolution);
-    driveEncoder.setVelocityConversionFactor(2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR / kEncoderResolution);
+    driveEncoder.setPositionConversionFactor(2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR);
+    driveEncoder.setVelocityConversionFactor(2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR);
+
+    driveMotor.enableVoltageCompensation(12);
+    driveMotor.setSmartCurrentLimit(40);
+
+    turningMotor.enableVoltageCompensation(12);
+    turningMotor.setSmartCurrentLimit(40);
 
     m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
     turningEncoder.setPositionToAbsolute();
+  }
+
+  public double getDriveCurrent() {
+    return driveMotor.getOutputCurrent();
   }
 
   public void invertSteerMotor(boolean inversion) {
@@ -154,13 +164,22 @@ public class SwerveModule {
    * @param desiredState Desired state with speed and angle.
    */
   public void setDesiredState(SwerveModuleState desiredState) {
+
+    Rotation2d encoderRotation = Rotation2d.fromDegrees(turningEncoder.getPosition() % 360);
+
+
     // Optimize the reference state to avoid spinning further than 90 degrees
     SwerveModuleState state =
         SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(turningEncoder.getPosition() % 360));
 
-    // Calculate the drive output from the drive PID controller.
+    // Scale speed by cosine of angle error. This scales down movement perpendicular to the desired
+    // direction of travel that can occur when modules change directions. This results in smoother
+    // driving.
+    state.speedMetersPerSecond *= state.angle.minus(encoderRotation).getCos();
+
+    // Calculate the drive output from the drive PID controller. Divide by 60 to get Meters per Second
     final double driveOutput =
-        m_drivePIDController.calculate(driveEncoder.getVelocity() * 2 * Math.PI * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR *  kWheelRadius, state.speedMetersPerSecond);
+        m_drivePIDController.calculate(driveEncoder.getVelocity() / 60, state.speedMetersPerSecond);
 
     final double driveFeedforward = m_driveFeedforward.calculate(state.speedMetersPerSecond);
 
@@ -174,7 +193,6 @@ public class SwerveModule {
     mainDriveOutput = driveOutput;
 
     mainTurnOutput = turnOutput;
-
 
     driveMotor.setVoltage(driveOutput + driveFeedforward);
     turningMotor.setVoltage(turnOutput);

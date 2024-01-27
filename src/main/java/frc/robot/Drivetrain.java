@@ -17,6 +17,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -96,10 +97,31 @@ public class Drivetrain extends SubsystemBase {
     Robot.navX.reset();
     AVTimer.start();
 
-    frontLeft = new SwerveModule(RobotMap.Swerve.LEFT_FRONT_DRIVE_ID, RobotMap.Swerve.LEFT_FRONT_STEER_ID, RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID);
-    frontRight = new SwerveModule(RobotMap.Swerve.RIGHT_FRONT_DRIVE_ID, RobotMap.Swerve.RIGHT_FRONT_STEER_ID, RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID);
-    backLeft = new SwerveModule(RobotMap.Swerve.LEFT_BACK_DRIVE_ID, RobotMap.Swerve.LEFT_BACK_STEER_ID, RobotMap.Swerve.LEFT_BACK_STEER_CANCODER_ID);
-    backRight = new SwerveModule(RobotMap.Swerve.RIGHT_BACK_DRIVE_ID, RobotMap.Swerve.RIGHT_BACK_STEER_ID, RobotMap.Swerve.RIGHT_BACK_STEER_CANCODER_ID);
+    frontLeft = new SwerveModule(
+      RobotMap.Swerve.LEFT_FRONT_DRIVE_ID, 
+      RobotMap.Swerve.LEFT_FRONT_STEER_ID, 
+      RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID,
+      new PIDController(1, 0, 0)
+      );
+    frontRight = new SwerveModule(
+      RobotMap.Swerve.RIGHT_FRONT_DRIVE_ID, 
+      RobotMap.Swerve.RIGHT_FRONT_STEER_ID, 
+      RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID,
+      new PIDController(1, 0, 0)
+      );
+    backLeft = new SwerveModule(
+      RobotMap.Swerve.LEFT_BACK_DRIVE_ID, 
+      RobotMap.Swerve.LEFT_BACK_STEER_ID, 
+      RobotMap.Swerve.LEFT_BACK_STEER_CANCODER_ID,
+      new PIDController(1, 0, 0)
+      );
+    backRight = new SwerveModule(
+      RobotMap.Swerve.RIGHT_BACK_DRIVE_ID, 
+      RobotMap.Swerve.RIGHT_BACK_STEER_ID, 
+      RobotMap.Swerve.RIGHT_BACK_STEER_CANCODER_ID,
+      new PIDController(1, 0, 0)
+    );
+
 
     frontLeft.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.LEFT_FRONT_STEER_OFFSET);
     frontRight.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.RIGHT_FRONT_STEER_OFFSET);
@@ -113,11 +135,6 @@ public class Drivetrain extends SubsystemBase {
     frontLeft.invertDriveMotor(true);
     frontRight.invertDriveMotor(true);
     backRight.invertDriveMotor(true);
-
-    frontLeft.getDriveEncoder().setPositionConversionFactor(RobotMap.Swerve.SWERVE_CONVERSION_FACTOR);
-    frontRight.getDriveEncoder().setPositionConversionFactor(RobotMap.Swerve.SWERVE_CONVERSION_FACTOR);
-    backLeft.getDriveEncoder().setPositionConversionFactor(RobotMap.Swerve.SWERVE_CONVERSION_FACTOR);
-    backRight.getDriveEncoder().setPositionConversionFactor(RobotMap.Swerve.SWERVE_CONVERSION_FACTOR);
 
     odometry = new SwerveDriveOdometry(
       kinematics,
@@ -205,6 +222,21 @@ public class Drivetrain extends SubsystemBase {
     return chassisSpeeds;
   }
 
+    private ChassisSpeeds rotationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
+    // Assuming the control loop runs in 20ms
+    final double deltaTime = 0.02;
+
+    // The position of the bot one control loop in the future given the chassisspeed
+    Pose2d robotPoseVel = new Pose2d(chassisSpeeds.vxMetersPerSecond * deltaTime,
+        chassisSpeeds.vyMetersPerSecond * deltaTime,
+        new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * deltaTime));
+
+    Twist2d twistVel = new Pose2d(0, 0, new Rotation2d()).log(robotPoseVel);
+    return new ChassisSpeeds(
+        twistVel.dx / deltaTime, twistVel.dy / deltaTime,
+        twistVel.dtheta / deltaTime);
+  }
+
   public void drive(SwerveModuleState[] state) {
 
     frontLeftAngle.setDouble(state[0].angle.getDegrees());
@@ -230,12 +262,16 @@ public class Drivetrain extends SubsystemBase {
 
     chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
     
+    // chassisSpeeds = rotationalDriftCorrection(chassisSpeeds);
+    
     drive(kinematics.toSwerveModuleStates(chassisSpeeds));
   }
 
   public void robotRelativeDrive(ChassisSpeeds chassisSpeeds) {
 
     chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
+
+    // chassisSpeeds = rotationalDriftCorrection(chassisSpeeds);
 
     drive(kinematics.toSwerveModuleStates(chassisSpeeds));
 
@@ -330,6 +366,12 @@ public class Drivetrain extends SubsystemBase {
     updateOdometry();
     Logger.recordOutput("Odometry", pose);
     Logger.recordOutput("angular velocity", Robot.navX.getRate());
+    Logger.recordOutput("FrontLeft Voltage", frontLeft.getDriveCurrent());
+    Logger.recordOutput("FrontRight Voltage", frontRight.getDriveCurrent());
+    Logger.recordOutput("BackLeft Voltage", backLeft.getDriveCurrent());
+    Logger.recordOutput("BackRight Voltage", backRight.getDriveCurrent());
+
+
   }
 }
 
