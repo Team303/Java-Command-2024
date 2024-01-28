@@ -23,17 +23,17 @@ public class HomeShooter extends Command {
 
     @Override
     public void execute() {
-        shooter.setAngleSpeed(-0.2);
+        // shooter.setAngleSpeed(-0.2);
     } 
 
-    @Override
-    public boolean isFinished() {
-        return shooter.atHardLimit() || timer.hasElapsed(3.0);
-    }
+    // @Override
+    // public boolean isFinished() {
+    //     return shooter.atHardLimit() || timer.hasElapsed(3.0);
+    // }
 
     @Override
     public void end(boolean interrupted) {
-        shooter.setAngleSpeed(0);
+        // shooter.setAngleSpeed(0);
         shooter.resetEncoders();
         timer.stop();
     }

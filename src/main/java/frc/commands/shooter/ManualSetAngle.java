@@ -19,10 +19,11 @@ public class ManualSetAngle extends Command {
 
     public ManualSetAngle(double height, double range) {
         addRequirements(shooter);
-        //desiredAngle = angle;
+
+        desiredVelocity = 30.194977967;
         desiredAngle = Math.atan((2 * height) / range);
         //Calculate Speed here;
-
+        //desiredVelocity = 0.0;
         //desiredVelocity = Math.sqrt((2*height *9.8*(16*height * height + range * range ))/(8*height));
         desiredVelocity = Math.sqrt(2 * height * 9.8) / Math.sin(desiredAngle); //new equation
     }
@@ -30,20 +31,15 @@ public class ManualSetAngle extends Command {
 
     @Override
     public void execute() {
-        //shooter.leftAngleMotor.setVoltage(shooter.calculateAngleSpeed(desiredAngle));
-        //shooter.rightAngleMotor.setVoltage(shooter.calculateAngleSpeed(desiredAngle));
+        // shooter.leftAngleMotor.setVoltage(shooter.calculateAngleSpeed(desiredAngle));
+        // shooter.rightAngleMotor.setVoltage(shooter.calculateAngleSpeed(desiredAngle));
         shooter.leftFlywheelMotor.setVoltage(shooter.calculateFlywheelSpeed(desiredVelocity));
         shooter.rightFlywheelMotor.setVoltage(shooter.calculateFlywheelSpeed(desiredVelocity));
     } 
 
-    @Override
-    public boolean isFinished() {
-        return /*shooter.getShooterAngle() == desiredAngle &&*/ shooter.getVelocitySpeed() == desiredVelocity;
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        shooter.setAngleSpeed(0);
-    }
+    // @Override
+    // public boolean isFinished() {
+    //     return shooter.getShooterAngle() == desiredAngle && shooter.getVelocitySpeed() == desiredVelocity;
+    // }
 
 }

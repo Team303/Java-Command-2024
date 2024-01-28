@@ -4,6 +4,13 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
 // import org.littletonrobotics.junction.LoggedRobot;
 // import org.littletonrobotics.junction.Logger;
 // import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -16,7 +23,6 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -30,32 +36,22 @@ import frc.autonomous.Autonomous;
 import frc.autonomous.AutonomousProgram;
 import frc.commands.DefaultDrive;
 import frc.subsystems.Drivetrain;
-
-import org.littletonrobotics.junction.LogFileUtil;
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGReader;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-
-import frc.commands.shooter.HomeShooter;
-import frc.commands.shooter.ManualSetAngle;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.commands.DriveWait;
 import frc.subsystems.Shooter;
+import frc.commands.shooter.ManualSetAngle;
 
 public class Robot extends LoggedRobot {
-  public static final CommandXboxController driverController = new CommandXboxController(0);
-  public static final CommandXboxController operatorController = new CommandXboxController(1);
+  public static final CommandXboxController controller = new CommandXboxController(0);
   public static final AHRS navX = new AHRS(); 
-  public static final Drivetrain swerve = new Drivetrain();
+  public static final Drivetrain swerve = null; //new Drivetrain();
   public static final Shooter shooter = new Shooter();
-
-  public static Mechanism2d shotterSim;
 
   @Override
   public void robotInit() {
     configureButtonBindings();
-		Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
+
+	Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
 
 	if (isReal()) {
 		Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
@@ -71,13 +67,12 @@ public class Robot extends LoggedRobot {
 	Logger.start();
 
     Autonomous.init();
-		AutonomousProgram.addAutosToShuffleboard();
+	AutonomousProgram.addAutosToShuffleboard();
   }
 
   private void configureButtonBindings() {
-    driverController.y().onTrue(new InstantCommand(swerve::resetOdometry));
-	operatorController.y().whileTrue(new HomeShooter());
-	operatorController.a().whileTrue(new ManualSetAngle(78, 123));
+    // controller.y().onTrue(new InstantCommand(swerve::resetOdometry));
+	// controller.x().toggleOnTrue(new ManualSetAngle(5, 2));
   }
 
   	/* Currently running auto routine */
@@ -87,7 +82,7 @@ public class Robot extends LoggedRobot {
   @Override
 	public void autonomousInit() {
 		navX.reset();
-		swerve.resetOdometry();
+		// swerve.resetOdometry();
 		Command autonomousRoutine = AutonomousProgram.constructSelectedRoutine();
 
 		// Home the arm while waiting for the drivebase delay
@@ -113,13 +108,17 @@ public class Robot extends LoggedRobot {
 		if (autonomousCommand != null) {
 			autonomousCommand.cancel();
 		}
-    swerve.setDefaultCommand(new DefaultDrive(true));
+
+		shooter.setDefaultCommand(new ManualSetAngle(2.43, 2));
+
+    	// swerve.setDefaultCommand(new DefaultDrive(true));
+		
 	}
 
-  @Override
-  public void teleopPeriodic() { 
+	@Override
+	public void robotPeriodic() { 
 
-	  CommandScheduler.getInstance().run();
+		CommandScheduler.getInstance().run();
 		
-  }
+	}
 }
