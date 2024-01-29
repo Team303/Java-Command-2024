@@ -172,7 +172,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     AprilTagFieldLayout initialLayout;
     try {
-      initialLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
+      
+      initialLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
       Optional<Alliance> alliance = DriverStation.getAlliance();
       // TODO: Change to make the origin position based off of station rather than
       // just based off of alliance.
@@ -374,7 +375,7 @@ public class DriveSubsystem extends SubsystemBase {
         // Increase std devs based on (average) distance
         if (numTags == 1 && avgDist > 4)
             estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-        else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 2));
+        else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist*RobotMap.Swerve.PHOTON_STDDEV_SCALING_FACTOR));
 
         return estStdDevs;
     }

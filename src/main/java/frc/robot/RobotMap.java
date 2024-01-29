@@ -33,7 +33,9 @@ public class RobotMap {
 		public static final double LEFT_BACK_STEER_OFFSET = -23.5;
 		public static final double RIGHT_BACK_STEER_OFFSET = -208.3;
 
-		public static final double SWERVE_CONVERSION_FACTOR = (14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0); 
+		public static final double SWERVE_CONVERSION_FACTOR = (14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0);
+
+		public static final double PHOTON_STDDEV_SCALING_FACTOR = (1.0/2.0);
 
     }
 
