@@ -6,7 +6,6 @@ package frc.subsystems;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Optional;
 
 import org.littletonrobotics.junction.Logger;
@@ -26,44 +25,33 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
-import frc.robot.RobotMap;
-import frc.robot.SwerveModule;
-import frc.robot.RobotMap.Swerve;
-import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-
-import frc.robot.SwerveModule;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.modules.PhotonvisionModule.CameraName;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.PhotonvisionConstants;
+import frc.robot.SwerveModule;
 
 /** Represents a swerve drive style drivetrain. */
 public class DriveSubsystem extends SubsystemBase {
@@ -79,13 +67,12 @@ public class DriveSubsystem extends SubsystemBase {
   private final SwerveModule frontRight;
   private final SwerveModule backLeft;
   private final SwerveModule backRight;
-  int jump=0;
   // private final SwerveDriveOdometry odometry;
   private final PIDController m_driftCorrectionPid = new PIDController(0.1, 0, 0);
   // private Pose2d pose = new Pose2d(0.0, 0.0, new Rotation2d());
 
   private ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
-  private ChassisSpeeds relativeSpeeds = new ChassisSpeeds(); 
+  private ChassisSpeeds relativeSpeeds = new ChassisSpeeds();
 
   public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drive Base");
 
@@ -148,9 +135,8 @@ public class DriveSubsystem extends SubsystemBase {
   // private static final Vector<N3> photonStandardDeviations =
   // VecBuilder.fill(0.25, 0.25, 0);
   private static final Vector<N3> photonStandardDeviations = VecBuilder.fill(5, 5, 100);
-  private static final Vector<N3> kSingleStandardDeviations = VecBuilder.fill(5,5,100);
-  private static final Vector<N3> kMultiTagStandardDeviations = VecBuilder.fill(2.5,2.5,100);
-  
+  private static final Vector<N3> kSingleStandardDeviations = VecBuilder.fill(5, 5, 100);
+  private static final Vector<N3> kMultiTagStandardDeviations = VecBuilder.fill(2.5, 2.5, 100);
 
   public PhotonPoseEstimator visionPoseEstimatorFront;
   public PhotonPoseEstimator visionPoseEstimatorRight;
@@ -190,10 +176,9 @@ public class DriveSubsystem extends SubsystemBase {
     backLeft.getDriveEncoder().setPositionConversionFactor(RobotMap.Swerve.SWERVE_CONVERSION_FACTOR);
     backRight.getDriveEncoder().setPositionConversionFactor(RobotMap.Swerve.SWERVE_CONVERSION_FACTOR);
 
-
     AprilTagFieldLayout initialLayout;
     try {
-      
+
       initialLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
       Optional<Alliance> alliance = DriverStation.getAlliance();
       // TODO: Change to make the origin position based off of station rather than
@@ -236,55 +221,57 @@ public class DriveSubsystem extends SubsystemBase {
         odometryStandardDeviations, photonStandardDeviations);
 
     AutoBuilder.configureHolonomic(
-            this::getPose, // Robot pose supplier
-            this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
-            this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            this::robotRelativeDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-            new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                    new PIDConstants(5, 0.0, 0.0), // Translation PID constants
-                    new PIDConstants(8, 0, 0), // Rotation PID constants
-                    3.9, // Max module speed, in m/s
-                    0.381, // Drive base radius in meters. Distance from robot center to furthest module.
-                    new ReplanningConfig() // Default path replanning config. See the API for the options here
-            ),
-            () -> {
-                // Boolean supplier that controls when the path will be mirrored for the red alliance
-                // This will flip the path being followed to the red side of the field.
-                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+        this::getPose, // Robot pose supplier
+        this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+        this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+        this::robotRelativeDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+        new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+            new PIDConstants(5, 0.0, 0.0), // Translation PID constants
+            new PIDConstants(8, 0, 0), // Rotation PID constants
+            3.9, // Max module speed, in m/s
+            0.381, // Drive base radius in meters. Distance from robot center to furthest module.
+            new ReplanningConfig() // Default path replanning config. See the API for the options here
+        ),
+        () -> {
+          // Boolean supplier that controls when the path will be mirrored for the red
+          // alliance
+          // This will flip the path being followed to the red side of the field.
+          // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-                var alliance = DriverStation.getAlliance();
-                if (alliance.isPresent()) {
-                    return alliance.get() == DriverStation.Alliance.Red;
-                }
-                return false;
-            },
-            this // Reference to this subsystem to set requirements
+          var alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+          }
+          return false;
+        },
+        this // Reference to this subsystem to set requirements
     );
 
     AutoBuilder.configureHolonomic(
-            this::getPose, // Robot pose supplier
-            this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
-            this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            this::robotRelativeDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-            new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                    new PIDConstants(5, 0.0, 0.0), // Translation PID constants
-                    new PIDConstants(8, 0, 0), // Rotation PID constants
-                    3.9, // Max module speed, in m/s
-                    0.381, // Drive base radius in meters. Distance from robot center to furthest module.
-                    new ReplanningConfig() // Default path replanning config. See the API for the options here
-            ),
-            () -> {
-                // Boolean supplier that controls when the path will be mirrored for the red alliance
-                // This will flip the path being followed to the red side of the field.
-                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+        this::getPose, // Robot pose supplier
+        this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+        this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+        this::robotRelativeDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+        new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+            new PIDConstants(5, 0.0, 0.0), // Translation PID constants
+            new PIDConstants(8, 0, 0), // Rotation PID constants
+            3.9, // Max module speed, in m/s
+            0.381, // Drive base radius in meters. Distance from robot center to furthest module.
+            new ReplanningConfig() // Default path replanning config. See the API for the options here
+        ),
+        () -> {
+          // Boolean supplier that controls when the path will be mirrored for the red
+          // alliance
+          // This will flip the path being followed to the red side of the field.
+          // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-                var alliance = DriverStation.getAlliance();
-                if (alliance.isPresent()) {
-                    return alliance.get() == DriverStation.Alliance.Red;
-                }
-                return false;
-            },
-            this // Reference to this subsystem to set requirements
+          var alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+          }
+          return false;
+        },
+        this // Reference to this subsystem to set requirements
     );
 
   }
@@ -353,14 +340,16 @@ public class DriveSubsystem extends SubsystemBase {
     frontRight.setDesiredState(state[1]);
     backLeft.setDesiredState(state[2]);
     backRight.setDesiredState(state[3]);
-    
+
   }
 
   public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
 
     relativeSpeeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
     if (fieldOriented) {
-      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(translation.getX(), translation.getY(), rotation), Rotation2d.fromDegrees(-Robot.navX.getAngle()));
+      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+          new ChassisSpeeds(translation.getX(), translation.getY(), rotation),
+          Rotation2d.fromDegrees(-Robot.navX.getAngle()));
     } else {
       chassisSpeeds = relativeSpeeds;
     }
@@ -400,7 +389,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /** Updates the field relative position of the robot. */
-  public void updateOdometry(boolean jumpFront, boolean jumpBack) {
+  public void updateOdometry() {
     Optional<EstimatedRobotPose> resultFront = getEstimatedGlobalPoseFront(poseEstimator.getEstimatedPosition());
     Optional<EstimatedRobotPose> resultBack = getEstimatedGlobalPoseBack(poseEstimator.getEstimatedPosition());
     poseEstimator.update(Robot.navX.getRotation2d(), getModulePositions());
@@ -412,7 +401,7 @@ public class DriveSubsystem extends SubsystemBase {
     if (resultFront.isPresent()) {
       EstimatedRobotPose visionPoseEstimate = resultFront.get();
       poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-          visionPoseEstimate.timestampSeconds,getEstimationStdDevs(visionPoseEstimate.targetsUsed));
+          visionPoseEstimate.timestampSeconds, getEstimationStdDevs(visionPoseEstimate.targetsUsed));
     }
     // if (resultRight.isPresent()) {
     // EstimatedRobotPose visionPoseEstimate = resultRight.get();
@@ -422,18 +411,15 @@ public class DriveSubsystem extends SubsystemBase {
     if (resultBack.isPresent()) {
       EstimatedRobotPose visionPoseEstimate = resultBack.get();
       poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-          visionPoseEstimate.timestampSeconds,getEstimationStdDevs(visionPoseEstimate.targetsUsed));
+          visionPoseEstimate.timestampSeconds, getEstimationStdDevs(visionPoseEstimate.targetsUsed));
     }
     // if (resultLeft.isPresent()) {
     // EstimatedRobotPose visionPoseEstimate = resultLeft.get();
     // poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
     // visionPoseEstimate.timestampSeconds);
     // }
-    
+
     field2d.setRobotPose(getPose());
-    // pose = odometry.update(
-    // Robot.navX.getRotation2d(),
-    // getModulePositions());
   }
 
   public SwerveModulePosition[] getModulePositions() {
@@ -452,39 +438,39 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetOdometry() {
     Robot.navX.reset();
     poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), new Pose2d());
-    // odometry.resetPosition(Robot.navX.getRotation2d(), getModulePositions(),
-    // pose);
   }
+
   public void resetOdometry(Pose2d pose) {
     Robot.navX.reset();
     poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), pose);
-    // odometry.resetPosition(Robot.navX.getRotation2d(), getModulePositions(),
-    // pose);
   }
-  
-   public Vector<N3> getEstimationStdDevs(List<PhotonTrackedTarget> targetList) {
-        var estStdDevs = kSingleStandardDeviations;
-        var targets = targetList;
-        int numTags = 0;
-        double avgDist = 0;
-        for (var tgt : targets) {
-            var tagPose = visionPoseEstimatorFront.getFieldTags().getTagPose(tgt.getFiducialId());
-            if (tagPose.isEmpty()) continue;
-            numTags++;
-            avgDist +=
-                    tagPose.get().toPose2d().getTranslation().getDistance(getPose().getTranslation());
-        }
-        if (numTags == 0) return estStdDevs;
-        avgDist /= numTags;
-        // Decrease std devs if multiple targets are visible
-        if (numTags > 1) estStdDevs = kMultiTagStandardDeviations;
-        // Increase std devs based on (average) distance
-        if (numTags == 1 && avgDist > 4)
-            estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-        else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist*RobotMap.Swerve.PHOTON_STDDEV_SCALING_FACTOR));
 
-        return estStdDevs;
+  public Vector<N3> getEstimationStdDevs(List<PhotonTrackedTarget> targetList) {
+    var estStdDevs = kSingleStandardDeviations;
+    var targets = targetList;
+    int numTags = 0;
+    double avgDist = 0;
+    for (var tgt : targets) {
+      var tagPose = visionPoseEstimatorFront.getFieldTags().getTagPose(tgt.getFiducialId());
+      if (tagPose.isEmpty())
+        continue;
+      numTags++;
+      avgDist += tagPose.get().toPose2d().getTranslation().getDistance(getPose().getTranslation());
     }
+    if (numTags == 0)
+      return estStdDevs;
+    avgDist /= numTags;
+    // Decrease std devs if multiple targets are visible
+    if (numTags > 1)
+      estStdDevs = kMultiTagStandardDeviations;
+    // Increase std devs based on (average) distance
+    if (numTags == 1 && avgDist > 4)
+      estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+    else
+      estStdDevs = estStdDevs.times(1 + (avgDist * avgDist * RobotMap.Swerve.PHOTON_STDDEV_SCALING_FACTOR));
+
+    return estStdDevs;
+  }
 
   public Optional<EstimatedRobotPose> getEstimatedGlobalPoseFront(Pose2d prevEstimatedRobotPose) {
     visionPoseEstimatorFront.setReferencePose(prevEstimatedRobotPose);
@@ -497,7 +483,6 @@ public class DriveSubsystem extends SubsystemBase {
           --i;
         }
       }
-      // TODO: might not be the right latency
       PhotonPipelineResult cameraResult = new PhotonPipelineResult(rawResult.getLatencyMillis(), targets);
       cameraResult.setTimestampSeconds(rawResult.getTimestampSeconds());
       return visionPoseEstimatorFront.update(cameraResult);
@@ -505,12 +490,6 @@ public class DriveSubsystem extends SubsystemBase {
       return Optional.empty();
     }
   }
-
-  // public Optional<EstimatedRobotPose> getEstimatedGlobalPoseRight(Pose2d
-  // prevEstimatedRobotPose) {
-  // // visionPoseEstimatorRight.setReferencePose(prevEstimatedRobotPose);
-  // return visionPoseEstimatorRight.update();
-  // }
 
   public Optional<EstimatedRobotPose> getEstimatedGlobalPoseBack(Pose2d prevEstimatedRobotPose) {
     visionPoseEstimatorBack.setReferencePose(prevEstimatedRobotPose);
@@ -523,7 +502,6 @@ public class DriveSubsystem extends SubsystemBase {
           --i;
         }
       }
-      // TODO: might not be the right latency
       PhotonPipelineResult cameraResult = new PhotonPipelineResult(rawResult.getLatencyMillis(), targets);
       cameraResult.setTimestampSeconds(rawResult.getTimestampSeconds());
       return visionPoseEstimatorBack.update(cameraResult);
@@ -540,19 +518,15 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void resetPose(Pose2d pose) {
     Robot.navX.reset();
-    odometry.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), new Pose2d());
-  }
-
-  public Pose2d getPose() {
-    return pose; 
+    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), new Pose2d());
   }
 
   public SwerveModuleState[] getModuleStates() {
     return new SwerveModuleState[] {
-      frontLeft.getState(),
-      frontRight.getState(),
-      backLeft.getState(),
-      backRight.getState()
+        frontLeft.getState(),
+        frontRight.getState(),
+        backLeft.getState(),
+        backRight.getState()
     };
   }
 
@@ -580,12 +554,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     globalAngle.setDouble(Robot.navX.getAngle());
     angleVelo.setDouble(Robot.navX.getRate());
-    // if(jump<100){
-      updateOdometry(true,true);
-      // jump++;
-    // } else {
-    //   updateOdometry(false,false);
-    // }
+
+    updateOdometry();
 
     Logger.recordOutput("Odometry", getPose());
     Logger.recordOutput("angular velocity", Robot.navX.getRate());
