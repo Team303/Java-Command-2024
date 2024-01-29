@@ -138,10 +138,7 @@ public class DriveSubsystem extends SubsystemBase {
   private static final Vector<N3> kSingleStandardDeviations = VecBuilder.fill(5, 5, 100);
   private static final Vector<N3> kMultiTagStandardDeviations = VecBuilder.fill(2.5, 2.5, 100);
 
-  public PhotonPoseEstimator visionPoseEstimatorFront;
-  public PhotonPoseEstimator visionPoseEstimatorRight;
-  public PhotonPoseEstimator visionPoseEstimatorBack;
-  public PhotonPoseEstimator visionPoseEstimatorLeft;
+  public PhotonPoseEstimator[] visionPoseEstimator = new PhotonPoseEstimator[4];
 
   public SwerveDrivePoseEstimator poseEstimator;
 
@@ -192,60 +189,30 @@ public class DriveSubsystem extends SubsystemBase {
     }
     aprilTagField = initialLayout;
     if (Robot.isReal()) {
-      visionPoseEstimatorFront = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+      visionPoseEstimator[0]= new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
           Robot.photonvision.getCamera(CameraName.CAM1),
           PhotonvisionConstants.ROBOT_TO_FRONT_CAMERA);
       // visionPoseEstimatorRight = new PhotonPoseEstimator(aprilTagField,
       // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
       // Robot.photonvision.getCamera(CameraName.CAM2),
       // PhotonvisionConstants.ROBOT_TO_RIGHT_CAMERA);
-      visionPoseEstimatorBack = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+      visionPoseEstimator[1] = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
           Robot.photonvision.getCamera(CameraName.CAM3),
           PhotonvisionConstants.ROBOT_TO_BACK_CAMERA);
       // visionPoseEstimatorLeft = new PhotonPoseEstimator(aprilTagField,
       // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
       // Robot.photonvision.getCamera(CameraName.CAM4),
       // PhotonvisionConstants.ROBOT_TO_LEFT_CAMERA);
-      visionPoseEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+      visionPoseEstimator[0].setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
       // visionPoseEstimatorRight.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-      visionPoseEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+      visionPoseEstimator[1].setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
       // visionPoseEstimatorLeft.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 
-    // odometry = new SwerveDriveOdometry(
-    // kinematics,
-    // Robot.navX.getRotation2d(),
-    // getModulePositions());
+
     poseEstimator = new SwerveDrivePoseEstimator(kinematics, Robot.navX.getRotation2d(), getModulePositions(),
         new Pose2d(new Translation2d(), new Rotation2d()),
         odometryStandardDeviations, photonStandardDeviations);
-
-    AutoBuilder.configureHolonomic(
-        this::getPose, // Robot pose supplier
-        this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
-        this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        this::robotRelativeDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-        new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-            new PIDConstants(5, 0.0, 0.0), // Translation PID constants
-            new PIDConstants(8, 0, 0), // Rotation PID constants
-            3.9, // Max module speed, in m/s
-            0.381, // Drive base radius in meters. Distance from robot center to furthest module.
-            new ReplanningConfig() // Default path replanning config. See the API for the options here
-        ),
-        () -> {
-          // Boolean supplier that controls when the path will be mirrored for the red
-          // alliance
-          // This will flip the path being followed to the red side of the field.
-          // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-          var alliance = DriverStation.getAlliance();
-          if (alliance.isPresent()) {
-            return alliance.get() == DriverStation.Alliance.Red;
-          }
-          return false;
-        },
-        this // Reference to this subsystem to set requirements
-    );
 
     AutoBuilder.configureHolonomic(
         this::getPose, // Robot pose supplier
@@ -390,8 +357,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
-    Optional<EstimatedRobotPose> resultFront = getEstimatedGlobalPoseFront(poseEstimator.getEstimatedPosition());
-    Optional<EstimatedRobotPose> resultBack = getEstimatedGlobalPoseBack(poseEstimator.getEstimatedPosition());
+    Optional<EstimatedRobotPose> resultFront = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition(),CameraName.CAM1);
+    Optional<EstimatedRobotPose> resultBack = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition(),CameraName.CAM3);
+    // Optional<EstimatedRobotPose> resultRight = getEstimatedGlobalPoseFront(poseEstimator.getEstimatedPosition());
+    // Optional<EstimatedRobotPose> resultLeft = getEstimatedGlobalPoseBack(poseEstimator.getEstimatedPosition());
     poseEstimator.update(Robot.navX.getRotation2d(), getModulePositions());
 
     // Optional<EstimatedRobotPose> resultRight =
@@ -451,7 +420,7 @@ public class DriveSubsystem extends SubsystemBase {
     int numTags = 0;
     double avgDist = 0;
     for (var tgt : targets) {
-      var tagPose = visionPoseEstimatorFront.getFieldTags().getTagPose(tgt.getFiducialId());
+      var tagPose = visionPoseEstimator[0].getFieldTags().getTagPose(tgt.getFiducialId());
       if (tagPose.isEmpty())
         continue;
       numTags++;
@@ -472,10 +441,22 @@ public class DriveSubsystem extends SubsystemBase {
     return estStdDevs;
   }
 
-  public Optional<EstimatedRobotPose> getEstimatedGlobalPoseFront(Pose2d prevEstimatedRobotPose) {
-    visionPoseEstimatorFront.setReferencePose(prevEstimatedRobotPose);
-    if (Robot.photonvision.hasTargets(CameraName.CAM1)) {
-      PhotonPipelineResult rawResult = Robot.photonvision.getLatestResult(CameraName.CAM1);
+  public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose, CameraName camera) {
+    int estimator;
+    switch(camera){
+      case CAM1:
+        estimator=0;
+        break;
+      case CAM3:
+        estimator=1;
+        break;
+      default:
+        System.out.println("ERROR: Invalid camera!");
+        return Optional.empty();
+    }
+    visionPoseEstimator[estimator].setReferencePose(prevEstimatedRobotPose);
+    if (Robot.photonvision.hasTargets(camera)) {
+      PhotonPipelineResult rawResult = Robot.photonvision.getLatestResult(camera);
       List<PhotonTrackedTarget> targets = rawResult.targets;
       for (int i = 0; i < targets.size(); i++) {
         if (targets.get(i).getPoseAmbiguity() > 0.25) {
@@ -485,36 +466,12 @@ public class DriveSubsystem extends SubsystemBase {
       }
       PhotonPipelineResult cameraResult = new PhotonPipelineResult(rawResult.getLatencyMillis(), targets);
       cameraResult.setTimestampSeconds(rawResult.getTimestampSeconds());
-      return visionPoseEstimatorFront.update(cameraResult);
+      return visionPoseEstimator[estimator].update(cameraResult);
     } else {
       return Optional.empty();
     }
   }
 
-  public Optional<EstimatedRobotPose> getEstimatedGlobalPoseBack(Pose2d prevEstimatedRobotPose) {
-    visionPoseEstimatorBack.setReferencePose(prevEstimatedRobotPose);
-    if (Robot.photonvision.hasTargets(CameraName.CAM3)) {
-      PhotonPipelineResult rawResult = Robot.photonvision.getLatestResult(CameraName.CAM3);
-      List<PhotonTrackedTarget> targets = rawResult.targets;
-      for (int i = 0; i < targets.size(); i++) {
-        if (targets.get(i).getPoseAmbiguity() > 0.2) {
-          targets.remove(i);
-          --i;
-        }
-      }
-      PhotonPipelineResult cameraResult = new PhotonPipelineResult(rawResult.getLatencyMillis(), targets);
-      cameraResult.setTimestampSeconds(rawResult.getTimestampSeconds());
-      return visionPoseEstimatorBack.update(cameraResult);
-    } else {
-      return Optional.empty();
-    }
-  }
-
-  // public Optional<EstimatedRobotPose> getEstimatedGlobalPoseLeft(Pose2d
-  // prevEstimatedRobotPose) {
-  // // visionPoseEstimatorLeft.setReferencePose(prevEstimatedRobotPose);
-  // return visionPoseEstimatorLeft.update();
-  // }
 
   public void resetPose(Pose2d pose) {
     Robot.navX.reset();
