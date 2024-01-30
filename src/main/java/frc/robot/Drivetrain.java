@@ -100,26 +100,22 @@ public class Drivetrain extends SubsystemBase {
     frontLeft = new SwerveModule(
       RobotMap.Swerve.LEFT_FRONT_DRIVE_ID, 
       RobotMap.Swerve.LEFT_FRONT_STEER_ID, 
-      RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID,
-      new PIDController(1, 0, 0)
+      RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID
       );
     frontRight = new SwerveModule(
       RobotMap.Swerve.RIGHT_FRONT_DRIVE_ID, 
       RobotMap.Swerve.RIGHT_FRONT_STEER_ID, 
-      RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID,
-      new PIDController(1, 0, 0)
+      RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID
       );
     backLeft = new SwerveModule(
       RobotMap.Swerve.LEFT_BACK_DRIVE_ID, 
       RobotMap.Swerve.LEFT_BACK_STEER_ID, 
-      RobotMap.Swerve.LEFT_BACK_STEER_CANCODER_ID,
-      new PIDController(1, 0, 0)
+      RobotMap.Swerve.LEFT_BACK_STEER_CANCODER_ID
       );
     backRight = new SwerveModule(
       RobotMap.Swerve.RIGHT_BACK_DRIVE_ID, 
       RobotMap.Swerve.RIGHT_BACK_STEER_ID, 
-      RobotMap.Swerve.RIGHT_BACK_STEER_CANCODER_ID,
-      new PIDController(1, 0, 0)
+      RobotMap.Swerve.RIGHT_BACK_STEER_CANCODER_ID
     );
 
 
@@ -222,19 +218,19 @@ public class Drivetrain extends SubsystemBase {
     return chassisSpeeds;
   }
 
-    private ChassisSpeeds rotationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
-    // Assuming the control loop runs in 20ms
-    final double deltaTime = 0.02;
+  private ChassisSpeeds rotationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
+  // Assuming the control loop runs in 20ms
+  final double deltaTime = 0.02;
 
-    // The position of the bot one control loop in the future given the chassisspeed
-    Pose2d robotPoseVel = new Pose2d(chassisSpeeds.vxMetersPerSecond * deltaTime,
-        chassisSpeeds.vyMetersPerSecond * deltaTime,
-        new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * deltaTime));
+  // The position of the bot one control loop in the future given the chassisspeed
+  Pose2d robotPoseVel = new Pose2d(chassisSpeeds.vxMetersPerSecond * deltaTime,
+      chassisSpeeds.vyMetersPerSecond * deltaTime,
+      new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * deltaTime));
 
-    Twist2d twistVel = new Pose2d(0, 0, new Rotation2d()).log(robotPoseVel);
-    return new ChassisSpeeds(
-        twistVel.dx / deltaTime, twistVel.dy / deltaTime,
-        twistVel.dtheta / deltaTime);
+  Twist2d twistVel = new Pose2d(0, 0, new Rotation2d()).log(robotPoseVel);
+  return new ChassisSpeeds(
+      twistVel.dx / deltaTime, twistVel.dy / deltaTime,
+      twistVel.dtheta / deltaTime);
   }
 
   public void drive(SwerveModuleState[] state) {

@@ -13,12 +13,15 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax; 
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import frc.subsystems.DriveSubsystem;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.ctre.phoenix.sensors.CANCoder;
+import frc.subsystems.DriveSubsystem;
 
 public class SwerveModule {
   private static final double kWheelRadius = 0.0508;
@@ -37,7 +40,7 @@ public class SwerveModule {
   }
 
   //TODO: figure this out
-  private static final double kModuleMaxAngularVelocity = Drivetrain.kMaxAngularSpeed;
+  private static final double kModuleMaxAngularVelocity = DriveSubsystem.kMaxAngularSpeed;
   private static final double kModuleMaxAngularAcceleration =
       2 * Math.PI; // radians per second squared
 
