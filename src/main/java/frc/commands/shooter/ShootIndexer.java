@@ -23,8 +23,8 @@ public class ShootIndexer extends Command {
     @Override
     public void execute() {
         // shooter.setIndexerSpeed(0.2);
-        shooter.leftFlywheelMotor.setVoltage(shooter.calculateFlywheelSpeed(desiredVelocity));
-        shooter.rightFlywheelMotor.setVoltage(shooter.calculateFlywheelSpeed(desiredVelocity));
+        shooter.leftFlywheelMotor.setVoltage(shooter.calculateFlywheelSpeedLeft(desiredVelocity));
+        shooter.rightFlywheelMotor.setVoltage(shooter.calculateFlywheelSpeedRight(desiredVelocity));
     } 
 
     @Override

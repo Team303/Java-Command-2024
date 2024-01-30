@@ -33,6 +33,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.ExponentialProfile.Constraints;
 import com.revrobotics.CANSparkMax;
+import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
 
@@ -57,10 +58,14 @@ public class Shooter extends SubsystemBase {
     // public final DutyCycleEncoder angleEncoder_dutyCycle;
 
     // public final RelativeEncoder indexerEncoder;
-    public final RelativeEncoder flyWheelEncoder;
+    public final RelativeEncoder flyWheelEncoderLeft;
+    public final RelativeEncoder flyWheelEncoderRight;
 
-    public final BangBangController flywheelController;
-    public final SimpleMotorFeedforward flywheelFeedForward;
+    public final BangBangController flywheelControllerLeft;
+    public final BangBangController flywheelControllerRight;
+    public final SimpleMotorFeedforward flywheelFeedForwardLeft;
+    public final SimpleMotorFeedforward flywheelFeedForwardRight;
+
 
     public final ProfiledPIDController shooterAnglePIDController;
     public final ArmFeedforward shooterAngleFeedForward;
@@ -72,8 +77,15 @@ public class Shooter extends SubsystemBase {
 
     public static final ShuffleboardTab SHOOTER_TAB = Shuffleboard.getTab("Shooter"); //Shuffleboard tab
     public static final GenericEntry ANGLE_POSITION_ENTRY = SHOOTER_TAB.add("Angle Position", 0.0).withPosition(0, 0).getEntry();
-    public static final GenericEntry FLYWHEEL_SPEED_ENTRY = SHOOTER_TAB.add("Flywheel Speed", 0.0).withPosition(1, 0).getEntry();
+    public static final GenericEntry FLYWHEEL_SPEED_ENTRY_LEFT = SHOOTER_TAB.add("Flywheel Speed Left", 0.0).withPosition(1, 0).getEntry();
+    public static final GenericEntry FLYWHEEL_SPEED_ENTRY_RIGHT = SHOOTER_TAB.add("Flywheel Speed Right", 0.0).withPosition(1, 0).getEntry();
+    public static final GenericEntry DESIRED_SPEED = SHOOTER_TAB.add("Desired Speed", 0.0).withPosition(1, 0).getEntry();
+
+
     public static final GenericEntry INDEXER_POSITION_ENTRY = SHOOTER_TAB.add("Indexer Position", 0.0).withPosition(2, 0).getEntry();
+
+    public static final GenericEntry DIFF_FACTOR = SHOOTER_TAB.add("Diff Factor", 0.0).withPosition(3, 0).getEntry();
+    public static double diffFactor = 1.0;
 
     public Shooter() {
         //-------------Kraken Code------------
@@ -106,20 +118,31 @@ public class Shooter extends SubsystemBase {
 
         // leftAngleMotor.setInverted(false);
         // rightAngleMotor.setInverted(true);
-        leftFlywheelMotor.setInverted(true);
-        rightFlywheelMotor.setInverted(false);
+        leftFlywheelMotor.setInverted(false);
+        rightFlywheelMotor.setInverted(true);
+
+        leftFlywheelMotor.setSmartCurrentLimit(40);
+        rightFlywheelMotor.setSmartCurrentLimit(40);
+
+
         // leftIndexerMotor.setInverted(true);
         // rightIndexerMotor.setInverted(false);
 
         // angleEncoder_dutyCycle = new DutyCycleEncoder(8);
         // indexerEncoder = leftIndexerMotor.getEncoder();
 
-        flyWheelEncoder = rightFlywheelMotor.getEncoder();
+        flyWheelEncoderLeft = leftFlywheelMotor.getEncoder();
+        flyWheelEncoderRight = rightFlywheelMotor.getEncoder();
         // flyWheelEncoder.setVelocityConversionFactor(2 * Math.PI * 0.0508);
 
-        flywheelController = new BangBangController();
+        flywheelControllerRight = new BangBangController();
+        flywheelControllerLeft = new BangBangController();
 
-        flywheelFeedForward = new SimpleMotorFeedforward(RobotMap.Shooter.FLYWHEEL_FEED_FORWARD_KS, 
+        flywheelFeedForwardLeft = new SimpleMotorFeedforward(RobotMap.Shooter.FLYWHEEL_FEED_FORWARD_KS, 
+                                                        RobotMap.Shooter.FLYWHEEL_FEED_FORWARD_KV,
+                                                        RobotMap.Shooter.FLYWHEEL_FEED_FORWARD_KA);
+
+        flywheelFeedForwardRight = new SimpleMotorFeedforward(RobotMap.Shooter.FLYWHEEL_FEED_FORWARD_KS, 
                                                         RobotMap.Shooter.FLYWHEEL_FEED_FORWARD_KV,
                                                         RobotMap.Shooter.FLYWHEEL_FEED_FORWARD_KA);
 
@@ -140,6 +163,14 @@ public class Shooter extends SubsystemBase {
 
     }
 
+    public double getFactor() {
+        return diffFactor;
+    }
+
+    public void setFactor(double factor) {
+        diffFactor = factor;
+    }
+
 
 
     // public double calculateAngleSpeed(double angle) {
@@ -148,10 +179,21 @@ public class Shooter extends SubsystemBase {
     //     return angleOutput + angleFeedforward;
     // }
 
-    public double calculateFlywheelSpeed(double speed) {
-        final double bangOutput = flywheelController.calculate(flyWheelEncoder.getVelocity() / 60, speed / (2 * Math.PI * 0.0508));
-        final double flywheelFeedForwardOutput = flywheelFeedForward.calculate(speed);
-        return (bangOutput * 12.0); // + (flywheelFeedForwardOutput * 0.9);
+    public double calculateFlywheelSpeedRight(double speed) {
+        final double bangOutput = flywheelControllerRight.calculate(flyWheelEncoderRight.getVelocity(), (speed / (2 * Math.PI * 0.0508)) * 60);
+        final double flywheelFeedForwardOutput = flywheelFeedForwardRight.calculate(speed);
+
+        return (bangOutput) + (flywheelFeedForwardOutput * 0.9);
+
+    }
+
+    public double calculateFlywheelSpeedLeft(double speed) {
+        final double bangOutput = flywheelControllerLeft.calculate(flyWheelEncoderLeft.getVelocity(), (speed / (2 * Math.PI * 0.0508)) * 60);
+        final double flywheelFeedForwardOutput = flywheelFeedForwardLeft.calculate(speed);
+
+        
+        DESIRED_SPEED.setDouble(speed / (2 * Math.PI * 0.0508) * 60);
+        return (bangOutput) + (flywheelFeedForwardOutput * 0.9);
     }
 
     // public void setAngleSpeed(double speed) {
@@ -174,7 +216,7 @@ public class Shooter extends SubsystemBase {
     // }
 
     public double getVelocitySpeed() {
-        return flyWheelEncoder.getVelocity();
+        return flyWheelEncoderRight.getVelocity();
     }
 
 	// public boolean atHardLimit() {
@@ -186,13 +228,20 @@ public class Shooter extends SubsystemBase {
     // }
 
     public void resetEncoders() {
-        flyWheelEncoder.setPosition(0);
+        flyWheelEncoderRight.setPosition(0);
     }
 
     @Override
     public void periodic() {
         // ANGLE_POSITION_ENTRY.setDouble(angleEncoder_dutyCycle.getAbsolutePosition());
-        FLYWHEEL_SPEED_ENTRY.setDouble(flyWheelEncoder.getVelocity());
+        FLYWHEEL_SPEED_ENTRY_RIGHT.setDouble(flyWheelEncoderRight.getVelocity());
+        FLYWHEEL_SPEED_ENTRY_LEFT.setDouble(flyWheelEncoderLeft.getVelocity());
+
+
+        DIFF_FACTOR.setDouble(diffFactor);
+        Logger.recordOutput("Speed Left", flyWheelEncoderLeft.getVelocity());
+        Logger.recordOutput("Speed Right", flyWheelEncoderLeft.getVelocity());
+        //FLYWHEEL_RPM.setDouble(leftFlywheelMotor.get)
         // INDEXER_POSITION_ENTRY.setDouble(indexerEncoder.getPosition());
     }
     

@@ -73,7 +73,14 @@ public class Robot extends LoggedRobot {
   private void configureButtonBindings() {
     // controller.y().onTrue(new InstantCommand(swerve::resetOdometry));
 	// controller.x().toggleOnTrue(new ManualSetAngle(5, 2));
-  }
+
+	//controller.a().onTrue(new ManualSetAngle(1.98, 3.96));
+	//controller.b().onTrue(new ManualSetAngle(1.98, 3.96));
+	controller.a().onTrue(new InstantCommand(() -> shooter.setFactor(1.0)));
+	controller.b().onTrue(new InstantCommand(() -> shooter.setFactor(0.7)));
+
+
+}
 
   	/* Currently running auto routine */
 
@@ -109,7 +116,7 @@ public class Robot extends LoggedRobot {
 			autonomousCommand.cancel();
 		}
 
-		shooter.setDefaultCommand(new ManualSetAngle(2.43, 2));
+		shooter.setDefaultCommand(new ManualSetAngle(1.98, 3.96));
 
     	// swerve.setDefaultCommand(new DefaultDrive(true));
 		
