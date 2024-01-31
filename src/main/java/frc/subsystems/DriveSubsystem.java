@@ -16,6 +16,8 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -46,6 +48,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.RobotMap.Swerve;
 
 import frc.robot.SwerveModule;
 import frc.modules.PhotonvisionModule.CameraName;
@@ -142,31 +145,64 @@ public class DriveSubsystem extends SubsystemBase {
   public PhotonPoseEstimator visionPoseEstimatorBack;
   public PhotonPoseEstimator visionPoseEstimatorLeft;
 
+  public CANcoderConfiguration configLeftFront;
+  public CANcoderConfiguration configRightFront;
+  public CANcoderConfiguration configLeftBack;  
+  public CANcoderConfiguration configRightBack;
+
   public SwerveDrivePoseEstimator poseEstimator;
 
   public DriveSubsystem() {
     Robot.navX.reset();
     AVTimer.start();
 
-    frontLeft = new SwerveModule(RobotMap.Swerve.LEFT_FRONT_DRIVE_ID, RobotMap.Swerve.LEFT_FRONT_STEER_ID,
-        RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID);
-    frontRight = new SwerveModule(RobotMap.Swerve.RIGHT_FRONT_DRIVE_ID, RobotMap.Swerve.RIGHT_FRONT_STEER_ID,
-        RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID);
-    backLeft = new SwerveModule(RobotMap.Swerve.LEFT_BACK_DRIVE_ID, RobotMap.Swerve.LEFT_BACK_STEER_ID,
-        RobotMap.Swerve.LEFT_BACK_STEER_CANCODER_ID);
-    backRight = new SwerveModule(RobotMap.Swerve.RIGHT_BACK_DRIVE_ID, RobotMap.Swerve.RIGHT_BACK_STEER_ID,
-        RobotMap.Swerve.RIGHT_BACK_STEER_CANCODER_ID);
+    configLeftFront = new CANcoderConfiguration();
+    configLeftFront.MagnetSensor.MagnetOffset = Swerve.LEFT_FRONT_STEER_OFFSET;
+    configRightFront = new CANcoderConfiguration();
+    configRightFront.MagnetSensor.MagnetOffset = Swerve.RIGHT_FRONT_STEER_OFFSET;
+    configLeftBack = new CANcoderConfiguration();
+    configLeftBack.MagnetSensor.MagnetOffset = Swerve.LEFT_BACK_STEER_OFFSET;
+    configRightBack = new CANcoderConfiguration();
+    configRightBack.MagnetSensor.MagnetOffset = Swerve.RIGHT_BACK_STEER_OFFSET;
 
-    frontLeft.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.LEFT_FRONT_STEER_OFFSET);
-    frontRight.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.RIGHT_FRONT_STEER_OFFSET);
-    backLeft.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.LEFT_BACK_STEER_OFFSET);
-    backRight.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.RIGHT_BACK_STEER_OFFSET);
+
+    frontLeft = new SwerveModule(
+      RobotMap.Swerve.LEFT_FRONT_DRIVE_ID, 
+      RobotMap.Swerve.LEFT_FRONT_STEER_ID,
+      RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID,
+      configLeftFront
+      );
+
+    frontRight = new SwerveModule(
+      RobotMap.Swerve.RIGHT_FRONT_DRIVE_ID, 
+      RobotMap.Swerve.RIGHT_FRONT_STEER_ID,
+      RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID,
+      configRightFront
+      );
+    backLeft = new SwerveModule(
+      RobotMap.Swerve.LEFT_BACK_DRIVE_ID, 
+      RobotMap.Swerve.LEFT_BACK_STEER_ID,
+      RobotMap.Swerve.LEFT_BACK_STEER_CANCODER_ID,
+      configLeftBack
+    );
+    backRight = new SwerveModule(
+      RobotMap.Swerve.RIGHT_BACK_DRIVE_ID, 
+      RobotMap.Swerve.RIGHT_BACK_STEER_ID,
+      RobotMap.Swerve.RIGHT_BACK_STEER_CANCODER_ID,
+      configRightBack  
+    );
+
+    // frontLeft.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.LEFT_FRONT_STEER_OFFSET);
+    // frontRight.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.RIGHT_FRONT_STEER_OFFSET);
+    // backLeft.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.LEFT_BACK_STEER_OFFSET);
+    // backRight.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.RIGHT_BACK_STEER_OFFSET);
 
     frontLeft.invertSteerMotor(true);
     frontRight.invertSteerMotor(true);
     backRight.invertSteerMotor(true);
 
-    frontLeft.invertDriveMotor(true);
+    frontLeft.invertDriveMotor(false);
+    backLeft.invertDriveMotor(true);
     frontRight.invertDriveMotor(true);
     backRight.invertDriveMotor(true);
 
@@ -435,10 +471,10 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
 
-    FRONT_LEFT_ENC.setDouble(frontLeft.getPosition().angle.getDegrees());
-    FRONT_RIGHT_ENC.setDouble(frontRight.getPosition().angle.getDegrees());
-    BACK_LEFT_ENC.setDouble(backLeft.getPosition().angle.getDegrees());
-    BACK_RIGHT_ENC.setDouble(backRight.getPosition().angle.getDegrees());
+    FRONT_LEFT_ENC.setDouble(frontLeft.turningEncoder.getAbsolutePosition().refresh().getValue());
+    FRONT_RIGHT_ENC.setDouble(frontRight.turningEncoder.getAbsolutePosition().refresh().getValue());
+    BACK_LEFT_ENC.setDouble(backLeft.turningEncoder.getAbsolutePosition().refresh().getValue());
+    BACK_RIGHT_ENC.setDouble(backRight.turningEncoder.getAbsolutePosition().refresh().getValue());
 
     frontLeftDriveOutput.setDouble(frontLeft.getMainDriveOutput());
     backLeftDriveOutput.setDouble(backLeft.getMainDriveOutput());

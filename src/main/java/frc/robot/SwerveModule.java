@@ -18,7 +18,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
-import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.hardware.CANcoder;
 import frc.subsystems.DriveSubsystem;
 
 public class SwerveModule {
@@ -46,9 +47,9 @@ public class SwerveModule {
   private final CANSparkMax turningMotor;
 
   private final RelativeEncoder driveEncoder;
-  private final CANCoder turningEncoder;
+  public final CANcoder turningEncoder;
 
-  public CANCoder getTurningEncoder() {
+  public CANcoder getTurningEncoder() {
     return turningEncoder;
   }
 
@@ -88,12 +89,14 @@ public class SwerveModule {
   public SwerveModule(
       int driveMotorChannel,
       int turningMotorChannel,
-      int turningEncoderChannelA) {
+      int turningEncoderChannelA,
+      CANcoderConfiguration config) {
     driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
     turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
 
     driveEncoder = driveMotor.getEncoder();
-    turningEncoder = new CANCoder(turningEncoderChannelA);
+    turningEncoder = new CANcoder(turningEncoderChannelA);
+    turningEncoder.getConfigurator().apply(config);
 
     driveMotor.setIdleMode(IdleMode.kBrake);
     turningMotor.setIdleMode(IdleMode.kBrake);
@@ -102,7 +105,7 @@ public class SwerveModule {
     driveEncoder.setVelocityConversionFactor(2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR);
 
     m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
-    turningEncoder.setPositionToAbsolute();
+    // turningEncoder.setPositionToAbsolute();
   }
 
   public void invertSteerMotor(boolean inversion) {
@@ -127,7 +130,7 @@ public class SwerveModule {
    */
   public SwerveModuleState getState() {
     return new SwerveModuleState(
-        driveEncoder.getVelocity(), Rotation2d.fromDegrees(turningEncoder.getPosition() % 360));
+        driveEncoder.getVelocity(), Rotation2d.fromRotations(turningEncoder.getAbsolutePosition().refresh().getValue()));
   }
 
   /**
@@ -145,7 +148,7 @@ public class SwerveModule {
    */
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(
-        driveEncoder.getPosition(), Rotation2d.fromDegrees(turningEncoder.getPosition() % 360));
+        driveEncoder.getPosition(), Rotation2d.fromRotations(turningEncoder.getAbsolutePosition().refresh().getValue()));
   }
 
 
@@ -157,7 +160,7 @@ public class SwerveModule {
   public void setDesiredState(SwerveModuleState desiredState) {
     // Optimize the reference state to avoid spinning further than 90 degrees
     SwerveModuleState state =
-        SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(turningEncoder.getPosition() % 360));
+        SwerveModuleState.optimize(desiredState, Rotation2d.fromRotations(turningEncoder.getAbsolutePosition().refresh().getValue()));
 
     // Calculate the drive output from the drive PID controller.
     final double driveOutput =
@@ -167,7 +170,7 @@ public class SwerveModule {
 
     // Calculate the turning motor output from the turning PID controller.
     final double turnOutput =
-        m_turningPIDController.calculate(Math.toRadians(turningEncoder.getPosition() % 360), state.angle.getRadians());
+        m_turningPIDController.calculate(Math.toRadians(turningEncoder.getAbsolutePosition().refresh().getValue() * 360 % 360), state.angle.getRadians());
 
     // final double turnFeedforward =
     //     m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
@@ -177,7 +180,7 @@ public class SwerveModule {
     mainTurnOutput = turnOutput;
 
 
-    driveMotor.setVoltage(driveOutput + driveFeedforward);
+    driveMotor.setVoltage(driveOutput + driveFeedforward );
     turningMotor.setVoltage(turnOutput);
   }
 }
