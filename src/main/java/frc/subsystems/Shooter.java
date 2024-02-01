@@ -1,38 +1,24 @@
 package frc.subsystems;
 
+import java.util.HashMap;
 import java.util.List;
 
-import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkLimitSwitch;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.SparkLimitSwitch.Type;
-
-import frc.robot.Robot;
 import frc.robot.RobotMap;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
+import java.text.DecimalFormat;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.BangBangController;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.units.Angle;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.ExponentialProfile.Constraints;
-import com.revrobotics.CANSparkMax;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
@@ -77,6 +63,7 @@ public class Shooter extends SubsystemBase {
 
     public static final ShuffleboardTab SHOOTER_TAB = Shuffleboard.getTab("Shooter"); //Shuffleboard tab
     public static final GenericEntry ANGLE_POSITION_ENTRY = SHOOTER_TAB.add("Angle Position", 0.0).withPosition(0, 0).getEntry();
+    public static final GenericEntry INTERPOLATED_ANGLE = SHOOTER_TAB.add("Interpolated Angle", 0.0).withPosition(1, 1).getEntry();
     public static final GenericEntry FLYWHEEL_SPEED_ENTRY_LEFT = SHOOTER_TAB.add("Flywheel Speed Left", 0.0).withPosition(1, 0).getEntry();
     public static final GenericEntry FLYWHEEL_SPEED_ENTRY_RIGHT = SHOOTER_TAB.add("Flywheel Speed Right", 0.0).withPosition(2, 0).getEntry();
     public static final GenericEntry DESIRED_SPEED = SHOOTER_TAB.add("Desired Speed", 0.0).withPosition(1, 0).getEntry();
@@ -87,7 +74,15 @@ public class Shooter extends SubsystemBase {
     public static final GenericEntry DIFF_FACTOR = SHOOTER_TAB.add("Diff Factor", 0.0).withPosition(3, 0).getEntry();
     public static double diffFactor = 1.0;
 
+    //public static HashMap<Integer, Double> interpolateAngleTable = new HashMap<Integer, Double>();
+    //public static DecimalFormat dFormatter = new DecimalFormat("0.0");
+
+    public static double[] interpolationAngles = {1.054, 1.013, 0.974, 0.937, 0.902, 0.869, 0.838, 0.809, 0.782, 0.756, //1.0 - 1.9
+                                                  0.731, 0.709, 0.687, 0.667, 0.648, 0.629, 0.612, 0.596, 0.581, 0.567, //2.0 - 2.9
+                                                  0.553, 0.540, 0.528, 0.516, 0.505, 0.495};                            //3.0 - 3.5
+
     public Shooter() {
+        //addInterpolationTableValues();
         //-------------Kraken Code------------
         // leftAngleMotor = new TalonFX(RobotMap.Shooter.LEFT_ANGLE_MOTOR_ID);
         // rightAngleMotor = new TalonFX(RobotMap.Shooter.RIGHT_ANGLE_MOTOR_ID);
@@ -161,6 +156,22 @@ public class Shooter extends SubsystemBase {
         // beamBreak = new DigitalInput(RobotMap.Shooter.BEAM_BREAK_ID);
         // angleLimitSwitch = new DigitalInput(0);
 
+    }
+
+    public double interpolateAngle(double range) {
+        if (range < 1) {
+            return interpolationAngles[0];
+        } else if (range > 3.5) {
+            return interpolationAngles[interpolationAngles.length - 1];
+        }
+
+        double floorRange = (double)((int)(range * 10)) ; //1.012 --> 10 --> 10.0
+
+        double floorAngle = interpolationAngles[(int)floorRange - 10];
+        double ceilAngle = interpolationAngles[(int)floorRange - 9];
+
+        double interAngle = floorAngle + (((range - (floorRange / 10)) / 0.1) * (ceilAngle - floorAngle));
+        return interAngle;
     }
 
     public double getFactor() {

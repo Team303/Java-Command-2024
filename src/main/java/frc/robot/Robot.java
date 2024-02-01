@@ -116,7 +116,7 @@ public class Robot extends LoggedRobot {
 			autonomousCommand.cancel();
 		}
 
-		shooter.setDefaultCommand(new ManualSetAngle(1.98, 5.71));
+		shooter.setDefaultCommand(new ManualSetAngle(1.98, 3.2));
 
     	// swerve.setDefaultCommand(new DefaultDrive(true));
 		
