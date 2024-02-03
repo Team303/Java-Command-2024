@@ -30,5 +30,16 @@ public class RobotMap {
 
 		public static final double SWERVE_CONVERSION_FACTOR = (14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0); 
 
+		/* Kraken Climber */
+		public static final double ARM_ONE_LIMIT = 0;
+		public static final double ARM_TWO_LIMIT = 0;
+
+		public static final int ARM_ONE_LIMIT_SWITCH = 0;
+		public static final int ARM_TWO_LIMIT_SWITCH = 1;
+
+		public static final double SPEED = 0.5;
+
     }
+
+	
 }
