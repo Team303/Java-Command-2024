@@ -58,13 +58,13 @@ import frc.robot.RobotMap.PhotonvisionConstants;
 
 /** Represents a swerve drive style drivetrain. */
 public class DriveSubsystem extends SubsystemBase {
-  public static final double kMaxSpeed = 3.9; // 3.9 meters per second
+  public static final double kMaxSpeed = 5.2; // 5.2 meters per second
   public static final double kMaxAngularSpeed = kMaxSpeed / (Math.hypot(0.381, 0.381)); // radians per second
 
-  private final Translation2d frontLeftLocation = new Translation2d(-0.381, -0.381);
-  private final Translation2d frontRightLocation = new Translation2d(-0.381, 0.381);
-  private final Translation2d backLeftLocation = new Translation2d(0.381, -0.381);
-  private final Translation2d backRightLocation = new Translation2d(0.381, 0.381);
+  private final Translation2d frontLeftLocation = new Translation2d(-0.381, 0.381);
+  private final Translation2d frontRightLocation = new Translation2d(0.381, 0.381);
+  private final Translation2d backLeftLocation = new Translation2d(-0.381, -0.381);
+  private final Translation2d backRightLocation = new Translation2d(-0.381, 0.381);
 
   private final SwerveModule frontLeft;
   private final SwerveModule frontRight;
@@ -130,7 +130,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   private final Timer AVTimer = new Timer();
 
-  public final AprilTagFieldLayout aprilTagField;
+  // public final AprilTagFieldLayout aprilTagField;
   private final Field2d field2d = new Field2d();
   private static final Vector<N3> odometryStandardDeviations = VecBuilder.fill(5, 5, Units.degreesToRadians(10));
   // private static final Vector<N3> photonStandardDeviations =
@@ -138,12 +138,7 @@ public class DriveSubsystem extends SubsystemBase {
   private static final Vector<N3> photonStandardDeviations = VecBuilder.fill(5, 5, 100);
   private static final Vector<N3> kSingleStandardDeviations = VecBuilder.fill(5,5,100);
   private static final Vector<N3> kMultiTagStandardDeviations = VecBuilder.fill(2.5,2.5,100);
-  
 
-  public PhotonPoseEstimator visionPoseEstimatorFront;
-  public PhotonPoseEstimator visionPoseEstimatorRight;
-  public PhotonPoseEstimator visionPoseEstimatorBack;
-  public PhotonPoseEstimator visionPoseEstimatorLeft;
 
   public CANcoderConfiguration configLeftFront;
   public CANcoderConfiguration configRightFront;
@@ -200,47 +195,48 @@ public class DriveSubsystem extends SubsystemBase {
     frontLeft.invertSteerMotor(true);
     frontRight.invertSteerMotor(true);
     backRight.invertSteerMotor(true);
+    backLeft.invertSteerMotor(true);
 
     frontLeft.invertDriveMotor(false);
-    backLeft.invertDriveMotor(true);
-    frontRight.invertDriveMotor(true);
-    backRight.invertDriveMotor(true);
+    backLeft.invertDriveMotor(false);
+    frontRight.invertDriveMotor(false);
+    backRight.invertDriveMotor(false);
 
     AprilTagFieldLayout initialLayout;
-    try {
+    // try {
       
-      initialLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
-      Optional<Alliance> alliance = DriverStation.getAlliance();
-      // TODO: Change to make the origin position based off of station rather than
-      // just based off of alliance.
-      initialLayout
-          .setOrigin(alliance.isPresent() && alliance.get() == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide
-              : OriginPosition.kRedAllianceWallRightSide);
-    } catch (IOException e) {
-      DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
-      initialLayout = null;
-    }
-    aprilTagField = initialLayout;
-    if (Robot.isReal()) {
-      visionPoseEstimatorFront = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-          Robot.photonvision.getCamera(CameraName.CAM1),
-          PhotonvisionConstants.ROBOT_TO_FRONT_CAMERA);
-      // visionPoseEstimatorRight = new PhotonPoseEstimator(aprilTagField,
-      // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-      // Robot.photonvision.getCamera(CameraName.CAM2),
-      // PhotonvisionConstants.ROBOT_TO_RIGHT_CAMERA);
-      visionPoseEstimatorBack = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-          Robot.photonvision.getCamera(CameraName.CAM3),
-          PhotonvisionConstants.ROBOT_TO_BACK_CAMERA);
-      // visionPoseEstimatorLeft = new PhotonPoseEstimator(aprilTagField,
-      // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-      // Robot.photonvision.getCamera(CameraName.CAM4),
-      // PhotonvisionConstants.ROBOT_TO_LEFT_CAMERA);
-      visionPoseEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-      // visionPoseEstimatorRight.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-      visionPoseEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-      // visionPoseEstimatorLeft.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-    }
+    //   initialLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
+    //   Optional<Alliance> alliance = DriverStation.getAlliance();
+    //   // TODO: Change to make the origin position based off of station rather than
+    //   // just based off of alliance.
+    //   initialLayout
+    //       .setOrigin(alliance.isPresent() && alliance.get() == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide
+    //           : OriginPosition.kRedAllianceWallRightSide);
+    // } catch (IOException e) {
+    //   DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
+    //   initialLayout = null;
+    // }
+    // aprilTagField = initialLayout;
+    // if (Robot.isReal()) {
+    //   visionPoseEstimatorFront = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+    //       Robot.photonvision.getCamera(CameraName.CAM1),
+    //       PhotonvisionConstants.ROBOT_TO_FRONT_CAMERA);
+    //   // visionPoseEstimatorRight = new PhotonPoseEstimator(aprilTagField,
+    //   // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+    //   // Robot.photonvision.getCamera(CameraName.CAM2),
+    //   // PhotonvisionConstants.ROBOT_TO_RIGHT_CAMERA);
+    //   visionPoseEstimatorBack = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+    //       Robot.photonvision.getCamera(CameraName.CAM3),
+    //       PhotonvisionConstants.ROBOT_TO_BACK_CAMERA);
+    //   // visionPoseEstimatorLeft = new PhotonPoseEstimator(aprilTagField,
+    //   // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+    //   // Robot.photonvision.getCamera(CameraName.CAM4),
+    //   // PhotonvisionConstants.ROBOT_TO_LEFT_CAMERA);
+    //   visionPoseEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    //   // visionPoseEstimatorRight.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    //   visionPoseEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    //   // visionPoseEstimatorLeft.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    // }
 
     // odometry = new SwerveDriveOdometry(
     // kinematics,
@@ -331,39 +327,9 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Updates the field relative position of the robot. */
   public void updateOdometry(boolean jumpFront, boolean jumpBack) {
-    Optional<EstimatedRobotPose> resultFront = getEstimatedGlobalPoseFront(poseEstimator.getEstimatedPosition());
-    Optional<EstimatedRobotPose> resultBack = getEstimatedGlobalPoseBack(poseEstimator.getEstimatedPosition());
     poseEstimator.update(Robot.navX.getRotation2d(), getModulePositions());
-
-    // Optional<EstimatedRobotPose> resultRight =
-    // getEstimatedGlobalPoseRight(poseEstimator.getEstimatedPosition());
-    // Optional<EstimatedRobotPose> resultLeft =
-    // getEstimatedGlobalPoseLeft(poseEstimator.getEstimatedPosition());
-    if (resultFront.isPresent()) {
-      EstimatedRobotPose visionPoseEstimate = resultFront.get();
-      poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-          visionPoseEstimate.timestampSeconds,getEstimationStdDevs(visionPoseEstimate.targetsUsed));
-    }
-    // if (resultRight.isPresent()) {
-    // EstimatedRobotPose visionPoseEstimate = resultRight.get();
-    // poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-    // visionPoseEstimate.timestampSeconds);
-    // }
-    if (resultBack.isPresent()) {
-      EstimatedRobotPose visionPoseEstimate = resultBack.get();
-      poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-          visionPoseEstimate.timestampSeconds,getEstimationStdDevs(visionPoseEstimate.targetsUsed));
-    }
-    // if (resultLeft.isPresent()) {
-    // EstimatedRobotPose visionPoseEstimate = resultLeft.get();
-    // poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-    // visionPoseEstimate.timestampSeconds);
-    // }
     
     field2d.setRobotPose(getPose());
-    // pose = odometry.update(
-    // Robot.navX.getRotation2d(),
-    // getModulePositions());
   }
 
   public SwerveModulePosition[] getModulePositions() {
@@ -391,82 +357,7 @@ public class DriveSubsystem extends SubsystemBase {
     // odometry.resetPosition(Robot.navX.getRotation2d(), getModulePositions(),
     // pose);
   }
-  
-   public Vector<N3> getEstimationStdDevs(List<PhotonTrackedTarget> targetList) {
-        var estStdDevs = kSingleStandardDeviations;
-        var targets = targetList;
-        int numTags = 0;
-        double avgDist = 0;
-        for (var tgt : targets) {
-            var tagPose = visionPoseEstimatorFront.getFieldTags().getTagPose(tgt.getFiducialId());
-            if (tagPose.isEmpty()) continue;
-            numTags++;
-            avgDist +=
-                    tagPose.get().toPose2d().getTranslation().getDistance(getPose().getTranslation());
-        }
-        if (numTags == 0) return estStdDevs;
-        avgDist /= numTags;
-        // Decrease std devs if multiple targets are visible
-        if (numTags > 1) estStdDevs = kMultiTagStandardDeviations;
-        // Increase std devs based on (average) distance
-        if (numTags == 1 && avgDist > 4)
-            estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-        else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist*RobotMap.Swerve.PHOTON_STDDEV_SCALING_FACTOR));
-
-        return estStdDevs;
-    }
-
-  public Optional<EstimatedRobotPose> getEstimatedGlobalPoseFront(Pose2d prevEstimatedRobotPose) {
-    visionPoseEstimatorFront.setReferencePose(prevEstimatedRobotPose);
-    if (Robot.photonvision.hasTargets(CameraName.CAM1)) {
-      PhotonPipelineResult rawResult = Robot.photonvision.getLatestResult(CameraName.CAM1);
-      List<PhotonTrackedTarget> targets = rawResult.targets;
-      for (int i = 0; i < targets.size(); i++) {
-        if (targets.get(i).getPoseAmbiguity() > 0.25) {
-          targets.remove(i);
-          --i;
-        }
-      }
-      // TODO: might not be the right latency
-      PhotonPipelineResult cameraResult = new PhotonPipelineResult(rawResult.getLatencyMillis(), targets);
-      cameraResult.setTimestampSeconds(rawResult.getTimestampSeconds());
-      return visionPoseEstimatorFront.update(cameraResult);
-    } else {
-      return Optional.empty();
-    }
-  }
-
-  // public Optional<EstimatedRobotPose> getEstimatedGlobalPoseRight(Pose2d
-  // prevEstimatedRobotPose) {
-  // // visionPoseEstimatorRight.setReferencePose(prevEstimatedRobotPose);
-  // return visionPoseEstimatorRight.update();
-  // }
-
-  public Optional<EstimatedRobotPose> getEstimatedGlobalPoseBack(Pose2d prevEstimatedRobotPose) {
-    visionPoseEstimatorBack.setReferencePose(prevEstimatedRobotPose);
-    if (Robot.photonvision.hasTargets(CameraName.CAM3)) {
-      PhotonPipelineResult rawResult = Robot.photonvision.getLatestResult(CameraName.CAM3);
-      List<PhotonTrackedTarget> targets = rawResult.targets;
-      for (int i = 0; i < targets.size(); i++) {
-        if (targets.get(i).getPoseAmbiguity() > 0.2) {
-          targets.remove(i);
-          --i;
-        }
-      }
-      // TODO: might not be the right latency
-      PhotonPipelineResult cameraResult = new PhotonPipelineResult(rawResult.getLatencyMillis(), targets);
-      cameraResult.setTimestampSeconds(rawResult.getTimestampSeconds());
-      return visionPoseEstimatorBack.update(cameraResult);
-    } else {
-      return Optional.empty();
-    }
-  }
-
-  // public Optional<EstimatedRobotPose> getEstimatedGlobalPoseLeft(Pose2d
-  // prevEstimatedRobotPose) {
-  // // visionPoseEstimatorLeft.setReferencePose(prevEstimatedRobotPose);
-  // return visionPoseEstimatorLeft.update();
-  // }
+ 
 
   @Override
   public void periodic() {

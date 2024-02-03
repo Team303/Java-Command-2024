@@ -61,7 +61,7 @@ public class SwerveModule {
   private final PIDController m_drivePIDController = new PIDController(0.2, 0, 0);
 
   // Gains are for example purposes only - must be determined for your own robot!
-  private final PIDController m_turningPIDController = new PIDController(8, 0, 0);
+  private final PIDController m_turningPIDController = new PIDController(6, 0, 0);
   
   /*  =
       new ProfiledPIDController(
@@ -73,7 +73,7 @@ public class SwerveModule {
   */
 
   // Gains are for example purposes only - must be determined for your own robot!
-  private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0,3.12, 0.36);
+  private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0,2.35,0.19);
   private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(1.5, 0.2);
 
   /**
@@ -180,7 +180,7 @@ public class SwerveModule {
     mainTurnOutput = turnOutput;
 
 
-    driveMotor.setVoltage(driveOutput + driveFeedforward );
-    turningMotor.setVoltage(turnOutput);
+    driveMotor.setVoltage(driveOutput + driveFeedforward);
+    turningMotor.setVoltage(  turnOutput );
   }
 }

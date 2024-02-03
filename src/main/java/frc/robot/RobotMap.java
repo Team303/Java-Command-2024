@@ -9,31 +9,31 @@ public class RobotMap {
     public static final class Swerve {
 
         /* CAN IDs of Drive Motors */
-		public static final int LEFT_FRONT_DRIVE_ID = 6;
-		public static final int LEFT_BACK_DRIVE_ID = 3;
-		public static final int RIGHT_FRONT_DRIVE_ID = 9;
-		public static final int RIGHT_BACK_DRIVE_ID = 12;
+		public static final int LEFT_FRONT_DRIVE_ID = 1;
+		public static final int LEFT_BACK_DRIVE_ID = 4;
+		public static final int RIGHT_FRONT_DRIVE_ID = 10;
+		public static final int RIGHT_BACK_DRIVE_ID = 7;
 
 		/* CAN IDs of steer Motors turning*/
-		public static final int LEFT_FRONT_STEER_ID = 4;
-		public static final int LEFT_BACK_STEER_ID = 13;
-		public static final int RIGHT_FRONT_STEER_ID = 7;
-		public static final int RIGHT_BACK_STEER_ID = 10;
+		public static final int LEFT_FRONT_STEER_ID = 3;
+		public static final int LEFT_BACK_STEER_ID = 6;
+		public static final int RIGHT_FRONT_STEER_ID = 12;
+		public static final int RIGHT_BACK_STEER_ID = 9;
 
 		/* Steer Encoder CAN IDs  */
-		public static final int LEFT_FRONT_STEER_CANCODER_ID = 5;
-		public static final int LEFT_BACK_STEER_CANCODER_ID = 2;
-		public static final int RIGHT_FRONT_STEER_CANCODER_ID = 8;
-		public static final int RIGHT_BACK_STEER_CANCODER_ID = 11;
+		public static final int LEFT_FRONT_STEER_CANCODER_ID = 2;
+		public static final int LEFT_BACK_STEER_CANCODER_ID = 5;
+		public static final int RIGHT_FRONT_STEER_CANCODER_ID = 11;
+		public static final int RIGHT_BACK_STEER_CANCODER_ID = 8;
 
         /* Steer Motor Offset */
-		public static final double LEFT_FRONT_STEER_OFFSET = -0.1442;
-		// public static final double LEFT_FRONT_STEER_OFFSET = Math.toRadians(-19.34);
-		public static final double RIGHT_FRONT_STEER_OFFSET = 0.0695;
-		public static final double LEFT_BACK_STEER_OFFSET = -0.3110;
-		public static final double RIGHT_BACK_STEER_OFFSET = -0.3234;
+		public static final double LEFT_BACK_STEER_OFFSET = 0.1945 + (0.2917);
+		// public static final double LEFT_BACK_STEER_OFFSET = Math.toRadians(-19.34);
+		public static final double RIGHT_BACK_STEER_OFFSET = -0.0119 + (0.2297);
+		public static final double LEFT_FRONT_STEER_OFFSET = -0.0424 - (0.1286);
+		public static final double RIGHT_FRONT_STEER_OFFSET = 0.1438 + (0.1111);
 
-		public static final double SWERVE_CONVERSION_FACTOR = (14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0);
+		public static final double SWERVE_CONVERSION_FACTOR = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
 
 		public static final double PHOTON_STDDEV_SCALING_FACTOR = (1.0/2.0);
 

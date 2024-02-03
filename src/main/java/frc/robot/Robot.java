@@ -46,7 +46,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void robotInit() {
-		photonvision = new PhotonvisionModule();
+		photonvision = null; //new PhotonvisionModule();
 		swerve = new DriveSubsystem();
 		configureButtonBindings();
 
