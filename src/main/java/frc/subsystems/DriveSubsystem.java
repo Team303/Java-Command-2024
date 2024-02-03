@@ -222,7 +222,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
     aprilTagField = initialLayout;
     if (Robot.isReal()) {
-      visionPoseEstimatorFront = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+       visionPoseEstimator[0]= new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
           Robot.photonvision.getCamera(CameraName.CAM1),
           PhotonvisionConstants.ROBOT_TO_FRONT_CAMERA);
       // visionPoseEstimatorRight = new PhotonPoseEstimator(aprilTagField,
@@ -341,8 +341,13 @@ public class DriveSubsystem extends SubsystemBase {
     // getEstimatedGlobalPoseLeft(poseEstimator.getEstimatedPosition());
     if (resultFront.isPresent()) {
       EstimatedRobotPose visionPoseEstimate = resultFront.get();
+      Vector<N3> stddevs =  getEstimationStdDevs(visionPoseEstimate.targetsUsed);
+      double[] data = stddevs.getData();
+      for(int i=0;i<data.length;i++){
+        System.out.println(i+" "+data[i]);
+      }
       poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-          visionPoseEstimate.timestampSeconds,getEstimationStdDevs(visionPoseEstimate.targetsUsed));
+          visionPoseEstimate.timestampSeconds, stddevs);
     }
     // if (resultRight.isPresent()) {
     // EstimatedRobotPose visionPoseEstimate = resultRight.get();
@@ -398,7 +403,7 @@ public class DriveSubsystem extends SubsystemBase {
         int numTags = 0;
         double avgDist = 0;
         for (var tgt : targets) {
-            var tagPose = visionPoseEstimatorFront.getFieldTags().getTagPose(tgt.getFiducialId());
+            var tagPose = visionPoseEstimator[0].getFieldTags().getTagPose(tgt.getFiducialId());
             if (tagPose.isEmpty()) continue;
             numTags++;
             avgDist +=
@@ -409,8 +414,8 @@ public class DriveSubsystem extends SubsystemBase {
         // Decrease std devs if multiple targets are visible
         if (numTags > 1) estStdDevs = kMultiTagStandardDeviations;
         // Increase std devs based on (average) distance
-        if (numTags == 1 && avgDist > 4)
-            estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+        // if (numTags == 1 && avgDist > 4)
+        //     estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
         else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist*RobotMap.Swerve.PHOTON_STDDEV_SCALING_FACTOR));
 
         return estStdDevs;
@@ -488,12 +493,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     globalAngle.setDouble(Robot.navX.getAngle());
     angleVelo.setDouble(Robot.navX.getRate());
-    // if(jump<100){
-      updateOdometry(true,true);
-      // jump++;
-    // } else {
-    //   updateOdometry(false,false);
-    // }
+    updateOdometry();
+
 
     Logger.recordOutput("Odometry", getPose());
     Logger.recordOutput("angular velocity", Robot.navX.getRate());
