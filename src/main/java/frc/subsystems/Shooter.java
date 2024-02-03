@@ -76,10 +76,12 @@ public class Shooter extends SubsystemBase {
 
     //public static HashMap<Integer, Double> interpolateAngleTable = new HashMap<Integer, Double>();
     //public static DecimalFormat dFormatter = new DecimalFormat("0.0");
-    public InterpolatingDoubleTreeMap interpolator = new InterpolatingDoubleTreeMap();
+    public InterpolatingDoubleTreeMap angleInterpolator = new InterpolatingDoubleTreeMap();
     public static double[] interpolationAngles = {1.054, 1.013, 0.974, 0.937, 0.902, 0.869, 0.838, 0.809, 0.782, 0.756, //1.0 - 1.9
                                                   0.731, 0.709, 0.687, 0.667, 0.648, 0.629, 0.612, 0.596, 0.581, 0.567, //2.0 - 2.9
                                                   0.553, 0.540, 0.528, 0.516, 0.505, 0.495};                            //3.0 - 3.5
+    public InterpolatingDoubleTreeMap timeInterpolator = new InterpolatingDoubleTreeMap();
+    public static double[] interpolationTimes = {};
 
     public Shooter() {
         //addInterpolationTableValues();
@@ -156,13 +158,20 @@ public class Shooter extends SubsystemBase {
         // beamBreak = new DigitalInput(RobotMap.Shooter.BEAM_BREAK_ID);
         // angleLimitSwitch = new DigitalInput(0);
         for(int i=0;i<interpolationAngles.length;i++){
-            interpolator.put((double)i,interpolationAngles[i]);
+            angleInterpolator.put((double)i*0.1+1.0,interpolationAngles[i]);
+        }
+        for(int i=0;i<interpolationTimes.length;i++){
+            timeInterpolator.put((double)i*0.1+1.0,interpolationTimes[i]);
         }
 
     }
 
     public double interpolateAngle(double range) {
-       return interpolator.get(range);
+       return angleInterpolator.get(range);
+    }
+
+    public double interpolateTime(double range) {
+        return timeInterpolator.get(range);
     }
 
     public double getFactor() {
