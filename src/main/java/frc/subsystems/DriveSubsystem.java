@@ -34,6 +34,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -304,6 +305,21 @@ public class DriveSubsystem extends SubsystemBase {
     frontRight.setDesiredState(swerveModuleStates[1]);
     backLeft.setDesiredState(swerveModuleStates[2]);
     backRight.setDesiredState(swerveModuleStates[3]);
+  }
+
+  private ChassisSpeeds rotationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
+  // Assuming the control loop runs in 20ms
+  final double deltaTime = 0.02;
+
+  // The position of the bot one control loop in the future given the chassisspeed
+  Pose2d robotPoseVel = new Pose2d(chassisSpeeds.vxMetersPerSecond * deltaTime,
+      chassisSpeeds.vyMetersPerSecond * deltaTime,
+      new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * deltaTime));
+
+  Twist2d twistVel = new Pose2d(0, 0, new Rotation2d()).log(robotPoseVel);
+  return new ChassisSpeeds(
+      twistVel.dx / deltaTime, twistVel.dy / deltaTime,
+      twistVel.dtheta / deltaTime);
   }
 
   /**
