@@ -64,7 +64,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final Translation2d frontLeftLocation = new Translation2d(-0.381, 0.381);
   private final Translation2d frontRightLocation = new Translation2d(0.381, 0.381);
   private final Translation2d backLeftLocation = new Translation2d(-0.381, -0.381);
-  private final Translation2d backRightLocation = new Translation2d(-0.381, 0.381);
+  private final Translation2d backRightLocation = new Translation2d(0.381, -0.381);
 
   private final SwerveModule frontLeft;
   private final SwerveModule frontRight;
@@ -72,7 +72,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final SwerveModule backRight;
   int jump=0;
   // private final SwerveDriveOdometry odometry;
-  private final PIDController m_driftCorrectionPid = new PIDController(0.1, 0, 0);
+  private final PIDController m_driftCorrectionPid = new PIDController(0.12, 0, 0);
   // private Pose2d pose = new Pose2d(0.0, 0.0, new Rotation2d());
 
   public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drive Base");
@@ -198,9 +198,9 @@ public class DriveSubsystem extends SubsystemBase {
     backLeft.invertSteerMotor(true);
 
     frontLeft.invertDriveMotor(false);
-    backLeft.invertDriveMotor(false);
+    backLeft.invertDriveMotor(true);
     frontRight.invertDriveMotor(false);
-    backRight.invertDriveMotor(false);
+    backRight.invertDriveMotor(true);
 
     AprilTagFieldLayout initialLayout;
     // try {
@@ -284,18 +284,19 @@ public class DriveSubsystem extends SubsystemBase {
   private ChassisSpeeds translationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
     if (!Robot.navX.isConnected())
       return chassisSpeeds;
-    double translationalVelocity = Math.abs(frontLeft.getDriveVelocity());
+    double translationalVelocity = Math.hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond);
     Logger.recordOutput("translational velocity", translationalVelocity);
+    Logger.recordOutput("turn rate",Robot.navX.getRate());
 
-    if (Math.abs(Robot.navX.getRate()) > 0.3) {
+    if (Math.abs(Robot.navX.getRate()) > 2) {
       m_desiredHeading = Robot.navX.getYaw();
     } else if (translationalVelocity > 1) {
 
       double calc = m_driftCorrectionPid.calculate(Robot.navX.getYaw(),
           m_desiredHeading);
 
-      if (Math.abs(calc) >= 0.55) {
-        chassisSpeeds.omegaRadiansPerSecond += calc;
+      if (Math.abs(calc) >= 0.1) {
+        chassisSpeeds.omegaRadiansPerSecond -= calc;
       }
     }
     return chassisSpeeds;
@@ -362,10 +363,10 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
 
-    FRONT_LEFT_ENC.setDouble(frontLeft.turningEncoder.getAbsolutePosition().refresh().getValue());
-    FRONT_RIGHT_ENC.setDouble(frontRight.turningEncoder.getAbsolutePosition().refresh().getValue());
-    BACK_LEFT_ENC.setDouble(backLeft.turningEncoder.getAbsolutePosition().refresh().getValue());
-    BACK_RIGHT_ENC.setDouble(backRight.turningEncoder.getAbsolutePosition().refresh().getValue());
+    FRONT_LEFT_ENC.setDouble(frontLeft.turningEncoder.getAbsolutePosition().refresh().getValue()*360);
+    FRONT_RIGHT_ENC.setDouble(frontRight.turningEncoder.getAbsolutePosition().refresh().getValue()*360);
+    BACK_LEFT_ENC.setDouble(backLeft.turningEncoder.getAbsolutePosition().refresh().getValue()*360);
+    BACK_RIGHT_ENC.setDouble(backRight.turningEncoder.getAbsolutePosition().refresh().getValue()*360);
 
     frontLeftDriveOutput.setDouble(frontLeft.getMainDriveOutput());
     backLeftDriveOutput.setDouble(backLeft.getMainDriveOutput());
