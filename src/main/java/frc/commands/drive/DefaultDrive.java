@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
-import frc.subsystems.Drivetrain;
+import frc.subsystems.DriveSubsystem;
 
 public class DefaultDrive extends Command {
      boolean fieldOriented;
@@ -21,8 +21,8 @@ public class DefaultDrive extends Command {
          Translation2d translation;
        
          translation = new Translation2d(
-         MathUtil.applyDeadband(-Robot.controller.getLeftY(), 0.15) * Drivetrain.kMaxSpeed *  (1-(Robot.controller.getLeftTriggerAxis()*0.5)),
-         MathUtil.applyDeadband(-Robot.controller.getLeftX(), 0.15) * Drivetrain.kMaxSpeed * (1-(Robot.controller.getLeftTriggerAxis()*0.5)));
+         MathUtil.applyDeadband(-Robot.controller.getLeftY(), 0.15) * DriveSubsystem.kMaxSpeed *  (1-(Robot.controller.getLeftTriggerAxis()*0.5)),
+         MathUtil.applyDeadband(-Robot.controller.getLeftX(), 0.15) * DriveSubsystem.kMaxSpeed * (1-(Robot.controller.getLeftTriggerAxis()*0.5)));
         
          double rotation = MathUtil.applyDeadband(Robot.controller.getRightX(), 0.15);
 

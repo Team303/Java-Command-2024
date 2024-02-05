@@ -1,7 +1,6 @@
 package frc.commands.shooter;
 
 import static frc.robot.Robot.shooter;
-import static frc.robot.Robot.swerve;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.FieldConstants;
 import frc.robot.util.FieldRelativeAcceleration;
@@ -36,8 +35,8 @@ public class ManualSetAngleSpeaker extends Command {
         // desiredVelocityLeft = 0;
         desiredVelocityRight = 32;
         desiredAngle = shooter.interpolateAngle(range);
-        FieldRelativeSpeeds curVel = swerve.currentSpeed;
-        FieldRelativeAcceleration curAccel = swerve.currentAccel;
+        //FieldRelativeSpeeds curVel = swerve.currentSpeed;
+        //FieldRelativeAcceleration curAccel = swerve.currentAccel;
         double desiredTime = shooter.interpolateTime(range);
         //TODO: Uncomment once merged into master
         // Translation2d movingGoalLocation = new Translation2d();

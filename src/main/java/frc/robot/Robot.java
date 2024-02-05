@@ -34,10 +34,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.autonomous.Autonomous;
 import frc.autonomous.AutonomousProgram;
-import frc.commands.DefaultDrive;
-import frc.subsystems.Drivetrain;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.commands.DriveWait;
+import frc.subsystems.DriveSubsystem;
+//import frc.commands.DefaultDrive;
 import frc.subsystems.Shooter;
 import frc.commands.shooter.ManualSetAngleSpeaker;
 import frc.robot.util.FieldRelativeAcceleration;
@@ -46,9 +44,9 @@ import frc.robot.util.FieldRelativeSpeeds;
 
 public class Robot extends LoggedRobot {
   public static final CommandXboxController controller = new CommandXboxController(0);
-  public static final AHRS navX = new AHRS(); 
-  public static final Drivetrain swerve = null; //new Drivetrain();
+  public static final AHRS navX = new AHRS(); //new Drivetrain();
   public static final Shooter shooter = new Shooter();
+  public static final DriveSubsystem swerve = new DriveSubsystem();
 
   @Override
   public void robotInit() {
@@ -96,7 +94,7 @@ public class Robot extends LoggedRobot {
 		Command autonomousRoutine = AutonomousProgram.constructSelectedRoutine();
 
 		// Home the arm while waiting for the drivebase delay
-		Command delay = new ParallelCommandGroup(new DriveWait(AutonomousProgram.getAutonomousDelay()));
+		Command delay = new ParallelCommandGroup(/*new DriveWait(AutonomousProgram.getAutonomousDelay())*/);
 
 		// Schedule the selected autonomous command group
 		if (autonomousRoutine != null) {
