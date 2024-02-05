@@ -13,13 +13,19 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax; 
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import frc.subsystems.DriveSubsystem;
 
 public class SwerveModule {
@@ -43,18 +49,13 @@ public class SwerveModule {
   private static final double kModuleMaxAngularAcceleration =
       2 * Math.PI; // radians per second squared
 
-  private final CANSparkMax driveMotor;
-  private final CANSparkMax turningMotor;
+  private final TalonFX driveMotor;
+  private final TalonFX turningMotor;
 
-  private final RelativeEncoder driveEncoder;
   public final CANcoder turningEncoder;
 
   public CANcoder getTurningEncoder() {
     return turningEncoder;
-  }
-
-  public RelativeEncoder getDriveEncoder() {
-    return driveEncoder;
   }
 
   // Gains are for example purposes only - must be determined for your own robot!
@@ -91,21 +92,19 @@ public class SwerveModule {
       int turningMotorChannel,
       int turningEncoderChannelA,
       CANcoderConfiguration config) {
-    driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
-    turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
+    driveMotor = new TalonFX(driveMotorChannel);
+    turningMotor = new TalonFX(turningMotorChannel);
+      
+    driveMotor.setNeutralMode(NeutralModeValue.Brake);
+    turningMotor.setNeutralMode(NeutralModeValue.Brake);
+      
+    CurrentLimitsConfigs clc = new CurrentLimitsConfigs().withStatorCurrentLimit(40).withSupplyCurrentLimit(40);
 
-    driveMotor.setSmartCurrentLimit(40);
-    turningMotor.setSmartCurrentLimit(40);
+    driveMotor.getConfigurator().apply(clc);
+    turningMotor.getConfigurator().apply(clc);
 
-    driveEncoder = driveMotor.getEncoder();
     turningEncoder = new CANcoder(turningEncoderChannelA);
     turningEncoder.getConfigurator().apply(config);
-
-    driveMotor.setIdleMode(IdleMode.kBrake);
-    turningMotor.setIdleMode(IdleMode.kBrake);
-
-    driveEncoder.setPositionConversionFactor(2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR);
-    driveEncoder.setVelocityConversionFactor(2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR);
 
     m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -121,11 +120,15 @@ public class SwerveModule {
     driveMotor.setInverted(inversion);
   }
 
+  public double getDrivePosition() {
+    return driveMotor.getPosition().refresh().getValue() * 2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR;
+  }
+
   /**\
    * Returns the drive motor
-   * @return The CANSparkMax of the drive motor
+   * @return The TalonFX of the drive motor
    */
-  public CANSparkMax getDriveMotor() {
+  public TalonFX getDriveMotor() {
     return driveMotor;
   }
   /**
@@ -135,7 +138,7 @@ public class SwerveModule {
    */
   public SwerveModuleState getState() {
     return new SwerveModuleState(
-        driveEncoder.getVelocity(), Rotation2d.fromRotations(turningEncoder.getAbsolutePosition().refresh().getValue() % 1.0));
+      getDriveVelocity(), Rotation2d.fromRotations(turningEncoder.getAbsolutePosition().refresh().getValue() % 1.0));
   }
 
   /**
@@ -143,7 +146,7 @@ public class SwerveModule {
    * @return the current Velocity of the module in m/s
    */
   public double getDriveVelocity() {
-    return driveEncoder.getVelocity(); // / 60 * 2 * Math.PI * kWheelRadius;
+    return driveMotor.getVelocity().refresh().getValue() * 2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR; // / 60 * 2 * Math.PI * kWheelRadius;
   }
 
   /**
@@ -153,7 +156,7 @@ public class SwerveModule {
    */
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(
-        driveEncoder.getPosition(), Rotation2d.fromRotations(turningEncoder.getAbsolutePosition().refresh().getValue() % 1.0));
+        getDrivePosition(), Rotation2d.fromRotations(turningEncoder.getAbsolutePosition().refresh().getValue() % 1.0));
   }
 
 
@@ -169,7 +172,7 @@ public class SwerveModule {
 
     // Calculate the drive output from the drive PID controller.
     final double driveOutput =
-        m_drivePIDController.calculate(driveEncoder.getVelocity() * 2 * Math.PI * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR *  kWheelRadius, state.speedMetersPerSecond);
+        m_drivePIDController.calculate(getDriveVelocity() * 2 * Math.PI * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR *  kWheelRadius, state.speedMetersPerSecond);
 
     final double driveFeedforward = m_driveFeedforward.calculate(state.speedMetersPerSecond);
 
