@@ -39,7 +39,10 @@ import frc.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.commands.DriveWait;
 import frc.subsystems.Shooter;
-import frc.commands.shooter.ManualSetAngle;
+import frc.commands.shooter.ManualSetAngleSpeaker;
+import frc.robot.util.FieldRelativeAcceleration;
+import frc.robot.util.FieldRelativeSpeeds;
+
 
 public class Robot extends LoggedRobot {
   public static final CommandXboxController controller = new CommandXboxController(0);
@@ -116,7 +119,7 @@ public class Robot extends LoggedRobot {
 			autonomousCommand.cancel();
 		}
 
-		shooter.setDefaultCommand(new ManualSetAngle(1.98, 5.71));
+		shooter.setDefaultCommand(new ManualSetAngleSpeaker(1.98, 3.2));
 
     	// swerve.setDefaultCommand(new DefaultDrive(true));
 		
