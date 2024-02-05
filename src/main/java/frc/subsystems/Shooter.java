@@ -26,29 +26,28 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.PIDController;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.ExponentialProfile.Constraints;
-import com.revrobotics.CANSparkMax;
 import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
 
     // -------------Kraken Code------------
     // public final TalonFX leftAngleMotor;
-    // public final TalonFX rightAngleMotor;
-    // public final TalonFX leftFlywheelMotor;
-    // public final TalonFX rightFlywheelMotor;
-    
+   // public final TalonFX rightAngleMotor;
+    public final TalonFX leftFlywheelMotor;
+    public final TalonFX rightFlywheelMotor;
 
     //spark max code
     // public final CANSparkMax leftAngleMotor;
-    // public final CANSparkMax rightAngleMotor;
-    public final CANSparkMax leftFlywheelMotor;
-    public final CANSparkMax rightFlywheelMotor;
+    // // public final CANSparkMax rightAngleMotor;
+    // public final CANSparkMax leftFlywheelMotor;
+    // public final CANSparkMax rightFlywheelMotor;
 
     // public final CANSparkMax leftIndexerMotor;
     // public final CANSparkMax rightIndexerMotor;
@@ -58,8 +57,8 @@ public class Shooter extends SubsystemBase {
     // public final DutyCycleEncoder angleEncoder_dutyCycle;
 
     // public final RelativeEncoder indexerEncoder;
-    public final RelativeEncoder flyWheelEncoderLeft;
-    public final RelativeEncoder flyWheelEncoderRight;
+    // public final RelativeEncoder flyWheelEncoderLeft;
+    // public final RelativeEncoder flyWheelEncoderRight;
 
     public final BangBangController flywheelControllerLeft;
     public final BangBangController flywheelControllerRight;
@@ -91,8 +90,8 @@ public class Shooter extends SubsystemBase {
         //-------------Kraken Code------------
         // leftAngleMotor = new TalonFX(RobotMap.Shooter.LEFT_ANGLE_MOTOR_ID);
         // rightAngleMotor = new TalonFX(RobotMap.Shooter.RIGHT_ANGLE_MOTOR_ID);
-        // leftFlywheelMotor = new TalonFX(RobotMap.Shooter.LEFT_FLYWHEEL_MOTOR_ID);
-        // rightFlywheelMotor = new TalonFX(RobotMap.Shooter.RIGHT_FLYWHEEL_MOTOR_ID);
+        leftFlywheelMotor = new TalonFX(RobotMap.Shooter.LEFT_FLYWHEEL_MOTOR_ID);
+        rightFlywheelMotor = new TalonFX(RobotMap.Shooter.RIGHT_FLYWHEEL_MOTOR_ID);
 
         // leftAngleMotor.setNeutralMode(NeutralModeValue.Brake);
         // rightAngleMotor.setNeutralMode(NeutralModeValue.Brake);
@@ -104,15 +103,15 @@ public class Shooter extends SubsystemBase {
 
         // leftAngleMotor = new CANSparkMax(RobotMap.Shooter.LEFT_ANGLE_MOTOR_ID, MotorType.kBrushless);
         // rightAngleMotor = new CANSparkMax(RobotMap.Shooter.RIGHT_ANGLE_MOTOR_ID, MotorType.kBrushless);
-        leftFlywheelMotor = new CANSparkMax(RobotMap.Shooter.LEFT_FLYWHEEL_MOTOR_ID, MotorType.kBrushless);
-        rightFlywheelMotor = new CANSparkMax(RobotMap.Shooter.RIGHT_FLYWHEEL_MOTOR_ID, MotorType.kBrushless);
+       // leftFlywheelMotor = new CANSparkMax(RobotMap.Shooter.LEFT_FLYWHEEL_MOTOR_ID, MotorType.kBrushless);
+        //rightFlywheelMotor = new CANSparkMax(RobotMap.Shooter.RIGHT_FLYWHEEL_MOTOR_ID, MotorType.kBrushless);
         // leftIndexerMotor = new CANSparkMax(RobotMap.Shooter.LEFT_INDEXER_MOTOR_ID, MotorType.kBrushless);
         // rightIndexerMotor = new CANSparkMax(RobotMap.Shooter.RIGHT_INDEXER_MOTOR_ID, MotorType.kBrushless);
 
         // leftAngleMotor.setIdleMode(IdleMode.kBrake);
         // rightAngleMotor.setIdleMode(IdleMode.kBrake);
-        leftFlywheelMotor.setIdleMode(IdleMode.kCoast);
-        rightFlywheelMotor.setIdleMode(IdleMode.kCoast);
+        leftFlywheelMotor.setNeutralMode(NeutralModeValue.Coast);
+        rightFlywheelMotor.setNeutralMode(NeutralModeValue.Coast);
         // leftIndexerMotor.setIdleMode(IdleMode.kBrake);
         // rightIndexerMotor.setIdleMode(IdleMode.kBrake);
 
@@ -121,9 +120,6 @@ public class Shooter extends SubsystemBase {
         leftFlywheelMotor.setInverted(false);
         rightFlywheelMotor.setInverted(true);
 
-        leftFlywheelMotor.setSmartCurrentLimit(40);
-        rightFlywheelMotor.setSmartCurrentLimit(40);
-
 
         // leftIndexerMotor.setInverted(true);
         // rightIndexerMotor.setInverted(false);
@@ -131,8 +127,6 @@ public class Shooter extends SubsystemBase {
         // angleEncoder_dutyCycle = new DutyCycleEncoder(8);
         // indexerEncoder = leftIndexerMotor.getEncoder();
 
-        flyWheelEncoderLeft = leftFlywheelMotor.getEncoder();
-        flyWheelEncoderRight = rightFlywheelMotor.getEncoder();
         // flyWheelEncoder.setVelocityConversionFactor(2 * Math.PI * 0.0508);
 
         flywheelControllerRight = new BangBangController();
@@ -180,7 +174,7 @@ public class Shooter extends SubsystemBase {
     // }
 
     public double calculateFlywheelSpeedRight(double speed) {
-        final double bangOutput = flywheelControllerRight.calculate(flyWheelEncoderRight.getVelocity(), (speed / (2 * Math.PI * 0.0508)) * 60);
+        final double bangOutput = flywheelControllerRight.calculate(leftFlywheelMotor.getVelocity().refresh().getValueAsDouble(), (speed / (2 * Math.PI * 0.0508)) * 60);
         final double flywheelFeedForwardOutput = flywheelFeedForwardRight.calculate(speed);
 
         return (bangOutput) + (flywheelFeedForwardOutput * 0.9);
@@ -188,7 +182,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public double calculateFlywheelSpeedLeft(double speed) {
-        final double bangOutput = flywheelControllerLeft.calculate(flyWheelEncoderLeft.getVelocity(), (speed / (2 * Math.PI * 0.0508)) * 60);
+        final double bangOutput = flywheelControllerLeft.calculate(rightFlywheelMotor.getVelocity().refresh().getValueAsDouble(), (speed / (2 * Math.PI * 0.0508)) * 60);
         final double flywheelFeedForwardOutput = flywheelFeedForwardLeft.calculate(speed);
 
         
@@ -216,7 +210,7 @@ public class Shooter extends SubsystemBase {
     // }
 
     public double getVelocitySpeed() {
-        return flyWheelEncoderRight.getVelocity();
+        return leftFlywheelMotor.getVelocity().refresh().getValueAsDouble();
     }
 
 	// public boolean atHardLimit() {
@@ -228,19 +222,21 @@ public class Shooter extends SubsystemBase {
     // }
 
     public void resetEncoders() {
-        flyWheelEncoderRight.setPosition(0);
+        leftFlywheelMotor.setPosition(0);
+        rightFlywheelMotor.setPosition(0);
+
     }
 
     @Override
     public void periodic() {
         // ANGLE_POSITION_ENTRY.setDouble(angleEncoder_dutyCycle.getAbsolutePosition());
-        FLYWHEEL_SPEED_ENTRY_RIGHT.setDouble(flyWheelEncoderRight.getVelocity());
-        FLYWHEEL_SPEED_ENTRY_LEFT.setDouble(flyWheelEncoderLeft.getVelocity());
+        FLYWHEEL_SPEED_ENTRY_RIGHT.setDouble(rightFlywheelMotor.getVelocity().refresh().getValueAsDouble());
+        FLYWHEEL_SPEED_ENTRY_LEFT.setDouble(leftFlywheelMotor.getVelocity().refresh().getValueAsDouble());
 
 
         DIFF_FACTOR.setDouble(diffFactor);
-        Logger.recordOutput("Speed Left", flyWheelEncoderLeft.getVelocity());
-        Logger.recordOutput("Speed Right", flyWheelEncoderLeft.getVelocity());
+        Logger.recordOutput("Speed Left", leftFlywheelMotor.getVelocity().refresh().getValueAsDouble());
+        Logger.recordOutput("Speed Right", rightFlywheelMotor.getVelocity().refresh().getValueAsDouble());
         //FLYWHEEL_RPM.setDouble(leftFlywheelMotor.get)
         // INDEXER_POSITION_ENTRY.setDouble(indexerEncoder.getPosition());
     }
