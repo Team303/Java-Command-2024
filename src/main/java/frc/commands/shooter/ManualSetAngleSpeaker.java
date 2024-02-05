@@ -17,9 +17,9 @@ public class ManualSetAngleSpeaker extends Command {
     double desiredVelocityRight;
     double desiredVelocityLeft;
     // will work once merged with master
-    Translation2d  target = FieldConstants.centerSpeakOpening.getTranslation();
+    Translation2d target = FieldConstants.centerSpeakOpening.getTranslation();
     // double range = FieldConstants.centerSpeakOpening.getTranslation().getDistance(swerve.getPose());
-    double range=0;
+    double range = 0;
 
     //TODO: Make the range/height not a parameter once merged into master
     public ManualSetAngleSpeaker(double height, double range) {
@@ -33,7 +33,7 @@ public class ManualSetAngleSpeaker extends Command {
         //desiredVelocity = Math.sqrt((2*height *9.8*(16*height * height + range * range ))/(8*height));
         //desiredVelocityRight = Math.sqrt(2 * height * 9.8) / Math.sin(desiredAngle); //new equation
         // desiredVelocityLeft = 0;
-        desiredVelocityRight = 32;
+        desiredVelocityRight = 16;
         desiredAngle = shooter.interpolateAngle(range);
         //FieldRelativeSpeeds curVel = swerve.currentSpeed;
         //FieldRelativeAcceleration curAccel = swerve.currentAccel;
@@ -84,8 +84,8 @@ public class ManualSetAngleSpeaker extends Command {
         // shooter.rightAngleMotor.setVoltage(shooter.calculateAngleSpeed(desiredAngle));
         desiredVelocityLeft = desiredVelocityRight * shooter.getFactor();
 
-        //shooter.leftFlywheelMotor.setVoltage(shooter.calculateFlywheelSpeedLeft(desiredVelocityLeft));
-        //shooter.rightFlywheelMotor.setVoltage(shooter.calculateFlywheelSpeedRight(desiredVelocityRight));
+        shooter.leftFlywheelMotor.setVoltage(shooter.calculateFlywheelSpeedLeft(desiredVelocityLeft));
+        // shooter.rightFlywheelMotor.setVoltage(shooter.calculateFlywheelSpeedRight(desiredVelocityRight));
     } 
 
     // @Override

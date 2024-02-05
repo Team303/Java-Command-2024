@@ -46,7 +46,7 @@ public class Robot extends LoggedRobot {
   public static final CommandXboxController controller = new CommandXboxController(0);
   public static final AHRS navX = new AHRS(); //new Drivetrain();
   public static final Shooter shooter = new Shooter();
-  public static final DriveSubsystem swerve = new DriveSubsystem();
+  public static final DriveSubsystem swerve = null;// new DriveSubsystem();
 
   @Override
   public void robotInit() {

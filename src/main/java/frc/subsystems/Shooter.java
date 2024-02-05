@@ -22,6 +22,8 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.ExponentialProfile.Constraints;
 import org.littletonrobotics.junction.Logger;
+
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -84,7 +86,7 @@ public class Shooter extends SubsystemBase {
                                                   0.731, 0.709, 0.687, 0.667, 0.648, 0.629, 0.612, 0.596, 0.581, 0.567, //2.0 - 2.9
                                                   0.553, 0.540, 0.528, 0.516, 0.505, 0.495};                            //3.0 - 3.5
     public InterpolatingDoubleTreeMap timeInterpolator = new InterpolatingDoubleTreeMap();
-    public static double[] interpolationTimes = {};
+    public static double[] interpolationTimes = new double[interpolationAngles.length];
 
     public Shooter() {
         //addInterpolationTableValues();
@@ -162,6 +164,9 @@ public class Shooter extends SubsystemBase {
             timeInterpolator.put((double)i*0.1+1.0,interpolationTimes[i]);
         }
 
+        CurrentLimitsConfigs clc = new CurrentLimitsConfigs().withStatorCurrentLimit(30).withSupplyCurrentLimit(30);
+        leftFlywheelMotor.getConfigurator().apply(clc);
+        rightFlywheelMotor.getConfigurator().apply(clc);
     }
 
     public double interpolateAngle(double range) {
@@ -189,20 +194,20 @@ public class Shooter extends SubsystemBase {
     // }
 
     public double calculateFlywheelSpeedRight(double speed) {
-        final double bangOutput = flywheelControllerRight.calculate(leftFlywheelMotor.getVelocity().refresh().getValueAsDouble(), (speed / (2 * Math.PI * 0.0508)) * 60);
+        final double bangOutput = flywheelControllerRight.calculate(leftFlywheelMotor.getVelocity().refresh().getValueAsDouble() * 60, (speed / (2 * Math.PI * 0.0508)) * 60);
         final double flywheelFeedForwardOutput = flywheelFeedForwardRight.calculate(speed);
 
-        return (bangOutput) + (flywheelFeedForwardOutput * 0.9);
+        return (bangOutput) + (flywheelFeedForwardOutput * 0.87);
 
     }
 
     public double calculateFlywheelSpeedLeft(double speed) {
-        final double bangOutput = flywheelControllerLeft.calculate(rightFlywheelMotor.getVelocity().refresh().getValueAsDouble(), (speed / (2 * Math.PI * 0.0508)) * 60);
+        final double bangOutput = flywheelControllerLeft.calculate(rightFlywheelMotor.getVelocity().refresh().getValueAsDouble() * 60, (speed / (2 * Math.PI * 0.0508)) * 60);
         final double flywheelFeedForwardOutput = flywheelFeedForwardLeft.calculate(speed);
 
         
         DESIRED_SPEED.setDouble(speed / (2 * Math.PI * 0.0508) * 60);
-        return (bangOutput) + (flywheelFeedForwardOutput * 0.9);
+        return (bangOutput) + (flywheelFeedForwardOutput * 0.87);
     }
 
     // public void setAngleSpeed(double speed) {
@@ -245,13 +250,13 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
         // ANGLE_POSITION_ENTRY.setDouble(angleEncoder_dutyCycle.getAbsolutePosition());
-        FLYWHEEL_SPEED_ENTRY_RIGHT.setDouble(rightFlywheelMotor.getVelocity().refresh().getValueAsDouble());
-        FLYWHEEL_SPEED_ENTRY_LEFT.setDouble(leftFlywheelMotor.getVelocity().refresh().getValueAsDouble());
+        FLYWHEEL_SPEED_ENTRY_RIGHT.setDouble(rightFlywheelMotor.getVelocity().refresh().getValueAsDouble() * 60);
+        FLYWHEEL_SPEED_ENTRY_LEFT.setDouble(leftFlywheelMotor.getVelocity().refresh().getValueAsDouble() * 60);
 
 
         DIFF_FACTOR.setDouble(diffFactor);
-        Logger.recordOutput("Speed Left", leftFlywheelMotor.getVelocity().refresh().getValueAsDouble());
-        Logger.recordOutput("Speed Right", rightFlywheelMotor.getVelocity().refresh().getValueAsDouble());
+        Logger.recordOutput("Speed Left", leftFlywheelMotor.getVelocity().refresh().getValueAsDouble() * 60);
+        Logger.recordOutput("Speed Right", rightFlywheelMotor.getVelocity().refresh().getValueAsDouble() * 60);
         //FLYWHEEL_RPM.setDouble(leftFlywheelMotor.get)
         // INDEXER_POSITION_ENTRY.setDouble(indexerEncoder.getPosition());
     }

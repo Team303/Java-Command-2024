@@ -51,8 +51,8 @@ public class RobotMap {
 		public static final double ANGLE_FEED_FORWARD_VEL = 2.0; // NEED TO TWEAK
 
 		public static final double FLYWHEEL_FEED_FORWARD_KS = 0; // NEED TO CHANGE
-		public static final double FLYWHEEL_FEED_FORWARD_KV = 0.5; // NEED TO CHANGE
-		public static final double FLYWHEEL_FEED_FORWARD_KA = 12; // NEED TO CHANGE
+		public static final double FLYWHEEL_FEED_FORWARD_KV = 0.38; // NEED TO CHANGE
+		public static final double FLYWHEEL_FEED_FORWARD_KA = 4.34; // NEED TO CHANGE
 
 		public static final double ANGLE_PID_CONTROLLER_P = 0.0; // NEED TO CHANGE
 		public static final double ANGLE_PID_CONTROLLER_I = 0.0; // NEED TO CHANGE
