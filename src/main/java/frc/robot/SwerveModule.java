@@ -50,7 +50,7 @@ public class SwerveModule {
       2 * Math.PI; // radians per second squared
 
   private final TalonFX driveMotor;
-  private final TalonFX turningMotor;
+  private final CANSparkMax turningMotor;
 
   public final CANcoder turningEncoder;
 
@@ -93,15 +93,15 @@ public class SwerveModule {
       int turningEncoderChannelA,
       CANcoderConfiguration config) {
     driveMotor = new TalonFX(driveMotorChannel);
-    turningMotor = new TalonFX(turningMotorChannel);
+    turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
       
     driveMotor.setNeutralMode(NeutralModeValue.Brake);
-    turningMotor.setNeutralMode(NeutralModeValue.Brake);
+    turningMotor.setIdleMode(IdleMode.kBrake);
       
     CurrentLimitsConfigs clc = new CurrentLimitsConfigs().withStatorCurrentLimit(40).withSupplyCurrentLimit(40);
 
     driveMotor.getConfigurator().apply(clc);
-    turningMotor.getConfigurator().apply(clc);
+    turningMotor.setSmartCurrentLimit(40);
 
     turningEncoder = new CANcoder(turningEncoderChannelA);
     turningEncoder.getConfigurator().apply(config);
