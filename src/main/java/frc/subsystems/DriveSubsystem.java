@@ -56,7 +56,7 @@ import frc.modules.PhotonvisionModule.CameraName;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.PhotonvisionConstants;
-import frc.robot.SwerveModule;
+import frc.modules.SwerveModule;
 
 /** Represents a swerve drive style drivetrain. */
 public class DriveSubsystem extends SubsystemBase {

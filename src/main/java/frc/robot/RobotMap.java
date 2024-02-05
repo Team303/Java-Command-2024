@@ -1,8 +1,12 @@
 package frc.robot;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.numbers.N5;
 import edu.wpi.first.math.util.Units;
 
 public class RobotMap {
@@ -48,6 +52,9 @@ public class RobotMap {
 		public static final double DOUBLE_SUBSTATION_TARGET_HEIGHT_METERS = 0.59;
 		public static final double CAMERA_PITCH_RADIANS = 0; // NOT FINAL
 		
+		public static final Matrix<N3,N3> CAMERA_MATRIX = null;
+		public static final Matrix<N5,N1> DIST_COEFFS = null; // TODO: Calibrate
+
 		public static final Transform3d ROBOT_TO_FRONT_CAMERA= new Transform3d(new Translation3d(0.381, 0, FRONT_CAMERA_HEIGHT_METERS),new Rotation3d(0.0,0.0,0.0));
 		public static final Transform3d ROBOT_TO_BACK_CAMERA= new Transform3d(new Translation3d(-0.381,0,BACK_CAMERA_HEIGHT_METERS),new Rotation3d(0,Units.degreesToRadians(180),0));
 		public static final Transform3d ROBOT_TO_LEFT_CAMERA= new Transform3d(new Translation3d(0,0.381,LEFT_CAMERA_HEIGHT_METERS),new Rotation3d(0,Units.degreesToRadians(90),0));
