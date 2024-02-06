@@ -164,7 +164,8 @@ public class Shooter extends SubsystemBase {
             timeInterpolator.put((double)i*0.1+1.0,interpolationTimes[i]);
         }
 
-        CurrentLimitsConfigs clc = new CurrentLimitsConfigs().withStatorCurrentLimit(30).withSupplyCurrentLimit(30);
+        CurrentLimitsConfigs clc = new CurrentLimitsConfigs().withStatorCurrentLimit(40).withSupplyCurrentLimit(40);
+        
         leftFlywheelMotor.getConfigurator().apply(clc);
         rightFlywheelMotor.getConfigurator().apply(clc);
     }
