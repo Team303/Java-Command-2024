@@ -1,10 +1,8 @@
 package frc.subsystems;
 
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -25,13 +23,15 @@ public class Climber extends SubsystemBase {
         armOne = new TalonFX(0);
         armTwo = new TalonFX(1);
 
-        armOne.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 30); // PIDx is normally 0, Timeout is normally 30ms
+        armOne.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 30); // PIDx is normally 0, Timeout is
+                                                                                     // normally 30ms
         armOne.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms);
         armOne.configVelocityMeasurementWindow(60);
         armOne.configSelectedFeedbackCoefficient(conversionFactor, 0, 30);
 
         armTwo.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms);
-        armTwo.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 30); // PIDx is normally 0, Timeout is normally 30ms
+        armTwo.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 30); // PIDx is normally 0, Timeout is
+                                                                                     // normally 30ms
         armTwo.configVelocityMeasurementWindow(60);
         armTwo.configSelectedFeedbackCoefficient(conversionFactor, 0, 30);
 
@@ -51,56 +51,31 @@ public class Climber extends SubsystemBase {
     }
 
     public void extendArms(double speed) {
-        if (getArmOneEncoderPosition() < armOneUpperLimit) {
-            armOne.set(ControlMode.PercentOutput, speed);
-        } else {
-            armOne.set(ControlMode.PercentOutput, 0);
-        }
-
-        if (getArmTwoEncoderPosition() < armTwoUpperLimit) {
-            armTwo.set(ControlMode.PercentOutput, speed);
-        } else {
-            armTwo.set(ControlMode.PercentOutput, 0);
-        }
+        double armOneSpeed = getArmEncoderPosition(1) < armOneUpperLimit ? speed : 0;
+        double armTwoSpeed = getArmEncoderPosition(2) < armTwoUpperLimit ? speed : 0;
+        armOne.set(ControlMode.PercentOutput, armOneSpeed);
+        armTwo.set(ControlMode.PercentOutput, armTwoSpeed);
     }
 
     public void retractArms(double speed) {
         speed = -Math.abs(speed);
-
-        if (!isArmOneAtLowerLimit()) {
-            armOne.set(ControlMode.PercentOutput, speed);
-        } else {
-            armOne.set(ControlMode.PercentOutput, 0);
-        }
-        if (!isArmTwoAtLowerLimit()) {
-            armTwo.set(ControlMode.PercentOutput, speed);
-        } else {
-            armTwo.set(ControlMode.PercentOutput, 0);
-        }
+        double armOneSpeed = !isArmAtLowerLimit(1) ? speed : 0;
+        double armTwoSpeed = !isArmAtLowerLimit(2) ? speed : 0;
+        armOne.set(ControlMode.PercentOutput, armOneSpeed);
+        armTwo.set(ControlMode.PercentOutput, armTwoSpeed);
     }
 
-    public double getArmOneEncoderPosition() {
-        return armOne.getSelectedSensorPosition();
+    public double getArmEncoderPosition(int armIndex) {
+        return armIndex == 1 ? armOne.getSelectedSensorPosition() : armTwo.getSelectedSensorPosition();
     }
 
-    public double getArmTwoEncoderPosition() {
-        return armTwo.getSelectedSensorPosition();
+    public boolean isArmAtLimit(int armIndex) {
+        return armIndex == 1 ? getArmEncoderPosition(1) >= armOneUpperLimit
+                : getArmEncoderPosition(2) >= armTwoUpperLimit;
     }
 
-    public boolean isArmOneAtLimit() {
-        return getArmOneEncoderPosition() >= armOneUpperLimit;
-    }
-
-    public boolean isArmTwoAtLimit() {
-        return getArmTwoEncoderPosition() >= armTwoUpperLimit;
-    }
-
-    public boolean isArmOneAtLowerLimit() {
-        return armOneLimitSwitch.get();
-    }
-
-    public boolean isArmTwoAtLowerLimit() {
-        return armTwoLimitSwitch.get();
+    public boolean isArmAtLowerLimit(int armIndex) {
+        return armIndex == 1 ? armOneLimitSwitch.get() : armTwoLimitSwitch.get();
     }
 
     public void stopArms() {
@@ -110,63 +85,63 @@ public class Climber extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // Monitor and adjust motor based on sensor readings, if you want lol
+        System.out.println("Aritra code bangs");
     }
 }
 
 // public class Climber extends SubsystemBase {
-    
-//     private final TalonFX armOne;
-//     private final TalonFX armTwo;
 
-//     private final DigitalInput armOneLimitSwitch;
-//     private final DigitalInput armTwoLimitSwitch;
+// private final TalonFX armOne;
+// private final TalonFX armTwo;
 
-//     public Climber() {
-//         armOne = new TalonFX(0);
-//         armTwo = new TalonFX(1);
+// private final DigitalInput armOneLimitSwitch;
+// private final DigitalInput armTwoLimitSwitch;
 
-//         armOneLimitSwitch = new DigitalInput(0);
-//         armTwoLimitSwitch = new DigitalInput(1);
-//     }
+// public Climber() {
+// armOne = new TalonFX(0);
+// armTwo = new TalonFX(1);
 
-//     public void setArmOneSpeed(double speed) {
-//         if (!isArmOneAtLimit()) {
-//             armTwo.set(speed);
-//         } else {
-//             armTwo.set(0);
-//         }
-//     }
+// armOneLimitSwitch = new DigitalInput(0);
+// armTwoLimitSwitch = new DigitalInput(1);
+// }
 
-//     public void setArmTwoSpeed(double speed) {
-//         if (!isArmTwoAtLimit()) {
-//             armTwo.set(speed);
-//         } else {
-//             armTwo.set(0);
-//         }
-//     }
+// public void setArmOneSpeed(double speed) {
+// if (!isArmOneAtLimit()) {
+// armTwo.set(speed);
+// } else {
+// armTwo.set(0);
+// }
+// }
 
-//     public void stopArms() {
-//         armOne.set(0);
-//         armTwo.set(0);
-//     }
+// public void setArmTwoSpeed(double speed) {
+// if (!isArmTwoAtLimit()) {
+// armTwo.set(speed);
+// } else {
+// armTwo.set(0);
+// }
+// }
 
-//     public void extendArms() {
-//         double speed = 1.0;
-//         setArmOneSpeed(speed);
-//         setArmTwoSpeed(speed);
-//     }
+// public void stopArms() {
+// armOne.set(0);
+// armTwo.set(0);
+// }
 
-//     public boolean isArmOneAtLimit() {
-//         return armOneLimitSwitch.get();
-//     }
+// public void extendArms() {
+// double speed = 1.0;
+// setArmOneSpeed(speed);
+// setArmTwoSpeed(speed);
+// }
 
-//     public boolean isArmTwoAtLimit() {
-//         return armTwoLimitSwitch.get();
-//     }
+// public boolean isArmOneAtLimit() {
+// return armOneLimitSwitch.get();
+// }
 
-//     @Override
-//     public void periodic() {
-//         // Called once per scheduler run
-//     }
+// public boolean isArmTwoAtLimit() {
+// return armTwoLimitSwitch.get();
+// }
+
+// @Override
+// public void periodic() {
+// // Called once per scheduler run
+// }
 // }
