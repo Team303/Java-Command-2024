@@ -32,8 +32,9 @@ public class ManualSetAngleSpeaker extends Command {
         //desiredVelocity = 0.0;
         //desiredVelocity = Math.sqrt((2*height *9.8*(16*height * height + range * range ))/(8*height));
         //desiredVelocityRight = Math.sqrt(2 * height * 9.8) / Math.sin(desiredAngle); //new equation
-        // desiredVelocityLeft = 0;
-        desiredVelocityRight = 16;
+        desiredVelocityLeft = 20;
+        desiredVelocityRight = 20;
+
         desiredAngle = shooter.interpolateAngle(range);
         //FieldRelativeSpeeds curVel = swerve.currentSpeed;
         //FieldRelativeAcceleration curAccel = swerve.currentAccel;
@@ -82,10 +83,10 @@ public class ManualSetAngleSpeaker extends Command {
     public void execute() {
         // shooter.leftAngleMotor.setVoltage(shooter.calculateAngleSpeed(desiredAngle));
         // shooter.rightAngleMotor.setVoltage(shooter.calculateAngleSpeed(desiredAngle));
-        desiredVelocityLeft = desiredVelocityRight * shooter.getFactor();
+        //desiredVelocityLeft = desiredVelocityRight * shooter.getFactor();
 
         shooter.leftFlywheelMotor.setVoltage(shooter.calculateFlywheelSpeedLeft(desiredVelocityLeft));
-        // shooter.rightFlywheelMotor.setVoltage(shooter.calculateFlywheelSpeedRight(desiredVelocityRight));
+        shooter.rightFlywheelMotor.setVoltage(shooter.calculateFlywheelSpeedRight(desiredVelocityRight));
     } 
 
     // @Override

@@ -10,36 +10,21 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-
-// import org.littletonrobotics.junction.LoggedRobot;
-// import org.littletonrobotics.junction.Logger;
-// import org.littletonrobotics.junction.networktables.NT4Publisher;
-// import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-
 import com.kauailabs.navx.frc.AHRS;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.autonomous.Autonomous;
 import frc.autonomous.AutonomousProgram;
 import frc.subsystems.DriveSubsystem;
 //import frc.commands.DefaultDrive;
 import frc.subsystems.Shooter;
 import frc.commands.shooter.ManualSetAngleSpeaker;
-import frc.robot.util.FieldRelativeAcceleration;
-import frc.robot.util.FieldRelativeSpeeds;
 
 
 public class Robot extends LoggedRobot {

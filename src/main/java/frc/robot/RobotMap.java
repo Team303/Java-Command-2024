@@ -60,7 +60,7 @@ public class RobotMap {
 
 		public static final int BEAM_BREAK_ID = 0;
 
-		public static final double accelerationCompensationFactor=0.1; //NEED TO CHANGE
+		public static final double accelerationCompensationFactor = 0.1; //NEED TO CHANGE
 
 	}
 
