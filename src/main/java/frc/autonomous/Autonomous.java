@@ -4,9 +4,12 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Robot;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import static frc.autonomous.AutonomousProgram.create;
+
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 /**
  * Quick guide to Comand Groups:
@@ -14,7 +17,7 @@ import static frc.autonomous.AutonomousProgram.create;
  * SequentialComandGroup:
  * Will run all comands in order within it's parentheses
  * Note: If a comand does not have a isFinshed statment the code will be stuck
- * on that command forever
+ * on that command foreverk
  *
  * ParallelCommandGroup:
  * Will run commands in parallel if they use diffrent SubSystems
@@ -44,5 +47,6 @@ public class Autonomous {
 
         public static void init() {
             create("Test", () -> new InstantCommand(() -> System.out.println("TEST")));
+            create("pathplanner test", () -> Robot.swerve.getAutonomousCommand("testAuto"));
         }
 }

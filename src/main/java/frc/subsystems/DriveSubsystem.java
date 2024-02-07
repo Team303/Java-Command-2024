@@ -288,14 +288,14 @@ public class DriveSubsystem extends SubsystemBase {
     Logger.recordOutput("translational velocity", translationalVelocity);
     Logger.recordOutput("turn rate",Robot.navX.getRate());
 
-    if (Math.abs(Robot.navX.getRate()) > 2) {
+    if (Math.abs(Robot.navX.getRate()) > 0.5) {
       m_desiredHeading = Robot.navX.getYaw();
     } else if (translationalVelocity > 1) {
 
       double calc = m_driftCorrectionPid.calculate(Robot.navX.getYaw(),
           m_desiredHeading);
 
-      if (Math.abs(calc) >= 0.1) {
+      if (Math.abs(calc) >= 0.55) {
         chassisSpeeds.omegaRadiansPerSecond -= calc;
       }
     }
