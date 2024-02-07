@@ -34,7 +34,7 @@ public class HomeShooter extends Command {
     @Override
     public void end(boolean interrupted) {
         // shooter.setAngleSpeed(0);
-        shooter.resetEncoders();
+        shooter.resetFlywheelEncoders();
         timer.stop();
     }
 

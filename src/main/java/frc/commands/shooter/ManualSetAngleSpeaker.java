@@ -1,12 +1,11 @@
 package frc.commands.shooter;
 
 import static frc.robot.Robot.shooter;
+import static frc.subsystems.Shooter.INTERPOLATED_DEGREES_ENTRY;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.FieldConstants;
 import frc.robot.util.FieldRelativeAcceleration;
 import frc.robot.util.FieldRelativeSpeeds;
-
-import static frc.subsystems.Shooter.INTERPOLATED_ANGLE;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,6 +23,7 @@ public class ManualSetAngleSpeaker extends Command {
     //TODO: Make the range/height not a parameter once merged into master
     public ManualSetAngleSpeaker(double height, double range) {
         addRequirements(shooter);
+        //shooter.resetEncoders();
         
         // desiredVelocityRight = 17;
         // desiredVelocityLeft = 17 * shooter.getFactor();
@@ -32,10 +32,11 @@ public class ManualSetAngleSpeaker extends Command {
         //desiredVelocity = 0.0;
         //desiredVelocity = Math.sqrt((2*height *9.8*(16*height * height + range * range ))/(8*height));
         //desiredVelocityRight = Math.sqrt(2 * height * 9.8) / Math.sin(desiredAngle); //new equation
-        desiredVelocityLeft = 20;
-        desiredVelocityRight = 20;
+        desiredVelocityRight = 31;
 
         desiredAngle = shooter.interpolateAngle(range);
+        INTERPOLATED_DEGREES_ENTRY.setDouble(Math.toDegrees((desiredAngle)));
+
         //FieldRelativeSpeeds curVel = swerve.currentSpeed;
         //FieldRelativeAcceleration curAccel = swerve.currentAccel;
         double desiredTime = shooter.interpolateTime(range);
@@ -73,25 +74,28 @@ public class ManualSetAngleSpeaker extends Command {
         // double newDist = movingGoalLocation.minus(swerve.getPose().getTranslation()).getDistance(new Translation2d());
 
         // SmartDashboard.putNumber("NewDist", newDist);
-
-
-        INTERPOLATED_ANGLE.setDouble(desiredAngle);
     }
 
 
     @Override
     public void execute() {
-        // shooter.leftAngleMotor.setVoltage(shooter.calculateAngleSpeed(desiredAngle));
-        // shooter.rightAngleMotor.setVoltage(shooter.calculateAngleSpeed(desiredAngle));
-        //desiredVelocityLeft = desiredVelocityRight * shooter.getFactor();
+        desiredVelocityLeft = desiredVelocityRight * shooter.getFactor();
 
         shooter.leftFlywheelMotor.setVoltage(shooter.calculateFlywheelSpeedLeft(desiredVelocityLeft));
-        shooter.rightFlywheelMotor.setVoltage(shooter.calculateFlywheelSpeedRight(desiredVelocityRight));
+        //shooter.rightFlywheelMotor.setVoltage(shooter.calculateFlywheelSpeedRight(desiredVelocityRight));
+
+        // shooter.leftAngleMotor.setVoltage(shooter.calculateAngleSpeedLeft(desiredAngle));
+        shooter.rightAngleMotor.setVoltage(shooter.calculateAngleSpeedRight(desiredAngle));
     } 
 
-    // @Override
-    // public boolean isFinished() {
-    //     return shooter.getShooterAngle() == desiredAngle && shooter.getVelocitySpeed() == desiredVelocity;
-    // }
+    @Override
+    public boolean isFinished() {
+        return shooter.atHardLimit();
+    }
+
+    public void end(boolean interrupted) {
+        shooter.leftFlywheelMotor.setVoltage(0);
+    }
+
 
 }
