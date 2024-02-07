@@ -58,9 +58,12 @@ public class Shooter extends SubsystemBase {
     //Interploation Stuff
     public InterpolatingDoubleTreeMap angleInterpolator = new InterpolatingDoubleTreeMap();
     public InterpolatingDoubleTreeMap timeInterpolator = new InterpolatingDoubleTreeMap();
+
+    //We need to interpolate until 12 meters 💀
     public static double[] interpolationAngles = {1.054, 1.013, 0.974, 0.937, 0.902, 0.869, 0.838, 0.809, 0.782, 0.756, //1.0 - 1.9
                                                   0.731, 0.709, 0.687, 0.667, 0.648, 0.629, 0.612, 0.596, 0.581, 0.567, //2.0 - 2.9
                                                   0.553, 0.540, 0.528, 0.516, 0.505, 0.495};                            //3.0 - 3.5
+
     public static double[] interpolationTimes = new double[interpolationAngles.length];
 
     //Shuffleboard Stuff

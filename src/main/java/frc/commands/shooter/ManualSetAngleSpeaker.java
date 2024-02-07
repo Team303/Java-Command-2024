@@ -23,15 +23,7 @@ public class ManualSetAngleSpeaker extends Command {
     //TODO: Make the range/height not a parameter once merged into master
     public ManualSetAngleSpeaker(double height, double range) {
         addRequirements(shooter);
-        //shooter.resetEncoders();
         
-        // desiredVelocityRight = 17;
-        // desiredVelocityLeft = 17 * shooter.getFactor();
-        //desiredAngle = Math.atan(2 *height / range);
-        //Calculate Speed here;
-        //desiredVelocity = 0.0;
-        //desiredVelocity = Math.sqrt((2*height *9.8*(16*height * height + range * range ))/(8*height));
-        //desiredVelocityRight = Math.sqrt(2 * height * 9.8) / Math.sin(desiredAngle); //new equation
         desiredVelocityRight = 31;
 
         desiredAngle = shooter.interpolateAngle(range);
