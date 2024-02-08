@@ -15,7 +15,7 @@ import edu.wpi.first.units.Velocity;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
+import frc.subsystems.DriveSubsystem;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -74,7 +74,7 @@ public class SwerveModule {
   private final PIDController m_drivePIDController = new PIDController(0.2, 0, 0);
 
   // Gains are for example purposes only - must be determined for your own robot!
-  private final PIDController m_turningPIDController = new PIDController(7, 0, 0);
+  private final PIDController m_turningPIDController = new PIDController(6, 0, 0);
   
   /*  =
       new ProfiledPIDController(
@@ -122,10 +122,10 @@ public class SwerveModule {
 
     TalonFXConfiguration configs = new TalonFXConfiguration();
     
-    configs.Slot0.kP = 0.11; // An error of 1 rotation per second results in 2V output
+    configs.Slot0.kP = 0.4; // An error of 1 rotation per second results in 2V output
     configs.Slot0.kI = 0.5; // An error of 1 rotation per second increases output by 0.5V every second
     configs.Slot0.kD = 0.0001; // A change of 1 rotation per second squared results in 0.01 volts output
-    configs.Slot0.kV = 0.12; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / Rotation per second
+    //configs.Slot0.kV = 0.12; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / Rotation per second
     // Peak output of 8 volts
     configs.Voltage.PeakForwardVoltage = 8;
     configs.Voltage.PeakReverseVoltage = -8;
@@ -180,7 +180,7 @@ public class SwerveModule {
    */
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(
-        getDrivePosition(), Rotation2d.fromRotations(turningEncoder.getAbsolutePosition().refresh().getValueAsDouble() % 1.0));
+        getDrivePosition(), Rotation2d.fromRotations(normalizeAngle(turningEncoder.getAbsolutePosition().refresh().getValueAsDouble() * 2 * Math.PI)));
   }
 
   private double normalizeAngle(double angle) {
@@ -228,9 +228,9 @@ public class SwerveModule {
     // driveMotor.setControl(torqueVelocityDriveControl.withVelocity(1000));
 
     Logger.recordOutput("desired drive velocity", state.speedMetersPerSecond / (2* Math.PI*kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR));
-    driveMotor.setControl(voltageVelocityDriveControl.withVelocity(state.speedMetersPerSecond / (2* Math.PI*kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR)));
+    //driveMotor.setControl(voltageVelocityDriveControl.withVelocity(state.speedMetersPerSecond / (2* Math.PI*kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR)));
     //driveMotor.setControl(voltageVelocityDriveControl.withVelocity(0));
-    // driveMotor.setVoltage(driveOutput + driveFeedforward);
+    driveMotor.setVoltage(driveOutput + driveFeedforward);
     turningMotor.setVoltage(turnOutput);
   }
 }
