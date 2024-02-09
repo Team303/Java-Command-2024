@@ -106,6 +106,9 @@ public class Robot extends LoggedRobot {
 	}
 
 	@Override
+	public void disabledInit() {}
+
+	@Override
 	public void teleopInit() {
 		// This makes sure that the autonomous stops running when teleop starts running.
 		if (autonomousCommand != null) {

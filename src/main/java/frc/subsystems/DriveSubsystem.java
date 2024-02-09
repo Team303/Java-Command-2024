@@ -183,26 +183,30 @@ public class DriveSubsystem extends SubsystemBase {
       RobotMap.Swerve.LEFT_FRONT_DRIVE_ID, 
       RobotMap.Swerve.LEFT_FRONT_STEER_ID,
       RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID,
-      configLeftFront
+      configLeftFront,
+      new PIDController(8, 0, 0)
       );
 
     frontRight = new SwerveModule(
       RobotMap.Swerve.RIGHT_FRONT_DRIVE_ID, 
       RobotMap.Swerve.RIGHT_FRONT_STEER_ID,
       RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID,
-      configRightFront
+      configRightFront,
+      new PIDController(8, 0, 0)
       );
     backLeft = new SwerveModule(
       RobotMap.Swerve.LEFT_BACK_DRIVE_ID, 
       RobotMap.Swerve.LEFT_BACK_STEER_ID,
       RobotMap.Swerve.LEFT_BACK_STEER_CANCODER_ID,
-      configLeftBack
+      configLeftBack,
+      new PIDController(8, 0, 0)
     );
     backRight = new SwerveModule(
       RobotMap.Swerve.RIGHT_BACK_DRIVE_ID, 
       RobotMap.Swerve.RIGHT_BACK_STEER_ID,
       RobotMap.Swerve.RIGHT_BACK_STEER_CANCODER_ID,
-      configRightBack  
+      configRightBack,
+      new PIDController(8, 0, 0)
     );
 
     // frontLeft.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.LEFT_FRONT_STEER_OFFSET);
@@ -331,14 +335,15 @@ public class DriveSubsystem extends SubsystemBase {
     Logger.recordOutput("translational velocity", translationalVelocity);
     Logger.recordOutput("turn rate",Robot.navX.getRate());
 
-    if (Math.abs(Robot.navX.getRate()) > 0.5) {
+    if (Math.abs(Robot.navX.getRate()) > 2) {
       m_desiredHeading = Robot.navX.getYaw();
-    } else if (translationalVelocity > 1) {
+    } else if (Math.abs(translationalVelocity) > 1) {
 
       double calc = m_driftCorrectionPid.calculate(Robot.navX.getYaw(),
           m_desiredHeading);
 
-      if (Math.abs(calc) >= 0.55) {
+      if (Math.abs(calc) >= 0.1) 
+      {
         chassisSpeeds.omegaRadiansPerSecond -= calc;
       }
     }
@@ -359,6 +364,7 @@ public class DriveSubsystem extends SubsystemBase {
     
   }
 
+ 
   public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
 
     ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -374,7 +380,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
 
-    drive(kinematics.toSwerveModuleStates(chassisSpeeds));
+    //drive(kinematics.toSwerveModuleStates(chassisSpeeds));
 
     // SwerveModuleState[] state = kinematics.toSwerveModuleStates(chassisSpeeds);
 
@@ -421,6 +427,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void resetOdometry() {
     Robot.navX.reset();
+
     poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), new Pose2d());
   }
 
@@ -474,5 +481,16 @@ public class DriveSubsystem extends SubsystemBase {
 
     Logger.recordOutput("Odometry", getPose());
     Logger.recordOutput("angular velocity", Robot.navX.getRate());
+    Logger.recordOutput("Front Left Angle Error", frontLeft.m_turningPIDController.getSetpoint());
+    Logger.recordOutput("Front Right Angle Error", frontRight.m_turningPIDController.getSetpoint());
+    Logger.recordOutput("Back Left Angle Error", backLeft.m_turningPIDController.getSetpoint());
+    Logger.recordOutput("BackRight Angle Error", backRight.m_turningPIDController.getSetpoint());
+    Logger.recordOutput("Front Left Arya", frontLeft.getPosition().angle.getDegrees());
+    Logger.recordOutput("Back Left Arav", backLeft.getPosition().angle.getDegrees());
+    Logger.recordOutput("Front Right Alan", frontRight.getPosition().angle.getDegrees());
+    Logger.recordOutput("Back Right Aritra", backRight.getPosition().angle.getDegrees());
+    Logger.recordOutput("Alan is a persecuter", true);
+
+    // Logger.recordOuptu("Swervemodule states", Swer)
   }
 }
