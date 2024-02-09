@@ -6,6 +6,7 @@ package frc.robot;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -23,6 +24,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotMap.Swerve;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -107,23 +109,50 @@ public class Drivetrain extends SubsystemBase {
 
   private final Timer AVTimer = new Timer();
 
+  public CANcoderConfiguration configLeftFront;
+  public CANcoderConfiguration configRightFront;
+  public CANcoderConfiguration configLeftBack;  
+  public CANcoderConfiguration configRightBack;
+
+
   public Drivetrain() {
     Robot.navX.reset();
     AVTimer.start();
 
-    frontLeft = new SwerveModule(RobotMap.Swerve.LEFT_FRONT_DRIVE_ID, RobotMap.Swerve.LEFT_FRONT_STEER_ID,
-        RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID);
-    frontRight = new SwerveModule(RobotMap.Swerve.RIGHT_FRONT_DRIVE_ID, RobotMap.Swerve.RIGHT_FRONT_STEER_ID,
-        RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID);
-    backLeft = new SwerveModule(RobotMap.Swerve.LEFT_BACK_DRIVE_ID, RobotMap.Swerve.LEFT_BACK_STEER_ID,
-        RobotMap.Swerve.LEFT_BACK_STEER_CANCODER_ID);
-    backRight = new SwerveModule(RobotMap.Swerve.RIGHT_BACK_DRIVE_ID, RobotMap.Swerve.RIGHT_BACK_STEER_ID,
-        RobotMap.Swerve.RIGHT_BACK_STEER_CANCODER_ID);
+    configLeftFront = new CANcoderConfiguration();
+    configLeftFront.MagnetSensor.MagnetOffset = Swerve.LEFT_FRONT_STEER_OFFSET;
+    configRightFront = new CANcoderConfiguration();
+    configRightFront.MagnetSensor.MagnetOffset = Swerve.RIGHT_FRONT_STEER_OFFSET;
+    configLeftBack = new CANcoderConfiguration();
+    configLeftBack.MagnetSensor.MagnetOffset = Swerve.LEFT_BACK_STEER_OFFSET;
+    configRightBack = new CANcoderConfiguration();
+    configRightBack.MagnetSensor.MagnetOffset = Swerve.RIGHT_BACK_STEER_OFFSET;
 
-    frontLeft.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.LEFT_FRONT_STEER_OFFSET);
-    frontRight.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.RIGHT_FRONT_STEER_OFFSET);
-    backLeft.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.LEFT_BACK_STEER_OFFSET);
-    backRight.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.RIGHT_BACK_STEER_OFFSET);
+    frontLeft = new SwerveModule(
+      RobotMap.Swerve.LEFT_FRONT_DRIVE_ID, 
+      RobotMap.Swerve.LEFT_FRONT_STEER_ID,
+      RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID,
+      configLeftFront
+      );
+
+    frontRight = new SwerveModule(
+      RobotMap.Swerve.RIGHT_FRONT_DRIVE_ID, 
+      RobotMap.Swerve.RIGHT_FRONT_STEER_ID,
+      RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID,
+      configRightFront
+      );
+    backLeft = new SwerveModule(
+      RobotMap.Swerve.LEFT_BACK_DRIVE_ID, 
+      RobotMap.Swerve.LEFT_BACK_STEER_ID,
+      RobotMap.Swerve.LEFT_BACK_STEER_CANCODER_ID,
+      configLeftBack
+    );
+    backRight = new SwerveModule(
+      RobotMap.Swerve.RIGHT_BACK_DRIVE_ID, 
+      RobotMap.Swerve.RIGHT_BACK_STEER_ID,
+      RobotMap.Swerve.RIGHT_BACK_STEER_CANCODER_ID,
+      configRightBack  
+    );
 
     frontLeft.invertSteerMotor(true);
     frontRight.invertSteerMotor(true);
@@ -132,11 +161,6 @@ public class Drivetrain extends SubsystemBase {
     frontLeft.invertDriveMotor(true);
     frontRight.invertDriveMotor(true);
     backRight.invertDriveMotor(true);
-
-    frontLeft.getDriveEncoder().setPositionConversionFactor(RobotMap.Swerve.SWERVE_CONVERSION_FACTOR);
-    frontRight.getDriveEncoder().setPositionConversionFactor(RobotMap.Swerve.SWERVE_CONVERSION_FACTOR);
-    backLeft.getDriveEncoder().setPositionConversionFactor(RobotMap.Swerve.SWERVE_CONVERSION_FACTOR);
-    backRight.getDriveEncoder().setPositionConversionFactor(RobotMap.Swerve.SWERVE_CONVERSION_FACTOR);
 
     odometry = new SwerveDriveOdometry(
         kinematics,

@@ -1,7 +1,8 @@
 package frc.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.controls.ControlRequest;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -23,17 +24,25 @@ public class Climber extends SubsystemBase {
         armOne = new TalonFX(0);
         armTwo = new TalonFX(1);
 
-        armOne.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 30); // PIDx is normally 0, Timeout is
-                                                                                     // normally 30ms
-        armOne.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms);
-        armOne.configVelocityMeasurementWindow(60);
-        armOne.configSelectedFeedbackCoefficient(conversionFactor, 0, 30);
+        FeedbackConfigs FC = new FeedbackConfigs();
+        FC.RotorToSensorRatio = conversionFactor; // not sure which one the conversion factor is for lol
+        FC.SensorToMechanismRatio = conversionFactor; // not sure which one the conversion factor is for lol
 
-        armTwo.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms);
-        armTwo.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 30); // PIDx is normally 0, Timeout is
-                                                                                     // normally 30ms
-        armTwo.configVelocityMeasurementWindow(60);
-        armTwo.configSelectedFeedbackCoefficient(conversionFactor, 0, 30);
+        armOne.getConfigurator().apply(FC, 0.030);
+        armTwo.getConfigurator().apply(FC, 0.030);
+
+        // armOne.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 30); i think by default it should be integrated sensor so im not gonna do this
+                                                                                     
+        // armOne.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms);
+        // armOne.configVelocityMeasurementWindow(60);
+        // armTwo.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms);
+        // armTwo.configVelocityMeasurementWindow(60);
+
+        /*
+         * In Phoenix 6, the velocity rolling average window in Talon FX and CANcoder has been replaced with a Kalman filter, 
+         * resulting in a less noisy velocity signal with a minimal impact on latency. 
+         * As a result, the velocity measurement period/window configs are no longer necessary in Phoenix 6 and have been removed.
+         */
 
         armOneUpperLimit = RobotMap.Swerve.ARM_ONE_LIMIT;
         armTwoUpperLimit = RobotMap.Swerve.ARM_TWO_LIMIT;
@@ -46,27 +55,29 @@ public class Climber extends SubsystemBase {
     }
 
     public void resetEncoders() {
-        armOne.setSelectedSensorPosition(0);
-        armOne.setSelectedSensorPosition(0);
+        armOne.setPosition(0);
+        armTwo.setPosition(0); // think it's supposed to be armTwo
     }
 
     public void extendArms(double speed) {
-        double armOneSpeed = getArmEncoderPosition(1) < armOneUpperLimit ? speed : 0;
+        double armOneSpeed = getArmEncoderPosition(1) < armOneUpperLimit ? speed : 0; // is the speed in volts? 
         double armTwoSpeed = getArmEncoderPosition(2) < armTwoUpperLimit ? speed : 0;
-        armOne.set(ControlMode.PercentOutput, armOneSpeed);
-        armTwo.set(ControlMode.PercentOutput, armTwoSpeed);
+        armOne.setControl(new VoltageOut(armOneSpeed)); // migration docs said that this is replacement, but the prev example makes no sense, read comment below 
+        armTwo.setControl(new VoltageOut(armTwoSpeed));
+        // armOne.set(ControlMode.PercentOutput, armOneSpeed); // isn't percentoutput based off of voltagecompensation? we haven't even set it here tho
+        // armTwo.set(ControlMode.PercentOutput, armTwoSpeed);
     }
 
     public void retractArms(double speed) {
         speed = -Math.abs(speed);
-        double armOneSpeed = !isArmAtLowerLimit(1) ? speed : 0;
+        double armOneSpeed = !isArmAtLowerLimit(1) ? speed : 0; 
         double armTwoSpeed = !isArmAtLowerLimit(2) ? speed : 0;
-        armOne.set(ControlMode.PercentOutput, armOneSpeed);
-        armTwo.set(ControlMode.PercentOutput, armTwoSpeed);
+        armOne.setControl(new VoltageOut(armOneSpeed)); 
+        armTwo.setControl(new VoltageOut(armTwoSpeed));
     }
 
     public double getArmEncoderPosition(int armIndex) {
-        return armIndex == 1 ? armOne.getSelectedSensorPosition() : armTwo.getSelectedSensorPosition();
+        return armIndex == 1 ? armOne.getPosition().refresh().getValue() : armTwo.getPosition().refresh().getValue();
     }
 
     public boolean isArmAtLimit(int armIndex) {
@@ -79,8 +90,8 @@ public class Climber extends SubsystemBase {
     }
 
     public void stopArms() {
-        armOne.set(ControlMode.PercentOutput, 0);
-        armTwo.set(ControlMode.PercentOutput, 0);
+        armOne.set(0);
+        armTwo.set(0);
     }
 
     @Override
