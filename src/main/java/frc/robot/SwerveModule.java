@@ -59,6 +59,7 @@ public class SwerveModule {
       2 * Math.PI; // radians per second squared
 
   private final TalonFX driveMotor;
+
   private final CANSparkMax turningMotor;
 
   private final VelocityVoltage voltageVelocityDriveControl = new VelocityVoltage(0, 0, true, 0, 0, true, false, false);
@@ -116,7 +117,8 @@ public class SwerveModule {
       
     driveMotor.setNeutralMode(NeutralModeValue.Brake);
     turningMotor.setIdleMode(IdleMode.kBrake);
-      
+    
+    driveMotor.setPosition(0);
     CurrentLimitsConfigs clc = new CurrentLimitsConfigs().withStatorCurrentLimit(40).withSupplyCurrentLimit(40);
 
     driveMotor.getConfigurator().apply(clc);

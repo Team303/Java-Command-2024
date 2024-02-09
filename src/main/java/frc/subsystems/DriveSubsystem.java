@@ -76,10 +76,10 @@ public class DriveSubsystem extends SubsystemBase {
   public static final double kMaxSpeed = 5.2; // 5.2 meters per second
   public static final double kMaxAngularSpeed = kMaxSpeed / (Math.hypot(0.381, 0.381)); // radians per second
 
-  private final Translation2d frontLeftLocation = new Translation2d(-0.381, 0.381);
-  private final Translation2d frontRightLocation = new Translation2d(0.381, 0.381);
-  private final Translation2d backLeftLocation = new Translation2d(-0.381, -0.381);
-  private final Translation2d backRightLocation = new Translation2d(0.381, -0.381);
+  private final Translation2d frontLeftLocation = new Translation2d(0.381, 0.381);
+  private final Translation2d frontRightLocation = new Translation2d(0.381, -0.381);
+  private final Translation2d backLeftLocation = new Translation2d(-0.381, 0.381);
+  private final Translation2d backRightLocation = new Translation2d(-0.381, -0.381);
 
   private final SwerveModule frontLeft;
   private final SwerveModule frontRight;
@@ -87,7 +87,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final SwerveModule backRight;
   int jump=0;
   // private final SwerveDriveOdometry odometry;
-  private final PIDController m_driftCorrectionPid = new PIDController(0.12, 0, 0);
+  private final PIDController m_driftCorrectionPid = new PIDController(0.05, 0, 0);
   // private Pose2d pose = new Pose2d(0.0, 0.0, new Rotation2d());
 
   private ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
@@ -104,13 +104,13 @@ public class DriveSubsystem extends SubsystemBase {
   public static final GenericEntry BACK_RIGHT_ENC = DRIVEBASE_TAB.add("back right enc", 0).withPosition(7, 0)
       .withSize(2, 1).getEntry();
 
-  public static final GenericEntry backRightDriveOutput = DRIVEBASE_TAB.add("back right drive ouptut", 0)
+  public static final GenericEntry backRightDriveEncoder = DRIVEBASE_TAB.add("back right drive enc", 0)
       .withPosition(7, 1).withSize(2, 1).getEntry();
-  public static final GenericEntry backLeftDriveOutput = DRIVEBASE_TAB.add("back left drive ouptut", 0)
+  public static final GenericEntry backLeftDriveEncoder = DRIVEBASE_TAB.add("back left drive enc", 0)
       .withPosition(5, 1).withSize(2, 1).getEntry();
-  public static final GenericEntry frontLeftDriveOutput = DRIVEBASE_TAB.add("front left drive ouptut", 0)
+  public static final GenericEntry frontLeftDriveEncoder = DRIVEBASE_TAB.add("front left drive enc", 0)
       .withPosition(0, 1).withSize(2, 1).getEntry();
-  public static final GenericEntry frontRightDriveOutput = DRIVEBASE_TAB.add("front right drive ouptut", 0)
+  public static final GenericEntry frontRightDriveEncoder = DRIVEBASE_TAB.add("front right drive enc", 0)
       .withPosition(2, 1).withSize(2, 1).getEntry();
 
   public static final GenericEntry backRightTurnOutput = DRIVEBASE_TAB.add("back right turn ouptut", 0)
@@ -184,7 +184,7 @@ public class DriveSubsystem extends SubsystemBase {
       RobotMap.Swerve.LEFT_FRONT_STEER_ID,
       RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID,
       configLeftFront,
-      new PIDController(8, 0, 0)
+      new PIDController(6, 0, 0)
       );
 
     frontRight = new SwerveModule(
@@ -192,21 +192,21 @@ public class DriveSubsystem extends SubsystemBase {
       RobotMap.Swerve.RIGHT_FRONT_STEER_ID,
       RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID,
       configRightFront,
-      new PIDController(8, 0, 0)
+      new PIDController(6, 0, 0)
       );
     backLeft = new SwerveModule(
       RobotMap.Swerve.LEFT_BACK_DRIVE_ID, 
       RobotMap.Swerve.LEFT_BACK_STEER_ID,
       RobotMap.Swerve.LEFT_BACK_STEER_CANCODER_ID,
       configLeftBack,
-      new PIDController(8, 0, 0)
+      new PIDController(6, 0, 0)
     );
     backRight = new SwerveModule(
       RobotMap.Swerve.RIGHT_BACK_DRIVE_ID, 
       RobotMap.Swerve.RIGHT_BACK_STEER_ID,
       RobotMap.Swerve.RIGHT_BACK_STEER_CANCODER_ID,
       configRightBack,
-      new PIDController(8, 0, 0)
+      new PIDController(6, 0, 0)
     );
 
     // frontLeft.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.LEFT_FRONT_STEER_OFFSET);
@@ -219,10 +219,10 @@ public class DriveSubsystem extends SubsystemBase {
     backRight.invertSteerMotor(true);
     backLeft.invertSteerMotor(true);
 
-    frontLeft.invertDriveMotor(false);
+    frontLeft.invertDriveMotor(true);
     backLeft.invertDriveMotor(true);
     frontRight.invertDriveMotor(false);
-    backRight.invertDriveMotor(true);
+    backRight.invertDriveMotor(false);
 
     AprilTagFieldLayout initialLayout;
     // try {
@@ -455,15 +455,15 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
 
-    FRONT_LEFT_ENC.setDouble(frontLeft.turningEncoder.getAbsolutePosition().refresh().getValue()*360);
-    FRONT_RIGHT_ENC.setDouble(frontRight.turningEncoder.getAbsolutePosition().refresh().getValue()*360);
-    BACK_LEFT_ENC.setDouble(backLeft.turningEncoder.getAbsolutePosition().refresh().getValue()*360);
-    BACK_RIGHT_ENC.setDouble(backRight.turningEncoder.getAbsolutePosition().refresh().getValue()*360);
+    FRONT_LEFT_ENC.setDouble(frontLeft.turningEncoder.getAbsolutePosition().refresh().getValue());
+    FRONT_RIGHT_ENC.setDouble(frontRight.turningEncoder.getAbsolutePosition().refresh().getValue());
+    BACK_LEFT_ENC.setDouble(backLeft.turningEncoder.getAbsolutePosition().refresh().getValue());
+    BACK_RIGHT_ENC.setDouble(backRight.turningEncoder.getAbsolutePosition().refresh().getValue());
 
-    frontLeftDriveOutput.setDouble(frontLeft.getMainDriveOutput());
-    backLeftDriveOutput.setDouble(backLeft.getMainDriveOutput());
-    frontRightDriveOutput.setDouble(frontRight.getMainDriveOutput());
-    backRightDriveOutput.setDouble(backRight.getMainDriveOutput());
+    frontLeftDriveEncoder.setDouble(frontLeft.getPosition().distanceMeters);
+    backLeftDriveEncoder.setDouble(backLeft.getPosition().distanceMeters);
+    frontRightDriveEncoder.setDouble(frontRight.getPosition().distanceMeters);
+    backRightDriveEncoder.setDouble(backRight.getPosition().distanceMeters);
 
     frontLeftTurnOutput.setDouble(frontLeft.getMainTurnOutput());
     backLeftTurnOutput.setDouble(backLeft.getMainTurnOutput());
@@ -490,6 +490,8 @@ public class DriveSubsystem extends SubsystemBase {
     Logger.recordOutput("Front Right Alan", frontRight.getPosition().angle.getDegrees());
     Logger.recordOutput("Back Right Aritra", backRight.getPosition().angle.getDegrees());
     Logger.recordOutput("Alan is a persecuter", true);
+    Logger.recordOutput("Swerve Module States", kinematics.toSwerveModuleStates(chassisSpeeds));
+    Logger.recordOutput("Real Swerve Module States", getModuleStates());
 
     // Logger.recordOuptu("Swervemodule states", Swer)
   }
