@@ -63,7 +63,7 @@ public class Robot extends LoggedRobot {
 	//controller.a().onTrue(new ManualSetAngle(1.98, 3.96));
 	//controller.b().onTrue(new ManualSetAngle(1.98, 3.96));
 	controller.a().onTrue(new InstantCommand(() -> shooter.setFactor(1.0)));
-	controller.b().onTrue(new InstantCommand(() -> shooter.setFactor(0.6)));
+	controller.b().onTrue(new InstantCommand(() -> shooter.setFactor(0.8)));
 
 
 }

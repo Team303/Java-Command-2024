@@ -1,7 +1,26 @@
 {
+  "HALProvider": {
+    "Other Devices": {
+      "DutyCycleEncoder[1]": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo"
+    }
+  },
+  "NetworkTables": {
+    "retained": {
+      "SmartDashboard": {
+        "DB": {
+          "open": true
+        },
+        "open": true
+      }
     }
   },
   "NetworkTables Info": {

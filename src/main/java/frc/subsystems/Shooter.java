@@ -9,10 +9,17 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import frc.robot.Robot;
 import frc.robot.RobotMap;
+import com.ctre.phoenix6.controls.Follower;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.BangBangController;
@@ -28,6 +35,9 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -37,23 +47,30 @@ public class Shooter extends SubsystemBase {
     public final TalonFX leftFlywheelMotor;
     public final TalonFX rightFlywheelMotor;
 
-    public final BangBangController flywheelBangController;
+    public final BangBangController flywheelLeftBangController;
+    public final BangBangController flywheelRightBangController;
+
     public final SimpleMotorFeedforward flywheelFeedForwardLeft;
     public final SimpleMotorFeedforward flywheelFeedForwardRight;
+
+
+    public final VelocityVoltage flywheelVoltageLeft = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
+    public final VelocityVoltage flywheelVoltageRight = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
+
+    //public final MotionMagicVelocityDutyCycle flywheelVoltageOutputLeft = new MotionMagicVelocityDutyCycle(0, 0, true, 0, 0, true, false, false);
+    //public final MotionMagicVelocityDutyCycle flywheelVoltageOutputRight = new MotionMagicVelocityDutyCycle(0, 0, true, 0, 0, true, false, false);
 
     //Angle stuff
     public final TalonFX leftAngleMotor;
     public final TalonFX rightAngleMotor;
 
-    public final ProfiledPIDController leftShooterAnglePIDController;
-    public final ProfiledPIDController rightShooterAnglePIDController;
-    public final ArmFeedforward leftShooterAngleFeedForward;
-    public final ArmFeedforward rightShooterAngleFeedForward;
+    public final ProfiledPIDController anglePIDController;
+    public final ArmFeedforward angleFeedForward;
 
-    public final DutyCycleEncoder shooterAngleEncoder;
+    public final DutyCycleEncoder angleEncoder;
 
     //Limit Switch Stuff
-    public final DigitalInput angleLimitSwitch;
+    //public final DigitalInput angleLimitSwitch;
 
     //Interploation Stuff
     public InterpolatingDoubleTreeMap angleInterpolator = new InterpolatingDoubleTreeMap();
@@ -86,9 +103,12 @@ public class Shooter extends SubsystemBase {
 
     //Advantage Scope Sims
     public static Mechanism2d shooterSim;
+    public static MechanismLigament2d simulatorRoot;
+    public static MechanismLigament2d realRoot;
 
     //Extras
-    public static double diffFactor = 1.0;
+    public double diffFactor = 1.0;
+    public double pivotAngle = 0.0;
 
     public Shooter() {
         //Flywheel Initalization
@@ -101,7 +121,8 @@ public class Shooter extends SubsystemBase {
         leftFlywheelMotor.setInverted(false);
         rightFlywheelMotor.setInverted(true);
         
-        flywheelBangController = new BangBangController();
+        flywheelLeftBangController = new BangBangController();
+        flywheelRightBangController = new BangBangController();
 
         flywheelFeedForwardLeft = new SimpleMotorFeedforward(RobotMap.Shooter.FLYWHEEL_FEED_FORWARD_KS, 
                                                         RobotMap.Shooter.FLYWHEEL_FEED_FORWARD_KV,
@@ -111,6 +132,18 @@ public class Shooter extends SubsystemBase {
                                                         RobotMap.Shooter.FLYWHEEL_FEED_FORWARD_KV,
                                                         RobotMap.Shooter.FLYWHEEL_FEED_FORWARD_KA);
 
+        TalonFXConfiguration flywheelConfigs = new TalonFXConfiguration();
+
+        flywheelConfigs.Slot0.kP = 0.3;
+        flywheelConfigs.Slot0.kI = 40;
+        flywheelConfigs.Slot0.kD = 0.0000;
+        flywheelConfigs.Slot0.kV = 0;
+
+        flywheelConfigs.Voltage.PeakForwardVoltage = 12;
+        flywheelConfigs.Voltage.PeakReverseVoltage = -12;
+
+        leftFlywheelMotor.getConfigurator().apply(flywheelConfigs);
+        rightFlywheelMotor.getConfigurator().apply(flywheelConfigs);
 
 
         //Angle Initalization
@@ -121,70 +154,81 @@ public class Shooter extends SubsystemBase {
         leftAngleMotor.setNeutralMode(NeutralModeValue.Brake);
         rightAngleMotor.setNeutralMode(NeutralModeValue.Brake);
 
-        leftAngleMotor.setInverted(false);
-        rightAngleMotor.setInverted(true);
-
-        leftShooterAngleFeedForward = new ArmFeedforward(RobotMap.Shooter.ANGLE_FEED_FORWARD_KS, 
+        angleFeedForward = new ArmFeedforward(RobotMap.Shooter.ANGLE_FEED_FORWARD_KS, 
                                                          RobotMap.Shooter.ANGLE_FEED_FORWARD_KG, 
                                                          RobotMap.Shooter.ANGLE_FEED_FORWARD_KV, 
                                                          RobotMap.Shooter.ANGLE_FEED_FORWARD_KA);
 
-        rightShooterAngleFeedForward = new ArmFeedforward(RobotMap.Shooter.ANGLE_FEED_FORWARD_KS, 
-                                                          RobotMap.Shooter.ANGLE_FEED_FORWARD_KG, 
-                                                          RobotMap.Shooter.ANGLE_FEED_FORWARD_KV, 
-                                                          RobotMap.Shooter.ANGLE_FEED_FORWARD_KA);
-
-        leftShooterAnglePIDController = new ProfiledPIDController(RobotMap.Shooter.ANGLE_PID_CONTROLLER_P, 
-                                                                  RobotMap.Shooter.ANGLE_PID_CONTROLLER_I,
-                                                                  RobotMap.Shooter.ANGLE_PID_CONTROLLER_D, 
-                                                                  pidConstraints);
+        anglePIDController = new ProfiledPIDController(RobotMap.Shooter.ANGLE_PID_CONTROLLER_P, 
+                                                       RobotMap.Shooter.ANGLE_PID_CONTROLLER_I,
+                                                       RobotMap.Shooter.ANGLE_PID_CONTROLLER_D, 
+                                                       pidConstraints);
         
-        rightShooterAnglePIDController = new ProfiledPIDController(RobotMap.Shooter.ANGLE_PID_CONTROLLER_P, 
-                                                                   RobotMap.Shooter.ANGLE_PID_CONTROLLER_I,
-                                                                   RobotMap.Shooter.ANGLE_PID_CONTROLLER_D, 
-                                                                   pidConstraints);
 
-        leftShooterAnglePIDController.enableContinuousInput(-180, 180);
-        rightShooterAnglePIDController.enableContinuousInput(-180, 180);
+        anglePIDController.enableContinuousInput(-180, 180);
 
-        shooterAngleEncoder = new DutyCycleEncoder(RobotMap.Shooter.ANGLE_ENCODER_ID);
-        //shooterAngleEncoder.setDistancePerRotation(diffFactor); -- Use Gear Ratio Prob
+        rightAngleMotor.setControl(new Follower(leftAngleMotor.getDeviceID(), true));
 
+        angleEncoder = new DutyCycleEncoder(RobotMap.Shooter.ANGLE_ENCODER_ID);
 
         //Limit Switch Initalization
-        angleLimitSwitch = new DigitalInput(RobotMap.Shooter.ANGLE_HARD_STOP_SWITCH_ID);
+        //angleLimitSwitch = new DigitalInput(RobotMap.Shooter.ANGLE_HARD_STOP_SWITCH_ID);
 
         //Interpolation Initalization
         initalizeInterpolationTable();
 
         //Current Limit Initalization
-        CurrentLimitsConfigs clc = new CurrentLimitsConfigs().withStatorCurrentLimit(40).withSupplyCurrentLimit(40);
+        CurrentLimitsConfigs clc40 = new CurrentLimitsConfigs().withStatorCurrentLimit(40).withSupplyCurrentLimit(40);
+        //CurrentLimitsConfigs clc30 = new CurrentLimitsConfigs().withStatorCurrentLimit(30).withSupplyCurrentLimit(30);
         
-        leftFlywheelMotor.getConfigurator().apply(clc);
-        rightFlywheelMotor.getConfigurator().apply(clc);
-        leftAngleMotor.getConfigurator().apply(clc);
-        rightAngleMotor.getConfigurator().apply(clc);
+        leftFlywheelMotor.getConfigurator().apply(clc40);
+        rightFlywheelMotor.getConfigurator().apply(clc40);
+
+        leftAngleMotor.getConfigurator().apply(clc40);
+        rightAngleMotor.getConfigurator().apply(clc40);
 
         resetFlywheelEncoders();
+
+        //Simulation Initalization
+        shooterSim = new Mechanism2d(300 / 33.07, 300 / 33.07);
+        MechanismRoot2d shooterRoot = shooterSim.getRoot("Shooter", 
+                                                         (RobotMap.Shooter.SIMULATION_OFFSET + 150) / RobotMap.Shooter.SIMULATION_SCALE,
+                                                         (RobotMap.Shooter.SIMULATION_OFFSET + 150) / RobotMap.Shooter.SIMULATION_SCALE);
+        
+        simulatorRoot = shooterRoot.append(
+                new MechanismLigament2d(
+                        "Arm",
+                        (double) (RobotMap.Shooter.SHOOTER_SIM_LENGTH) / RobotMap.Shooter.SIMULATION_SCALE,
+                        0,
+                        5.0,
+                        new Color8Bit(255, 0, 0)));
+
+        realRoot = shooterRoot.append(
+                new MechanismLigament2d(
+                        "Arm Real",
+                        (double) (RobotMap.Shooter.SHOOTER_SIM_LENGTH) / RobotMap.Shooter.SIMULATION_SCALE,
+                        0,
+                        5.0,
+                        new Color8Bit(255, 255, 0)));
     }
 
 
     //Flywheel Functions
     public double calculateFlywheelSpeedLeft(double speed) {
-        final double bangOutput = flywheelBangController.calculate(leftFlywheelMotor.getVelocity().refresh().getValueAsDouble(), (speed / (2 * Math.PI * 0.0508)));
+        final double bangOutput = flywheelLeftBangController.calculate(leftFlywheelMotor.getVelocity().refresh().getValueAsDouble(), (speed / (2 * Math.PI * 0.0508)));
         final double flywheelFeedForwardOutput = flywheelFeedForwardLeft.calculate(speed);
 
         
         DESIRED_LEFT_RPM_ENTRY.setDouble(speed / (2 * Math.PI * 0.0508) * 60);
-        return (0.6 * bangOutput) + (flywheelFeedForwardOutput);
+        return (12 * bangOutput) + (flywheelFeedForwardOutput);
     }
 
     public double calculateFlywheelSpeedRight(double speed) {
-        final double bangOutput = flywheelBangController.calculate(rightFlywheelMotor.getVelocity().refresh().getValueAsDouble(), (speed / (2 * Math.PI * 0.0508)));
+        final double bangOutput = flywheelRightBangController.calculate(rightFlywheelMotor.getVelocity().refresh().getValueAsDouble(), (speed / (2 * Math.PI * 0.0508)));
         final double flywheelFeedForwardOutput = flywheelFeedForwardRight.calculate(speed);
 
         DESIRED_RIGHT_RPM_ENTRY.setDouble(speed / (2 * Math.PI * 0.0508) * 60);
-        return (0.6 * bangOutput) + (flywheelFeedForwardOutput);
+        return (12 * bangOutput) + (flywheelFeedForwardOutput);
 
     }
 
@@ -198,25 +242,19 @@ public class Shooter extends SubsystemBase {
 
 
     //Angle Functions
-    public double calculateAngleSpeedLeft(double angle) {
-         final double angleOutput = leftShooterAnglePIDController.calculate(getAbsoluteShooterAngle(), angle);
-         final double angleFeedforward = leftShooterAngleFeedForward.calculate(angle, leftShooterAnglePIDController.getSetpoint().velocity);
-         return angleOutput + angleFeedforward;
-    }
-
-
-    public double calculateAngleSpeedRight(double angle) {
-         final double angleOutput = rightShooterAnglePIDController.calculate(getAbsoluteShooterAngle(), angle);
-         final double angleFeedforward = rightShooterAngleFeedForward.calculate(angle, rightShooterAnglePIDController.getSetpoint().velocity);
+    public double calculateAngleSpeed(double angle) {
+         final double angleOutput = anglePIDController.calculate(getAbsoluteShooterAngle(), angle);
+         final double angleFeedforward = angleFeedForward.calculate(angle, anglePIDController.getSetpoint().velocity);
          return angleOutput + angleFeedforward;
     }
 
     public double getAbsoluteShooterAngle() {
-        return shooterAngleEncoder.getAbsolutePosition();
+        return angleEncoder.getAbsolutePosition();
     }
 
 	public boolean atHardLimit() {
-         return !angleLimitSwitch.get();
+        return false;
+        //return !angleLimitSwitch.get();
     }
 
     public void resetFlywheelEncoders() {
@@ -254,18 +292,20 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
         //Flywheel Entries
-        ACTUAL_LEFT_RPM_ENTRY.setDouble(getVelocitySpeedLeft() * 60);
+        ACTUAL_LEFT_RPM_ENTRY.setDouble(-getVelocitySpeedLeft() * 60);
         ACTUAL_RIGHT_RPM_ENTRY.setDouble(getVelocitySpeedRight() * 60);
         RPM_DIFF_FACTOR_ENTRY.setDouble(diffFactor);
 
         //Angle Entries
         ACTUAL_SHOOTER_ANGLE_ENTRY.setDouble(Math.toDegrees(getAbsoluteShooterAngle()));
+        realRoot.setAngle(getAbsoluteShooterAngle());
+        simulatorRoot.setAngle(pivotAngle);
 
         //Limit Entries
         ANGLE_LIMIT_SWITCH_STATUS_ENTRY.setBoolean(atHardLimit());
 
-
-        // Logger.recordOutput("Shooter Simulation", shooterSim);
+        SmartDashboard.putData("IntakeSim", shooterSim);
+        Logger.recordOutput("ShooterMechanism", shooterSim);
     }
     
 }

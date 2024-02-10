@@ -38,16 +38,16 @@ public class RobotMap {
 
 	public static final class Shooter {
 		//Flywheel Constants
-		public static final int LEFT_FLYWHEEL_MOTOR_ID = 2; // NEED TO CHANGE
-		public static final int RIGHT_FLYWHEEL_MOTOR_ID = 3; // NEED TO CHANGE
+		public static final int LEFT_FLYWHEEL_MOTOR_ID = 1; // NEED TO CHANGE
+		public static final int RIGHT_FLYWHEEL_MOTOR_ID = 2; // NEED TO CHANGE
 
 		public static final double FLYWHEEL_FEED_FORWARD_KS = 0; 
-		public static final double FLYWHEEL_FEED_FORWARD_KV = 0.38;
+		public static final double FLYWHEEL_FEED_FORWARD_KV = 1;
 		public static final double FLYWHEEL_FEED_FORWARD_KA = 4.34;
 
 		//Angle Constants
-		public static final int LEFT_ANGLE_MOTOR_ID = 0; // NEED TO CHANGE
-		public static final int RIGHT_ANGLE_MOTOR_ID = 3; // NEED TO CHANGE
+		public static final int LEFT_ANGLE_MOTOR_ID = 3; // NEED TO CHANGE
+		public static final int RIGHT_ANGLE_MOTOR_ID = 4; // NEED TO CHANGE
 
 		public static final double ANGLE_FEED_FORWARD_KS = 0.0; // NEED TO CHANGE
 		public static final double ANGLE_FEED_FORWARD_KG = 0.12; // NEED TO CHANGE
@@ -59,8 +59,12 @@ public class RobotMap {
 		public static final double ANGLE_PID_CONTROLLER_I = 0.0; // NEED TO CHANGE
 		public static final double ANGLE_PID_CONTROLLER_D = 0.0; // NEED TO CHANGE
 
-		public static final int ANGLE_HARD_STOP_SWITCH_ID = 0;
-		public static final int ANGLE_ENCODER_ID = 1;
+		//public static final int ANGLE_HARD_STOP_SWITCH_ID = 1;
+		public static final int ANGLE_ENCODER_ID = 2;
+
+
+		public static final double SIMULATION_OFFSET = 0; //NEED TO CHANGE
+		public static final double SIMULATION_SCALE = 0; //NEED TO CHANGE
 
 
 		//Extra

@@ -2,6 +2,11 @@ package frc.commands.shooter;
 
 import static frc.robot.Robot.shooter;
 import static frc.subsystems.Shooter.INTERPOLATED_DEGREES_ENTRY;
+import static frc.subsystems.Shooter.DESIRED_LEFT_RPM_ENTRY;
+import static frc.subsystems.Shooter.DESIRED_RIGHT_RPM_ENTRY;
+
+import com.ctre.phoenix6.controls.VelocityVoltage;
+
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.FieldConstants;
 import frc.robot.util.FieldRelativeAcceleration;
@@ -18,16 +23,17 @@ public class ManualSetAngleSpeaker extends Command {
     // will work once merged with master
     Translation2d target = FieldConstants.centerSpeakOpening.getTranslation();
     // double range = FieldConstants.centerSpeakOpening.getTranslation().getDistance(swerve.getPose());
-    double range = 0;
+    double range = 30;
 
     //TODO: Make the range/height not a parameter once merged into master
     public ManualSetAngleSpeaker(double height, double range) {
         addRequirements(shooter);
         
-        desiredVelocityRight = 31;
+        desiredVelocityRight = 22;
 
         desiredAngle = shooter.interpolateAngle(range);
         INTERPOLATED_DEGREES_ENTRY.setDouble(Math.toDegrees((desiredAngle)));
+        shooter.pivotAngle = Math.toDegrees(desiredAngle);
 
         //FieldRelativeSpeeds curVel = swerve.currentSpeed;
         //FieldRelativeAcceleration curAccel = swerve.currentAccel;
@@ -73,11 +79,23 @@ public class ManualSetAngleSpeaker extends Command {
     public void execute() {
         desiredVelocityLeft = desiredVelocityRight * shooter.getFactor();
 
-        shooter.leftFlywheelMotor.setVoltage(shooter.calculateFlywheelSpeedLeft(desiredVelocityLeft));
-        //shooter.rightFlywheelMotor.setVoltage(shooter.calculateFlywheelSpeedRight(desiredVelocityRight));
+        // double leftCalcVelocity = shooter.calculateFlywheelSpeedLeft(desiredVelocityLeft /  (2 * Math.PI * 0.0508));
+        // double rightCalcVelocity = shooter.calculateFlywheelSpeedRight(desiredVelocityRight /  (2 * Math.PI * 0.0508));
+        DESIRED_LEFT_RPM_ENTRY.setDouble(desiredVelocityLeft / (2 * Math.PI * 0.0508) * 60);        
+        DESIRED_RIGHT_RPM_ENTRY.setDouble(desiredVelocityRight / (2 * Math.PI * 0.0508) * 60);
+
+        shooter.leftFlywheelMotor.setControl(shooter.flywheelVoltageLeft.withVelocity(-(desiredVelocityLeft / (2 * Math.PI * 0.0508))));
+        shooter.rightFlywheelMotor.setControl(shooter.flywheelVoltageRight.withVelocity(desiredVelocityRight /  (2 * Math.PI * 0.0508)));
+
+        //FOC Enabled
+
+
+        //FOC Enabled
+        //shooter.leftFlywheelMotor.setControl(shooter.flywheelVoltageOutputLeft.withVelocity(leftCalcVelocity / (2 * Math.PI * 0.0508)));
+        //shooter.rightFlywheelMotor.setControl(shooter.flywheelVoltageOutputRight.withVelocity(rightCalcVelocity / (2 * Math.PI * 0.0508)));
 
         // shooter.leftAngleMotor.setVoltage(shooter.calculateAngleSpeedLeft(desiredAngle));
-        shooter.rightAngleMotor.setVoltage(shooter.calculateAngleSpeedRight(desiredAngle));
+        //shooter.rightAngleMotor.setVoltage(shooter.calculateAngleSpeedRight(desiredAngle));
     } 
 
     @Override
@@ -86,7 +104,7 @@ public class ManualSetAngleSpeaker extends Command {
     }
 
     public void end(boolean interrupted) {
-        shooter.leftFlywheelMotor.setVoltage(0);
+        //shooter.leftFlywheelMotor.setVoltage(0);
     }
 
 
