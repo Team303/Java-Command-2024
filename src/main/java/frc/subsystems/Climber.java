@@ -1,12 +1,19 @@
 package frc.subsystems;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 public class Climber extends SubsystemBase {
@@ -19,17 +26,45 @@ public class Climber extends SubsystemBase {
     private final DigitalInput armOneLimitSwitch;
     private final DigitalInput armTwoLimitSwitch;
 
+    public static final ShuffleboardTab CLIMBER_TAB = Shuffleboard.getTab("Climber");
+
+    public static final GenericEntry ARM_ONE_ENC = CLIMBER_TAB.add("Arm One Position", 0)
+            .withPosition(0, 0)
+            .withSize(2, 1)
+            .getEntry();
+
+    public static final GenericEntry ARM_TWO_ENC = CLIMBER_TAB.add("Arm Two Position", 0)
+            .withPosition(0, 1)
+            .withSize(2, 1)
+            .getEntry();
+
+    public static final GenericEntry ARM_ONE_SWITCH = CLIMBER_TAB.add("Arm One Limit Switch", false)
+            .withPosition(3, 0)
+            .withSize(2, 1)
+            .getEntry();
+
+    public static final GenericEntry ARM_TWO_SWITCH = CLIMBER_TAB.add("Arm One Limit Switch", false)
+            .withPosition(3, 1)
+            .withSize(2, 1)
+            .getEntry();
+
     public Climber() {
-        double conversionFactor = 1 / 2048.0; // arbitrary value - change to the actual CPR
         armOne = new TalonFX(0);
         armTwo = new TalonFX(1);
 
         FeedbackConfigs FC = new FeedbackConfigs();
-        FC.RotorToSensorRatio = conversionFactor; // not sure which one the conversion factor is for lol
-        FC.SensorToMechanismRatio = conversionFactor; // not sure which one the conversion factor is for lol
+        FC.RotorToSensorRatio = RobotMap.Climber.ROTOR_TO_SENSOR_FACTOR; 
+        FC.SensorToMechanismRatio = RobotMap.Climber.SENSOR_TO_MECHANISM_FACTOR; // not sure which one the conversion factor is for lol
 
         armOne.getConfigurator().apply(FC, 0.030);
         armTwo.getConfigurator().apply(FC, 0.030);
+
+        CurrentLimitsConfigs CLC = new CurrentLimitsConfigs();
+        CLC.StatorCurrentLimit = 40; 
+        CLC.SupplyCurrentLimit = 40; 
+
+        armOne.getConfigurator().apply(CLC);
+        armTwo.getConfigurator().apply(CLC);
 
         // armOne.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 30); i think by default it should be integrated sensor so im not gonna do this
                                                                                      
@@ -44,12 +79,12 @@ public class Climber extends SubsystemBase {
          * As a result, the velocity measurement period/window configs are no longer necessary in Phoenix 6 and have been removed.
          */
 
-        armOneUpperLimit = RobotMap.Swerve.ARM_ONE_LIMIT;
-        armTwoUpperLimit = RobotMap.Swerve.ARM_TWO_LIMIT;
+        armOneUpperLimit = RobotMap.Climber.ARM_ONE_LIMIT;
+        armTwoUpperLimit = RobotMap.Climber.ARM_TWO_LIMIT;
 
         // Limit switches
-        armOneLimitSwitch = new DigitalInput(RobotMap.Swerve.ARM_ONE_LIMIT_SWITCH);
-        armTwoLimitSwitch = new DigitalInput(RobotMap.Swerve.ARM_TWO_LIMIT_SWITCH);
+        armOneLimitSwitch = new DigitalInput(RobotMap.Climber.ARM_ONE_LIMIT_SWITCH);
+        armTwoLimitSwitch = new DigitalInput(RobotMap.Climber.ARM_TWO_LIMIT_SWITCH);
 
         resetEncoders();
     }
@@ -62,8 +97,8 @@ public class Climber extends SubsystemBase {
     public void extendArms(double speed) {
         double armOneSpeed = getArmEncoderPosition(1) < armOneUpperLimit ? speed : 0; // is the speed in volts? 
         double armTwoSpeed = getArmEncoderPosition(2) < armTwoUpperLimit ? speed : 0;
-        armOne.setControl(new VoltageOut(armOneSpeed)); // migration docs said that this is replacement, but the prev example makes no sense, read comment below 
-        armTwo.setControl(new VoltageOut(armTwoSpeed));
+        armOne.setControl(new VoltageOut(armOneSpeed).withEnableFOC(true).withOverrideBrakeDurNeutral(true)); // migration docs said that this is replacement, but the prev example makes no sense, read comment below 
+        armTwo.setControl(new VoltageOut(armTwoSpeed).withEnableFOC(true).withOverrideBrakeDurNeutral(true));
         // armOne.set(ControlMode.PercentOutput, armOneSpeed); // isn't percentoutput based off of voltagecompensation? we haven't even set it here tho
         // armTwo.set(ControlMode.PercentOutput, armTwoSpeed);
     }
@@ -72,8 +107,8 @@ public class Climber extends SubsystemBase {
         speed = -Math.abs(speed);
         double armOneSpeed = !isArmAtLowerLimit(1) ? speed : 0; 
         double armTwoSpeed = !isArmAtLowerLimit(2) ? speed : 0;
-        armOne.setControl(new VoltageOut(armOneSpeed)); 
-        armTwo.setControl(new VoltageOut(armTwoSpeed));
+        armOne.setControl(new VoltageOut(armOneSpeed).withEnableFOC(true).withOverrideBrakeDurNeutral(true)); 
+        armTwo.setControl(new VoltageOut(armTwoSpeed).withEnableFOC(true).withOverrideBrakeDurNeutral(true));
     }
 
     public double getArmEncoderPosition(int armIndex) {
@@ -90,14 +125,20 @@ public class Climber extends SubsystemBase {
     }
 
     public void stopArms() {
-        armOne.set(0);
-        armTwo.set(0);
+        armOne.setControl(new VoltageOut(0).withEnableFOC(true).withOverrideBrakeDurNeutral(true));
+        armTwo.setControl(new VoltageOut(0).withEnableFOC(true).withOverrideBrakeDurNeutral(true));
     }
 
     @Override
     public void periodic() {
         System.out.println("Aritra code bangs");
-    }
+
+        ARM_ONE_ENC.setDouble(armOne.getPosition().refresh().getValue());
+        ARM_TWO_ENC.setDouble(armTwo.getPosition().refresh().getValue());
+
+        ARM_ONE_SWITCH.setBoolean(armOneLimitSwitch.get());
+        ARM_TWO_SWITCH.setBoolean(armTwoLimitSwitch.get());
+    }   
 }
 
 // public class Climber extends SubsystemBase {
