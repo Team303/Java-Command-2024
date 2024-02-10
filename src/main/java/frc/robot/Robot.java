@@ -76,6 +76,7 @@ public class Robot extends LoggedRobot {
 
 	private void configureButtonBindings() {
 		controller.y().onTrue(new InstantCommand(swerve::resetOdometry));
+		controller.b().onTrue(new InstantCommand(swerve::resetOdometryWidget));
 	}
 
 	/* Currently running auto routine */
@@ -85,7 +86,6 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void autonomousInit() {
 		navX.reset();
-		swerve.resetOdometry();
 		Command autonomousRoutine = AutonomousProgram.constructSelectedRoutine();
 
 		// Home the arm while waiting for the drivebase delay

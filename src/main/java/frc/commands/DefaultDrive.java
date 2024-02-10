@@ -22,11 +22,11 @@ public class DefaultDrive extends Command {
     @Override
     public void execute() {
 
-        percentPower = (1-(Robot.controller.getLeftTriggerAxis()*0.5));
+        percentPower = (1-(Robot.controller.getLeftTriggerAxis()*0.8));
     
         translation = new Translation2d(
             MathUtil.applyDeadband(-Robot.controller.getLeftY(), 0.25) * DriveSubsystem.kMaxSpeed * percentPower,
-            MathUtil.applyDeadband(Robot.controller.getLeftX(), 0.25) * DriveSubsystem.kMaxSpeed * percentPower
+            MathUtil.applyDeadband(-Robot.controller.getLeftX(), 0.25) * DriveSubsystem.kMaxSpeed * percentPower
         );
         
         double rotation = -MathUtil.applyDeadband(Robot.controller.getRightX() * percentPower, 0.2) 

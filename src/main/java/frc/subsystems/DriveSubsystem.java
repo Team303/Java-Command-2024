@@ -87,7 +87,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final SwerveModule backRight;
   int jump=0;
   // private final SwerveDriveOdometry odometry;
-  private final PIDController m_driftCorrectionPid = new PIDController(0.05, 0, 0);
+  private final PIDController m_driftCorrectionPid = new PIDController(0.12, 0, 0);
   // private Pose2d pose = new Pose2d(0.0, 0.0, new Rotation2d());
 
   private ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
@@ -131,6 +131,13 @@ public class DriveSubsystem extends SubsystemBase {
   public static final GenericEntry frontRightAngle = DRIVEBASE_TAB.add("front right angle", 0).withPosition(2, 3)
       .withSize(2, 1).getEntry();
 
+  public static final GenericEntry resetPoseX = DRIVEBASE_TAB.add("resetPoseX", 0).withPosition(0, 4)
+      .withSize(1, 1).getEntry();
+  public static final GenericEntry resetPoseY = DRIVEBASE_TAB.add("resetPoseY", 0).withPosition(1, 4)
+    .withSize(1, 1).getEntry();
+  // public static final GenericEntry resetPoseAngle = DRIVEBASE_TAB.add("resetPoseAngle", 0).withPosition(2, 4)
+  //   .withSize(1, 1).getEntry();
+  
   public static final GenericEntry globalAngle = DRIVEBASE_TAB.add("global angle", 0).withPosition(4, 0).getEntry();
   public static final GenericEntry angleVelo = DRIVEBASE_TAB.add("angular velocity", 0).withPosition(4, 1).getEntry();
   // public static final GenericEntry time = DRIVEBASE_TAB.add("Time",
@@ -166,6 +173,8 @@ public class DriveSubsystem extends SubsystemBase {
   public SwerveDrivePoseEstimator poseEstimator;
 
   public DriveSubsystem() {
+
+    Logger.recordOutput("Swerve Module States", new SwerveModuleState[] {new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState()});
     Robot.navX.reset();
     AVTimer.start();
 
@@ -178,13 +187,26 @@ public class DriveSubsystem extends SubsystemBase {
     configRightBack = new CANcoderConfiguration();
     configRightBack.MagnetSensor.MagnetOffset = Swerve.RIGHT_BACK_STEER_OFFSET;
 
+    PIDController frontLeftPID = new PIDController(6, 0.5, 0);
+    frontLeftPID.setIntegratorRange(0,1);
+
+    PIDController frontRightPID = new PIDController(6, 0.5, 0);
+    frontLeftPID.setIntegratorRange(0,1);
+
+    PIDController backLeftPID = new PIDController(6, 0.5, 0);
+    frontLeftPID.setIntegratorRange(0,1);
+
+    PIDController backRightPID = new PIDController(6, 0.5, 0);
+    frontLeftPID.setIntegratorRange(0,1);
+
+
 
     frontLeft = new SwerveModule(
       RobotMap.Swerve.LEFT_FRONT_DRIVE_ID, 
       RobotMap.Swerve.LEFT_FRONT_STEER_ID,
       RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID,
       configLeftFront,
-      new PIDController(6, 0, 0)
+      frontLeftPID
       );
 
     frontRight = new SwerveModule(
@@ -192,21 +214,22 @@ public class DriveSubsystem extends SubsystemBase {
       RobotMap.Swerve.RIGHT_FRONT_STEER_ID,
       RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID,
       configRightFront,
-      new PIDController(6, 0, 0)
+      frontRightPID
       );
     backLeft = new SwerveModule(
       RobotMap.Swerve.LEFT_BACK_DRIVE_ID, 
       RobotMap.Swerve.LEFT_BACK_STEER_ID,
       RobotMap.Swerve.LEFT_BACK_STEER_CANCODER_ID,
       configLeftBack,
-      new PIDController(6, 0, 0)
+      backLeftPID
     );
     backRight = new SwerveModule(
       RobotMap.Swerve.RIGHT_BACK_DRIVE_ID, 
       RobotMap.Swerve.RIGHT_BACK_STEER_ID,
       RobotMap.Swerve.RIGHT_BACK_STEER_CANCODER_ID,
       configRightBack,
-      new PIDController(6, 0, 0)
+      backRightPID
+      
     );
 
     // frontLeft.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.LEFT_FRONT_STEER_OFFSET);
@@ -276,7 +299,7 @@ public class DriveSubsystem extends SubsystemBase {
             new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                     new PIDConstants(5, 0.0, 0.0), // Translation PID constants
                     new PIDConstants(8, 0, 0), // Rotation PID constants
-                    3.9, // Max module speed, in m/s
+                    5.2, // Max module speed, in m/s
                     0.381, // Drive base radius in meters. Distance from robot center to furthest module.
                     new ReplanningConfig() // Default path replanning config. See the API for the options here
             ),
@@ -335,7 +358,7 @@ public class DriveSubsystem extends SubsystemBase {
     Logger.recordOutput("translational velocity", translationalVelocity);
     Logger.recordOutput("turn rate",Robot.navX.getRate());
 
-    if (Math.abs(Robot.navX.getRate()) > 2) {
+    if (Math.abs(Robot.navX.getRate()) > 0.5) {
       m_desiredHeading = Robot.navX.getYaw();
     } else if (Math.abs(translationalVelocity) > 1) {
 
@@ -352,15 +375,19 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void drive(SwerveModuleState[] state) {
 
-    frontLeftAngle.setDouble(state[0].angle.getDegrees());
-    frontRightAngle.setDouble(state[1].angle.getDegrees());
-    backLeftAngle.setDouble(state[2].angle.getDegrees());
-    backRightAngle.setDouble(state[3].angle.getDegrees());
+    // frontLeftAngle.setDouble(state[0].angle.getDegrees());
+    // frontRightAngle.setDouble(state[1].angle.getDegrees());
+    // backLeftAngle.setDouble(state[2].angle.getDegrees());
+    // backRightAngle.setDouble(state[3].angle.getDegrees());
+
+    Logger.recordOutput("Swerve Module States", state);
 
     frontLeft.setDesiredState(state[0]);
     frontRight.setDesiredState(state[1]);
     backLeft.setDesiredState(state[2]);
     backRight.setDesiredState(state[3]);
+
+    System.out.println("Driving");
     
   }
 
@@ -373,27 +400,20 @@ public class DriveSubsystem extends SubsystemBase {
 
     chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
 
+    Logger.recordOutput("Swerve Module States", kinematics.toSwerveModuleStates(chassisSpeeds));
+
     drive(kinematics.toSwerveModuleStates(chassisSpeeds));
   }
 
   public void robotRelativeDrive(ChassisSpeeds chassisSpeeds) {
 
-    chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
+    // chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
+    // double vx = chassisSpeeds.vxMetersPerSecond;
+    // chassisSpeeds.vxMetersPerSecond = chassisSpeeds.vyMetersPerSecond;
+    // chassisSpeeds.vyMetersPerSecond = vx;
 
-    //drive(kinematics.toSwerveModuleStates(chassisSpeeds));
+    drive(kinematics.toSwerveModuleStates(chassisSpeeds));
 
-    // SwerveModuleState[] state = kinematics.toSwerveModuleStates(chassisSpeeds);
-
-    // frontLeftAngle.setDouble(state[0].angle.getDegrees());
-    // frontRightAngle.setDouble(state[1].angle.getDegrees());
-    // backLeftAngle.setDouble(state[2].angle.getDegrees());
-    // backRightAngle.setDouble(state[3].angle.getDegrees());
-
-    // frontLeft.setDesiredState(state[0]);
-    // frontRight.setDesiredState(state[1]);
-    // backLeft.setDesiredState(state[2]);
-    // backRight.setDesiredState(state[3]);
-    // System.out.println("Should be driving!");
   }
 
   public Command followPathFromFile(String pathToFile) {
@@ -432,10 +452,14 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void resetOdometry(Pose2d pose) {
-    Robot.navX.reset();
-    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), new Pose2d());
+    // Robot.navX.set(pose.getRotation().getDegrees());
+    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), pose);
     // odometry.resetPosition(Robot.navX.getRotation2d(), getModulePositions(),
     // pose);
+  }
+  
+  public void resetOdometryWidget() {
+    resetOdometry(new Pose2d(new Translation2d(resetPoseX.getDouble(0), resetPoseY.getDouble(0)), new Rotation2d()));
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
@@ -470,7 +494,7 @@ public class DriveSubsystem extends SubsystemBase {
     frontRightTurnOutput.setDouble(frontRight.getMainTurnOutput());
     backRightTurnOutput.setDouble(backRight.getMainTurnOutput());
 
-    globalAngle.setDouble(Robot.navX.getAngle());
+    globalAngle.setDouble(Robot.navX.getAngle() % 360);
     angleVelo.setDouble(Robot.navX.getRate());
     // if(jump<100){
       updateOdometry(true,true);
@@ -490,7 +514,6 @@ public class DriveSubsystem extends SubsystemBase {
     Logger.recordOutput("Front Right Alan", frontRight.getPosition().angle.getDegrees());
     Logger.recordOutput("Back Right Aritra", backRight.getPosition().angle.getDegrees());
     Logger.recordOutput("Alan is a persecuter", true);
-    Logger.recordOutput("Swerve Module States", kinematics.toSwerveModuleStates(chassisSpeeds));
     Logger.recordOutput("Real Swerve Module States", getModuleStates());
 
     // Logger.recordOuptu("Swervemodule states", Swer)

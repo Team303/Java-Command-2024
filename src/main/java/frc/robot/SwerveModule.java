@@ -41,6 +41,8 @@ public class SwerveModule {
   public static final double kWheelDiameter = kWheelRadius * 2;
   private static final int kEncoderResolution = 42;
 
+  private double lastTurnVelocity = 0;
+
 
   private double mainDriveOutput;
   
@@ -62,7 +64,7 @@ public class SwerveModule {
 
   private final CANSparkMax turningMotor;
 
-  private final VelocityVoltage voltageVelocityDriveControl = new VelocityVoltage(0, 0, true, 0, 0, true, false, false);
+  private final VelocityVoltage voltageVelocityDriveControl = new VelocityVoltage(0, 10, true, 0, 0, true, false, false);
 
   private final VelocityTorqueCurrentFOC torqueVelocityDriveControl = new VelocityTorqueCurrentFOC(0, 0, 0, 1, false, false, false);
 
@@ -89,7 +91,7 @@ public class SwerveModule {
 
   // Gains are for example purposes only - must be determined for your own robot!
   private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0,2.35,0.19);  
-  private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(1.5, 0.2);
+  private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0, 0.07);
 
   private final RelativeEncoder neoEncoder;
 
@@ -181,6 +183,14 @@ public class SwerveModule {
    */
   public double getDriveVelocity() {
     return driveMotor.getVelocity().refresh().getValue() * 2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR; // / 60 * 2 * Math.PI * kWheelRadius;
+  }
+
+    /**
+   * Returns the current Velocity of the steer motor in m/s
+   * @return the current Velocity of the steer motor in m/s
+   */
+  public double getTurnVelocity() {
+    return turningEncoder.getVelocity().refresh().getValue() * 2 * Math.PI;// * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR; // / 60 * 2 * Math.PI * kWheelRadius;
   }
 
   /**
@@ -327,13 +337,10 @@ public class SwerveModule {
     final double turnOutput =
         m_turningPIDController.calculate(convertSteerAngle(turningEncoder.getAbsolutePosition().refresh().getValue() * 2 * Math.PI), state.angle.getRadians());
 
-    // final double turnFeedforward =
-    //     m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
+    final double turnFeedforward = m_turnFeedforward.calculate(getTurnVelocity());
 
     mainDriveOutput = driveOutput;
     mainTurnOutput = turnOutput;
-
-    double friction_torque = (Robot.controller.getLeftY() > 0) ? 1 : -1;
 
     
     //driveMotor.setControl(voltageVelocityDriveControl.withVelocity((state.speedMetersPerSecond / (2* Math.PI*0.0508 * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR))));
@@ -346,10 +353,10 @@ public class SwerveModule {
     //  if (Math.abs(Robot.controller.getLeftX()) < 0.2 && Math.abs(Robot.controller.getLeftY()) < 0.2 && Math.abs(Robot.controller.getRightX()) < 0.05) {
     //  } 
     // else {
-    driveMotor.setControl(voltageVelocityDriveControl.withVelocity(state.speedMetersPerSecond / (2* Math.PI*kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR)));
+    driveMotor.setControl(voltageVelocityDriveControl.withVelocity(state.speedMetersPerSecond / (2* Math.PI*kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR)).withAcceleration(10));
     //  }
     //driveMotor.setControl(voltageVelocityDriveControl.withVelocity(0));
     // driveMotor.setVoltage(driveOutput + driveFeedforward);
-    turningMotor.setVoltage(turnOutput);
+    turningMotor.setVoltage(turnOutput + turnFeedforward);
   }
 }
