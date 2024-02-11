@@ -74,12 +74,12 @@ import frc.robot.RobotMap.PhotonvisionConstants;
 /** Represents a swerve drive style drivetrain. */
 public class DriveSubsystem extends SubsystemBase {
   public static final double kMaxSpeed = 5.2; // 5.2 meters per second
-  public static final double kMaxAngularSpeed = kMaxSpeed / (Math.hypot(0.381, 0.381)); // radians per second
+  public static final double kMaxAngularSpeed = kMaxSpeed / (Math.hypot(0.3302, 0.3302)); // radians per second
 
-  private final Translation2d frontLeftLocation = new Translation2d(0.381, 0.381);
-  private final Translation2d frontRightLocation = new Translation2d(0.381, -0.381);
-  private final Translation2d backLeftLocation = new Translation2d(-0.381, 0.381);
-  private final Translation2d backRightLocation = new Translation2d(-0.381, -0.381);
+  private final Translation2d frontLeftLocation = new Translation2d(0.3302, 0.3302);
+  private final Translation2d frontRightLocation = new Translation2d(0.3302, -0.3302);
+  private final Translation2d backLeftLocation = new Translation2d(-0.3302, 0.3302);
+  private final Translation2d backRightLocation = new Translation2d(-0.3302, -0.3302);
 
   private final SwerveModule frontLeft;
   private final SwerveModule frontRight;
@@ -303,7 +303,7 @@ public class DriveSubsystem extends SubsystemBase {
                     new PIDConstants(5, 0.0, 0.0), // Translation PID constants
                     new PIDConstants(8, 0, 0), // Rotation PID constants
                     5.2, // Max module speed, in m/s
-                    0.381, // Drive base radius in meters. Distance from robot center to furthest module.
+                    0.3302, // Drive base radius in meters. Distance from robot center to furthest module.
                     new ReplanningConfig() // Default path replanning config. See the API for the options here
             ),
             () -> {

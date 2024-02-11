@@ -25,11 +25,15 @@ public class TurnToSpeaker extends Command {
 
     public TurnToSpeaker() {
         addRequirements(Robot.swerve);
-        this.angle = normalizeAngle(Robot.swerve.calculateAngleSpeaker());
 
         controller = new PIDController(0.07, 0, 0.01);
         controller.enableContinuousInput(-180, 180);
         controller.setTolerance(2);
+    }
+
+    @Override
+    public void initialize() {
+      this.angle = normalizeAngle(Robot.swerve.calculateAngleSpeaker());
     }
 
     @Override
