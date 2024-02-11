@@ -60,12 +60,12 @@ public class Robot extends LoggedRobot {
 			Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
 			new PowerDistribution(13, ModuleType.kRev); // Enables power distribution logging
 		} else {
-			setUseTiming(false); // Run as fast as possible
-			String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the
-															// user)
-			Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-			Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a
-																									// new log
+			// setUseTiming(false); // Run as fast as possible
+			// String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the
+			// 												// user)
+			// Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+			// Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a
+			Logger.addDataReceiver(new NT4Publisher());																	// new log
 		}
 
 		Logger.start();
@@ -74,6 +74,11 @@ public class Robot extends LoggedRobot {
 
 		Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();
+	}
+
+	@Override
+	public void simulationInit() {
+		configureButtonBindings();
 	}
 
 	private void configureButtonBindings() {

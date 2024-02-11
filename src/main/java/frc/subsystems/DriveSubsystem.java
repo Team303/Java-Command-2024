@@ -515,14 +515,9 @@ public class DriveSubsystem extends SubsystemBase {
     Pose2d robotPose = getPose();
     Translation2d speakerPose;
 
-    if (isAlliance) {
-      speakerPose = new Translation2d(0.5, 5.5);
-    }
-    else {
-      speakerPose = new Translation2d(16.2, 5.5);
-    }
+    speakerPose = isAlliance ? new Translation2d(0.5, 5.5) :new Translation2d(16.2, 5.5);
 
-    return -Math.atan((speakerPose.getY() - robotPose.getY()) / (speakerPose.getX() - robotPose.getX())) * (180 / Math.PI);
+    return -Math.atan2(speakerPose.getY() - robotPose.getY(), speakerPose.getX() - robotPose.getX()) * (180 / Math.PI);
 
   }
  
