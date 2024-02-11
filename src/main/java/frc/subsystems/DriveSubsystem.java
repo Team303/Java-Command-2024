@@ -135,8 +135,8 @@ public class DriveSubsystem extends SubsystemBase {
       .withSize(1, 1).getEntry();
   public static final GenericEntry resetPoseY = DRIVEBASE_TAB.add("resetPoseY", 0).withPosition(1, 4)
     .withSize(1, 1).getEntry();
-  // public static final GenericEntry resetPoseAngle = DRIVEBASE_TAB.add("resetPoseAngle", 0).withPosition(2, 4)
-  //   .withSize(1, 1).getEntry();
+  public static final GenericEntry resetPoseAngle = DRIVEBASE_TAB.add("resetPoseAngle", 0).withPosition(2, 4)
+    .withSize(1, 1).getEntry();
   
   public static final GenericEntry globalAngle = DRIVEBASE_TAB.add("global angle", 0).withPosition(4, 0).getEntry();
   public static final GenericEntry angleVelo = DRIVEBASE_TAB.add("angular velocity", 0).withPosition(4, 1).getEntry();
@@ -144,6 +144,9 @@ public class DriveSubsystem extends SubsystemBase {
   // 0).withPosition(4, 2).getEntry();
 
   public static final GenericEntry translationalVelo = DRIVEBASE_TAB.add("transational velocity", 0).withPosition(4, 3)
+      .getEntry();
+
+  public static final GenericEntry angleToSpeaker = DRIVEBASE_TAB.add("angleToSpeaker", 0).withPosition(3, 4)
       .getEntry();
 
   public static double angularVelocity = 0;
@@ -390,7 +393,6 @@ public class DriveSubsystem extends SubsystemBase {
     System.out.println("Driving");
     
   }
-
  
   public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
 
@@ -446,20 +448,47 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void resetOdometry() {
+
+    boolean isAlliance = true;
+
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+        isAlliance = alliance.get() == DriverStation.Alliance.Blue;
+    }
+
+    if (isAlliance) 
+      Robot.navX.setAngleAdjustment(0);
+    else
+      Robot.navX.setAngleAdjustment(180);
     Robot.navX.reset();
 
-    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), new Pose2d());
+    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), new Pose2d(new Translation2d(), Rotation2d.fromDegrees(Robot.navX.getAngle())));
   }
 
   public void resetOdometry(Pose2d pose) {
-    // Robot.navX.set(pose.getRotation().getDegrees());
+    Robot.navX.setAngleAdjustment(pose.getRotation().getDegrees());
     poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), pose);
     // odometry.resetPosition(Robot.navX.getRotation2d(), getModulePositions(),
     // pose);
   }
   
   public void resetOdometryWidget() {
-    resetOdometry(new Pose2d(new Translation2d(resetPoseX.getDouble(0), resetPoseY.getDouble(0)), new Rotation2d()));
+
+    boolean isAlliance = true;
+    Rotation2d angleAdjustment;
+
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+        isAlliance = alliance.get() == DriverStation.Alliance.Blue;
+    }
+
+    if (isAlliance) 
+      angleAdjustment = Rotation2d.fromDegrees(0);
+    else
+      angleAdjustment = Rotation2d.fromDegrees(180);
+
+
+    resetOdometry(new Pose2d(new Translation2d(resetPoseX.getDouble(0), resetPoseY.getDouble(0)), angleAdjustment));
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
@@ -473,6 +502,28 @@ public class DriveSubsystem extends SubsystemBase {
         backLeft.getState(),
         backRight.getState()
     };
+  }
+
+  public double calculateAngleSpeaker() {
+    boolean isAlliance = true;
+
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+        isAlliance = alliance.get() == DriverStation.Alliance.Blue;
+    }
+
+    Pose2d robotPose = getPose();
+    Translation2d speakerPose;
+
+    if (isAlliance) {
+      speakerPose = new Translation2d(0.5, 5.5);
+    }
+    else {
+      speakerPose = new Translation2d(16.2, 5.5);
+    }
+
+    return -Math.atan((speakerPose.getY() - robotPose.getY()) / (speakerPose.getX() - robotPose.getX())) * (180 / Math.PI);
+
   }
  
 
@@ -493,6 +544,7 @@ public class DriveSubsystem extends SubsystemBase {
     backLeftTurnOutput.setDouble(backLeft.getMainTurnOutput());
     frontRightTurnOutput.setDouble(frontRight.getMainTurnOutput());
     backRightTurnOutput.setDouble(backRight.getMainTurnOutput());
+    angleToSpeaker.setDouble(calculateAngleSpeaker());
 
     globalAngle.setDouble(Robot.navX.getAngle() % 360);
     angleVelo.setDouble(Robot.navX.getRate());
@@ -515,6 +567,7 @@ public class DriveSubsystem extends SubsystemBase {
     Logger.recordOutput("Back Right Aritra", backRight.getPosition().angle.getDegrees());
     Logger.recordOutput("Alan is a persecuter", true);
     Logger.recordOutput("Real Swerve Module States", getModuleStates());
+    
 
     // Logger.recordOuptu("Swervemodule states", Swer)
   }

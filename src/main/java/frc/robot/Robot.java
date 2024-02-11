@@ -35,6 +35,7 @@ import frc.commands.DefaultDrive;
 import frc.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.commands.DriveWait;
+import frc.commands.TurnToSpeaker;
 import frc.subsystems.DriveSubsystem;
 import frc.modules.PhotonvisionModule;
 
@@ -49,6 +50,7 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		photonvision = null; //new PhotonvisionModule();
 		swerve = new DriveSubsystem();
+		swerve.resetOdometry();
 		configureButtonBindings();
 
 		Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
@@ -77,6 +79,7 @@ public class Robot extends LoggedRobot {
 	private void configureButtonBindings() {
 		controller.y().onTrue(new InstantCommand(swerve::resetOdometry));
 		controller.b().onTrue(new InstantCommand(swerve::resetOdometryWidget));
+		controller.a().onTrue(new TurnToSpeaker());
 	}
 
 	/* Currently running auto routine */

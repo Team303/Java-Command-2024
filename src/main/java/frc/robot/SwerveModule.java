@@ -302,15 +302,6 @@ public class SwerveModule {
     return adjustedReferenceAngleRadians;
   }
 
-  private double normalizeAngle2(double angle) {
-    angle %= 2 * Math.PI;
-    if (Math.abs(angle) < Math.PI)
-      return angle;
-    else if (angle > 0)
-      return angle - Math.PI * 2;
-    else 
-      return angle + Math.PI * 2;
-  }
 
   /**
    * Converts the drive votlage to be inverted or not.
