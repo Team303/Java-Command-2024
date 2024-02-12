@@ -155,7 +155,7 @@ public class Shooter extends SubsystemBase {
         rightAngleMotor.setNeutralMode(NeutralModeValue.Brake);
 
         angleFeedForward = new ArmFeedforward(RobotMap.Shooter.ANGLE_FEED_FORWARD_KS, 
-                                                         RobotMap.Shooter.ANGLE_FEED_FORWARD_KG, 
+6                                                         RobotMap.Shooter.ANGLE_FEED_FORWARD_KG, 
                                                          RobotMap.Shooter.ANGLE_FEED_FORWARD_KV, 
                                                          RobotMap.Shooter.ANGLE_FEED_FORWARD_KA);
 
