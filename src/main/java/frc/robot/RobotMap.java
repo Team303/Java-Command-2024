@@ -58,8 +58,23 @@ public class RobotMap {
 	}
 
 	public static final class Intake {
-		public static final int PIVOT_MOTOR_ID = 0;
+		public static final int LEFT_PIVOT_MOTOR_ID = 0;
+		public static final int RIGHT_PIVOT_MOTOR_ID = 4;
 		public static final int BELT_MOTOR_ID = 1;
 		public static final int PIVOT_ENCODER_ID = 2;
+
+		public static final double PIVOT_FEED_FORWARD_KS = 0.0; //NEED TO CHANGE
+		public static final double PIVOT_FEED_FORWARD_KG = 0.0; //NEED TO CHANGE
+		public static final double PIVOT_FEED_FORWARD_KV = 0.0; //NEED TO CHANGE
+		public static final double PIVOT_FEED_FORWARD_KA = 0.0; //NEED TO CHANGE
+		public static final double PIVOT_FEED_FORWARD_VEL = 2.0; //NEED TO TWEAK
+
+		public static final double PIVOT_PID_CONTROLLER_P = 0.0; //NEED TO CHANGE
+		public static final double PIVOT_PID_CONTROLLER_I = 0.0; //NEED TO CHANGE
+		public static final double PIVOT_PID_CONTROLLER_D = 0.0; //NEED TO CHANGE
+
+		public static final double SIMULATION_OFFSET = 0.0; //NEED TO CHANGE
+		public static final double SIMULATION_SCALE = 0.0; //NEED TO CHANGE
+		public static final double INTAKE_SIM_LENGTH = 0.0; //NEED TO CHANGE
 	}
 }
