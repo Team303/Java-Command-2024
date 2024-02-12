@@ -1,14 +1,10 @@
 package frc.commands.intake;
 
-import edu.wpi.first.math.geometry.Translation3d;
-import frc.robot.Robot;
-import frc.robot.RobotMap;
-import frc.subsystems.Intake;
-import edu.wpi.first.wpilibj2.command.Command;
 import static frc.robot.Robot.intake;
 import static frc.subsystems.Intake.DESIRED_PIVOT_ANGLE_ENTRY;
-import edu.wpi.first.wpilibj.Timer;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotMap;
 
 public class HomeIntake extends Command {
 
@@ -25,16 +21,17 @@ public class HomeIntake extends Command {
         intake.rightPivotMotor.setVoltage(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
 
         intake.beltMotor.setVoltage(0);
-    } 
-
-    @Override
-     public boolean isFinished() {
-        return intake.atHomeHardLimit() || Math.abs(intake.getAbsolutePivotAngle() - RobotMap.Intake.HOME_ANGLE) <= RobotMap.Intake.ANGLE_TOLERANCE;
     }
 
     @Override
-    public void end(boolean interrupted) {   
-        //Lock the intake
+    public boolean isFinished() {
+        return intake.atHomeHardLimit() || Math
+                .abs(intake.getAbsolutePivotAngle() - RobotMap.Intake.HOME_ANGLE) <= RobotMap.Intake.ANGLE_TOLERANCE;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        // Lock the intake
         intake.leftPivotMotor.setVoltage(0);
         intake.rightPivotMotor.setVoltage(0);
     }

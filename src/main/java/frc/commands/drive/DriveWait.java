@@ -1,7 +1,7 @@
 package frc.commands.drive;
 
-import frc.robot.Robot;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Robot;
 
 public class DriveWait extends WaitCommand {
 

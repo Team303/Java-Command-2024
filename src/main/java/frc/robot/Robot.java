@@ -4,6 +4,13 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
 // import org.littletonrobotics.junction.LoggedRobot;
 // import org.littletonrobotics.junction.Logger;
 // import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -11,47 +18,34 @@ package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.autonomous.Autonomous;
 import frc.autonomous.AutonomousProgram;
 import frc.commands.drive.DefaultDrive;
-import frc.subsystems.DriveSubsystem;
-
-import org.littletonrobotics.junction.LogFileUtil;
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGReader;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-import frc.subsystems.Intake;
 import frc.commands.drive.DriveWait;
+import frc.subsystems.DriveSubsystem;
+import frc.subsystems.Intake;
 
 public class Robot extends LoggedRobot {
-  public static final CommandXboxController driverController = new CommandXboxController(0);
-  public static final CommandXboxController operatorController = new CommandXboxController(1);
-  public static final AHRS navX = new AHRS(); 
-  public static final DriveSubsystem swerve = new DriveSubsystem();
-  public static final Intake intake = new Intake();
+	public static final CommandXboxController driverController = new CommandXboxController(0);
+	public static final CommandXboxController operatorController = new CommandXboxController(1);
+	public static final AHRS navX = new AHRS();
+	public static final DriveSubsystem swerve = new DriveSubsystem();
+	public static final Intake intake = new Intake();
 
-  private Mechanism2d mechanism = new Mechanism2d(3, 3);
+	private Mechanism2d mechanism = new Mechanism2d(3, 3);
 
-  @Override
-  public void robotInit() {
-    configureButtonBindings();
+	@Override
+	public void robotInit() {
+		configureButtonBindings();
 		Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
 
 		if (isReal()) {
@@ -69,23 +63,22 @@ public class Robot extends LoggedRobot {
 
 		Logger.start();
 
+		Autonomous.init();
+		AutonomousProgram.addAutosToShuffleboard();
 
-    Autonomous.init();
-	AutonomousProgram.addAutosToShuffleboard();
+		Logger.start();
 
-	Logger.start();
+	}
 
-  }
+	private void configureButtonBindings() {
+		driverController.y().onTrue(new InstantCommand(swerve::resetOdometry));
+	}
 
-  private void configureButtonBindings() {
-    driverController.y().onTrue(new InstantCommand(swerve::resetOdometry));
-  }
-
-  	/* Currently running auto routine */
+	/* Currently running auto routine */
 
 	private Command autonomousCommand;
 
-  @Override
+	@Override
 	public void autonomousInit() {
 		navX.reset();
 		swerve.resetOdometry();
@@ -108,19 +101,19 @@ public class Robot extends LoggedRobot {
 		CommandScheduler.getInstance().schedule(this.autonomousCommand);
 	}
 
-  @Override
+	@Override
 	public void teleopInit() {
 		// This makes sure that the autonomous stops running when teleop starts running.
 		if (autonomousCommand != null) {
 			autonomousCommand.cancel();
 		}
-    swerve.setDefaultCommand(new DefaultDrive(true));
+		swerve.setDefaultCommand(new DefaultDrive(true));
 	}
 
 	@Override
-	public void robotPeriodic() { 
+	public void robotPeriodic() {
 		Logger.recordOutput("Example/Mechanism", mechanism);
 		CommandScheduler.getInstance().run();
-		
-  }
+
+	}
 }
