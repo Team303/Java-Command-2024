@@ -165,7 +165,6 @@ public class Shooter extends SubsystemBase {
                                                        pidConstraints);
         
 
-        anglePIDController.enableContinuousInput(-180, 180);
 
         rightAngleMotor.setControl(new Follower(leftAngleMotor.getDeviceID(), true));
 
