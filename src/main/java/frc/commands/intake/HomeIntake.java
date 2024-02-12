@@ -1,6 +1,7 @@
 package frc.commands.intake;
 
 import static frc.robot.Robot.intake;
+import static frc.robot.Robot.belt;
 import static frc.subsystems.Intake.DESIRED_PIVOT_ANGLE_ENTRY;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,7 +21,6 @@ public class HomeIntake extends Command {
         intake.leftPivotMotor.setVoltage(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
         intake.rightPivotMotor.setVoltage(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
 
-        intake.beltMotor.setVoltage(0);
     }
 
     @Override
@@ -34,6 +34,7 @@ public class HomeIntake extends Command {
         // Lock the intake
         intake.leftPivotMotor.setVoltage(0);
         intake.rightPivotMotor.setVoltage(0);
+        intake.pivotAlan.setPosition(0);
     }
 
 }

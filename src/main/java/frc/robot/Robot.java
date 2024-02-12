@@ -25,14 +25,19 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.autonomous.Autonomous;
 import frc.autonomous.AutonomousProgram;
+import frc.commands.amoghbelt.WheelSpinnyThing;
 import frc.commands.drive.DefaultDrive;
 import frc.commands.drive.DriveWait;
+import frc.commands.intake.GroundIntake;
+import frc.commands.intake.HomeIntake;
 import frc.subsystems.DriveSubsystem;
 import frc.subsystems.Intake;
+import frc.subsystems.Belt;
 
 public class Robot extends LoggedRobot {
 	public static final CommandXboxController driverController = new CommandXboxController(0);
@@ -40,6 +45,7 @@ public class Robot extends LoggedRobot {
 	public static final AHRS navX = new AHRS();
 	public static final DriveSubsystem swerve = new DriveSubsystem();
 	public static final Intake intake = new Intake();
+	public static final Belt belt = new Belt();
 
 	private Mechanism2d mechanism = new Mechanism2d(3, 3);
 
@@ -72,6 +78,8 @@ public class Robot extends LoggedRobot {
 
 	private void configureButtonBindings() {
 		driverController.y().onTrue(new InstantCommand(swerve::resetOdometry));
+		operatorController.a().toggleOnTrue(new GroundIntake()).toggleOnFalse(new HomeIntake());
+		operatorController.b().toggleOnTrue(new WheelSpinnyThing());
 	}
 
 	/* Currently running auto routine */

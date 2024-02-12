@@ -82,5 +82,7 @@ public class RobotMap {
 		public static final double HOME_ANGLE = 0.0; // GET ANGLE FROM JOHN
 		public static final double GROUND_ANGLE = 0.0;// GET ANGLE FROM JOHN
 		public static final double ANGLE_TOLERANCE = 1.0;// KEEP TESTING
+
+		public static final double GEAR_RATIO = 0.0; //GET FROM SOMEONE
 	}
 }
