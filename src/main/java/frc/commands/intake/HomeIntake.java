@@ -2,40 +2,41 @@ package frc.commands.intake;
 
 import edu.wpi.first.math.geometry.Translation3d;
 import frc.robot.Robot;
+import frc.robot.RobotMap;
 import frc.subsystems.Intake;
 import edu.wpi.first.wpilibj2.command.Command;
 import static frc.robot.Robot.intake;
+import static frc.subsystems.Intake.DESIRED_PIVOT_ANGLE_ENTRY;
 import edu.wpi.first.wpilibj.Timer;
 
 
 public class HomeIntake extends Command {
 
-    Timer timer = new Timer();
-
     public HomeIntake() {
         addRequirements(intake);
-    }
 
-    @Override
-    public void initialize() {
-        timer.restart();
+        DESIRED_PIVOT_ANGLE_ENTRY.setDouble(RobotMap.Intake.GROUND_ANGLE);
+        intake.pivotAngle = RobotMap.Intake.GROUND_ANGLE;
     }
 
     @Override
     public void execute() {
-       //  intake.setAngleSpeed(-0.2);
+        intake.leftPivotMotor.setVoltage(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
+        intake.rightPivotMotor.setVoltage(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
+
+        intake.beltMotor.setVoltage(0);
     } 
 
-    // @Override
-    // public boolean isFinished() {
-    //     return shooter.atHardLimit() || timer.hasElapsed(3.0);
-    // }
+    @Override
+     public boolean isFinished() {
+        return intake.atHomeHardLimit() || Math.abs(intake.getAbsolutePivotAngle() - RobotMap.Intake.HOME_ANGLE) <= RobotMap.Intake.ANGLE_TOLERANCE;
+    }
 
     @Override
-    public void end(boolean interrupted) {
-        // shooter.setAngleSpeed(0);
-        
-        timer.stop();
+    public void end(boolean interrupted) {   
+        //Lock the intake
+        intake.leftPivotMotor.setVoltage(0);
+        intake.rightPivotMotor.setVoltage(0);
     }
 
 }

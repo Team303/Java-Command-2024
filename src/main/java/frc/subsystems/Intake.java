@@ -40,8 +40,6 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 public class Intake extends SubsystemBase {
 
 	public final TalonFX leftPivotMotor;
-	
-
 	public final TalonFX rightPivotMotor;
 
 	public final ProfiledPIDController pivotPIDController;
@@ -49,11 +47,15 @@ public class Intake extends SubsystemBase {
 	
 	public final CANSparkMax beltMotor;
 	
-	public final DutyCycleEncoder pivotEncoder; 
+	public final DutyCycleEncoder pivotEncoder;
+	
+	public final DigitalInput homeLimit;
+	public final DigitalInput groundLimit;
 
 	public static final ShuffleboardTab INTAKE_TAB = Shuffleboard.getTab("Intake"); //Shuffleboard tab
 	public static final GenericEntry DESIRED_PIVOT_ANGLE_ENTRY = INTAKE_TAB.add("Desired Degrees", 0.0).withPosition(0, 0).getEntry();
 	public static final GenericEntry ACTUAL_PIVOT_ANGLE_ENTRY = INTAKE_TAB.add("Actual Degrees", 0.0).withPosition(1, 0).getEntry();
+	public static final GenericEntry BELT_SPEED_ENTRY = INTAKE_TAB.add("Belt Speed", 0.0).getEntry();
 
 	public static Mechanism2d intakeSim;
     public static MechanismLigament2d simulatorRoot;
@@ -62,6 +64,10 @@ public class Intake extends SubsystemBase {
 	public double pivotAngle = 0.0;
 
 	public Intake() {
+		beltMotor = new CANSparkMax(RobotMap.Intake.BELT_MOTOR_ID, MotorType.kBrushless);
+		beltMotor.setIdleMode(IdleMode.kBrake);
+		beltMotor.setSmartCurrentLimit(40);
+
 		TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(4, 2); //Change: Alan's job
 		leftPivotMotor = new TalonFX(RobotMap.Intake.LEFT_PIVOT_MOTOR_ID);
 		rightPivotMotor = new TalonFX(RobotMap.Intake.RIGHT_PIVOT_MOTOR_ID);
@@ -87,12 +93,9 @@ public class Intake extends SubsystemBase {
 		leftPivotMotor.getConfigurator().apply(clc40);
 		rightPivotMotor.getConfigurator().apply(clc40);
 
-
-
-		beltMotor = new CANSparkMax(RobotMap.Intake.BELT_MOTOR_ID, MotorType.kBrushless);
-		beltMotor.setIdleMode(IdleMode.kBrake);
-		beltMoto
 		pivotEncoder = new DutyCycleEncoder(RobotMap.Intake.PIVOT_ENCODER_ID);
+		homeLimit = new DigitalInput(RobotMap.Intake.HOME_LIMIT_SWITCH_ID);
+		groundLimit = new DigitalInput(RobotMap.Intake.GROUND_LIMIT_SWITCH_ID);
 
 		intakeSim = new Mechanism2d(300 / 33.07, 300 / 33.07);
         MechanismRoot2d intakeRoot = intakeSim.getRoot("Intake", 
@@ -118,48 +121,21 @@ public class Intake extends SubsystemBase {
 	}
 	//pivot functions
 	public double calculateAngleSpeed(double angle) {
-         final double pivotOutput = pivotPIDController.calculate(getAbsoluteIntakeAngle(), angle);
+         final double pivotOutput = pivotPIDController.calculate(getAbsolutePivotAngle(), angle);
          final double pivotFeedforward = pivotFeedForward.calculate(angle, pivotPIDController.getSetpoint().velocity);
          return pivotOutput + pivotFeedforward;
     } 
-	
-	public double getAbsoluteIntakeAngle() {
-        return pivotEncoder.getAbsolutePosition();
-    }
 
     public double getAbsolutePivotAngle() {
         return pivotEncoder.getAbsolutePosition();
     }
 
-	public boolean atHardLimit() {
-		return false; //idk if were using a limit switch but ill keep this here anyways
-	   //return !angleLimitSwitch.get();
+	public boolean atHomeHardLimit() {
+		return !homeLimit.get();
 	}
 
-	//belt functions
-
-	public double getBeltSpeed() {
-        return beltMotor.get();
-    }
-
-	//getters and setters for motors
-	public static TalonFX getLeftPivotMotor() {
-		return leftPivotMotor;
-	}
-	public static void setLeftPivotMotor(TalonFX leftPivotMotor) {
-		Intake.leftPivotMotor = leftPivotMotor;
-	}
-	public static TalonFX getRightPivotMotor() {
-		return rightPivotMotor;
-	}
-	public static void setRightPivotMotor(TalonFX rightPivotMotor) {
-		Intake.rightPivotMotor = rightPivotMotor;
-	}
-	public static CANSparkMax getBeltMotor() {
-		return beltMotor;
-	}
-	public static void setBeltMotor(CANSparkMax beltMotor) {
-		Intake.beltMotor = beltMotor;
+	public boolean atGroundHardLimit() {
+		return !groundLimit.get();
 	}
 
 	@Override
