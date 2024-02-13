@@ -26,11 +26,8 @@ public class Intake extends SubsystemBase {
 	public final CANSparkMax rightPivotMotor;
 
 	public final ProfiledPIDController pivotPIDController;
-	
 
 	public final ArmFeedforward pivotFeedForward;
-
-	
 
 	public final DutyCycleEncoder pivotEncoder;
 	public final RelativeEncoder pivotAlan;
@@ -54,18 +51,21 @@ public class Intake extends SubsystemBase {
 
 	public Intake() {
 
+		pivotFeedForward = new ArmFeedforward(RobotMap.Intake.PIVOT_FEED_FORWARD_KS,
+				RobotMap.Intake.PIVOT_FEED_FORWARD_KG,
+				RobotMap.Intake.PIVOT_FEED_FORWARD_KV,
+				RobotMap.Intake.PIVOT_FEED_FORWARD_KA);
 
-		TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(4, 2); // Change: Alan's job
 		leftPivotMotor = new CANSparkMax(RobotMap.Intake.LEFT_PIVOT_MOTOR_ID, MotorType.kBrushless);
 		rightPivotMotor = new CANSparkMax(RobotMap.Intake.RIGHT_PIVOT_MOTOR_ID, MotorType.kBrushless);
 
 		leftPivotMotor.setIdleMode(IdleMode.kBrake);
 		rightPivotMotor.setIdleMode(IdleMode.kBrake);
 
-		pivotFeedForward = new ArmFeedforward(RobotMap.Intake.PIVOT_FEED_FORWARD_KS,
-				RobotMap.Intake.PIVOT_FEED_FORWARD_KG,
-				RobotMap.Intake.PIVOT_FEED_FORWARD_KV,
-				RobotMap.Intake.PIVOT_FEED_FORWARD_KA);
+
+		TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(Math.PI/2, 
+			pivotFeedForward.maxAchievableAcceleration(12, getAbsolutePivotAngle(), leftPivotMotor.getEncoder().getVelocity())); 
+			// Change: Alan's job
 
 		pivotPIDController = new ProfiledPIDController(RobotMap.Intake.PIVOT_PID_CONTROLLER_P,
 				RobotMap.Intake.PIVOT_PID_CONTROLLER_I,
@@ -96,15 +96,15 @@ public class Intake extends SubsystemBase {
 	// pivot functions
 	public double calculateAngleSpeed(double angle) {
 
+		TrapezoidProfile.Constraints constrain = new TrapezoidProfile.Constraints(
+			3.14/2, 
+			pivotFeedForward.maxAchievableAcceleration(12, getAbsolutePivotAngle(), leftPivotMotor.getEncoder().getVelocity())); // Change: Alan's job
+
+		pivotPIDController.setConstraints(constrain);
+
 		final double pivotOutput = pivotPIDController.calculate(getAbsolutePivotAngle(), angle);
 		final double pivotFeedforward = pivotFeedForward.calculate(angle, pivotPIDController.getSetpoint().velocity);
 
-		TrapezoidProfile.Constraints constrain = new TrapezoidProfile.Constraints(
-			3.14/2, 
-			pivotFeedForward.maxAchievableAcceleration(12, angle, leftPivotMotor.getEncoder().getVelocity())); // Change: Alan's job
-
-
-		pivotPIDController.setConstraints(constrain);
 		return pivotOutput + pivotFeedforward;
 	}
 
@@ -113,11 +113,11 @@ public class Intake extends SubsystemBase {
 	}
 
 	public boolean atHomeHardLimit() {
-		return !homeLimit.get();
+		return homeLimit.get();
 	}
 
 	public boolean atGroundHardLimit() {
-		return !groundLimit.get();
+		return groundLimit.get();
 	}
 
 	public ProfiledPIDController getPivotPIDController() {

@@ -79,7 +79,7 @@ public class Robot extends LoggedRobot {
 	private void configureButtonBindings() {
 		driverController.y().onTrue(new InstantCommand(swerve::resetOdometry));
 		operatorController.a().toggleOnTrue(new GroundIntake()).toggleOnFalse(new HomeIntake());
-		operatorController.b().toggleOnTrue(new WheelSpinnyThing());
+		operatorController.b().onTrue(new WheelSpinnyThing());
 	}
 
 	/* Currently running auto routine */

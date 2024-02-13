@@ -3,6 +3,7 @@ package frc.commands.intake;
 import static frc.robot.Robot.intake;
 import static frc.robot.Robot.belt;
 import static frc.subsystems.Intake.DESIRED_PIVOT_ANGLE_ENTRY;
+import frc.robot.Robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotMap;
@@ -25,8 +26,7 @@ public class HomeIntake extends Command {
 
     @Override
     public boolean isFinished() {
-        return intake.atHomeHardLimit() || Math
-                .abs(intake.getAbsolutePivotAngle() - RobotMap.Intake.HOME_ANGLE) <= RobotMap.Intake.ANGLE_TOLERANCE;
+        return intake.atHomeHardLimit() || Robot.intake.pivotPIDController.atSetpoint();
     }
 
     @Override
