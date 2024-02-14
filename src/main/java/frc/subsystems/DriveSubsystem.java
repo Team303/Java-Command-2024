@@ -404,11 +404,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void robotRelativeDrive(ChassisSpeeds chassisSpeeds) {
 
-    // chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
-    // double vx = chassisSpeeds.vxMetersPerSecond;
-    // chassisSpeeds.vxMetersPerSecond = chassisSpeeds.vyMetersPerSecond;
-    // chassisSpeeds.vyMetersPerSecond = vx;
-
     drive(kinematics.toSwerveModuleStates(chassisSpeeds));
 
   }
