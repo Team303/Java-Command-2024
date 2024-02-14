@@ -43,7 +43,7 @@ public class Robot extends LoggedRobot {
 	public static final CommandXboxController driverController = new CommandXboxController(0);
 	public static final CommandXboxController operatorController = new CommandXboxController(1);
 	public static final AHRS navX = new AHRS();
-	public static final DriveSubsystem swerve = new DriveSubsystem();
+	public static final DriveSubsystem swerve = null;
 	public static final Intake intake = new Intake();
 	public static final Belt belt = new Belt();
 
@@ -77,8 +77,7 @@ public class Robot extends LoggedRobot {
 	}
 
 	private void configureButtonBindings() {
-		driverController.y().onTrue(new InstantCommand(swerve::resetOdometry));
-		operatorController.a().toggleOnTrue(new GroundIntake()).toggleOnFalse(new HomeIntake());
+		operatorController.a().onTrue(new HomeIntake());
 		operatorController.b().onTrue(new WheelSpinnyThing());
 	}
 
@@ -89,7 +88,6 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void autonomousInit() {
 		navX.reset();
-		swerve.resetOdometry();
 		Command autonomousRoutine = AutonomousProgram.constructSelectedRoutine();
 
 		// Home the arm while waiting for the drivebase delay
@@ -115,7 +113,6 @@ public class Robot extends LoggedRobot {
 		if (autonomousCommand != null) {
 			autonomousCommand.cancel();
 		}
-		swerve.setDefaultCommand(new DefaultDrive(true));
 	}
 
 	@Override

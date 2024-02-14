@@ -58,10 +58,11 @@ public class RobotMap {
 	}
 
 	public static final class Intake {
-		public static final int LEFT_PIVOT_MOTOR_ID = 0; // NEED TO CHANGE
-		public static final int RIGHT_PIVOT_MOTOR_ID = 4; // NEED TO CHANGE
-		public static final int BELT_MOTOR_ID = 1; // NEED TO CHANGE
-		public static final int PIVOT_ENCODER_ID = 2; // NEED TO CHANGE
+		public static final int BEAM_PORT = 0;
+		public static final int LEFT_PIVOT_MOTOR_ID = 2; // NEED TO CHANGE
+		public static final int RIGHT_PIVOT_MOTOR_ID = 5; // NEED TO CHANGE
+		public static final int BELT_MOTOR_ID = 17; // NEED TO CHANGE
+		public static final int PIVOT_ENCODER_ID = 3; // NEED TO CHANGE
 		public static final int HOME_LIMIT_SWITCH_ID = 0; // NEED TO CHANGE
 		public static final int GROUND_LIMIT_SWITCH_ID = 1; // NEED TO CHANGE
 
@@ -79,10 +80,10 @@ public class RobotMap {
 		public static final double SIMULATION_SCALE = 0.0; // NEED TO CHANGE
 		public static final double INTAKE_SIM_LENGTH = 0.0; // NEED TO CHANGE
 
-		public static final double HOME_ANGLE = 0.0; // GET ANGLE FROM JOHN
-		public static final double GROUND_ANGLE = 0.0;// GET ANGLE FROM JOHN
+		public static final double HOME_ANGLE = Math.PI/2; // GET ANGLE FROM JOHN
+		public static final double GROUND_ANGLE = Math.toRadians(340);// GET ANGLE FROM JOHN
 		public static final double ANGLE_TOLERANCE = 1.0;// KEEP TESTING
 
-		public static final double GEAR_RATIO = 0.0; //GET FROM SOMEONE
+		public static final double GEAR_RATIO = (1/9); //GET FROM SOMEONE
 	}
 }

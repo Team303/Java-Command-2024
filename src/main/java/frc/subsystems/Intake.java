@@ -32,8 +32,8 @@ public class Intake extends SubsystemBase {
 	public final DutyCycleEncoder pivotEncoder;
 	public final RelativeEncoder pivotAlan;
 
-	public final DigitalInput homeLimit;
-	public final DigitalInput groundLimit;
+	// public final DigitalInput homeLimit;
+	// public final DigitalInput groundLimit;
 
 	public static final ShuffleboardTab INTAKE_TAB = Shuffleboard.getTab("Intake"); // Shuffleboard tab
 	public static final GenericEntry DESIRED_PIVOT_ANGLE_ENTRY = INTAKE_TAB.add("Desired Degrees", 0.0)
@@ -45,11 +45,19 @@ public class Intake extends SubsystemBase {
 
 	public static final GenericEntry GROUND_LIMIT_SWITCH_ALAN_SUCKS = INTAKE_TAB.add("Ground Limit Switch Stauts", false).getEntry();
 
+
+	public static final GenericEntry MOTOR_OUTPUT = INTAKE_TAB.add("Motor Output", 0).getEntry();
+
 	
 
 	public double pivotAngle = 0.0;
 
 	public Intake() {
+
+		pivotEncoder = new DutyCycleEncoder(RobotMap.Intake.PIVOT_ENCODER_ID);
+		// pivotEncoder.setDutyCycleRange(0, 2*Math.PI);
+
+
 
 		pivotFeedForward = new ArmFeedforward(RobotMap.Intake.PIVOT_FEED_FORWARD_KS,
 				RobotMap.Intake.PIVOT_FEED_FORWARD_KG,
@@ -72,8 +80,10 @@ public class Intake extends SubsystemBase {
 				RobotMap.Intake.PIVOT_PID_CONTROLLER_D,
 				pidConstraints);
 
+		pivotPIDController.enableContinuousInput(0, 2 * Math.PI);
 
-		leftPivotMotor.follow(rightPivotMotor, true);
+
+		leftPivotMotor.follow(rightPivotMotor, false);
 
 		pivotAlan = leftPivotMotor.getEncoder();
 		pivotAlan.setPositionConversionFactor(2*Math.PI*RobotMap.Intake.GEAR_RATIO);
@@ -82,11 +92,9 @@ public class Intake extends SubsystemBase {
 		leftPivotMotor.setSmartCurrentLimit(40);
 		rightPivotMotor.setSmartCurrentLimit(40);
 
-		pivotEncoder = new DutyCycleEncoder(RobotMap.Intake.PIVOT_ENCODER_ID);
-		homeLimit = new DigitalInput(RobotMap.Intake.HOME_LIMIT_SWITCH_ID);
-		groundLimit = new DigitalInput(RobotMap.Intake.GROUND_LIMIT_SWITCH_ID);
+		// homeLimit = new DigitalInput(RobotMap.Intake.HOME_LIMIT_SWITCH_ID);
+		// groundLimit = new DigitalInput(RobotMap.Intake.GROUND_LIMIT_SWITCH_ID);
 
-		pivotEncoder.setDutyCycleRange(0, 2*Math.PI);
 
 		pivotPIDController.setTolerance(2);
 
@@ -109,16 +117,16 @@ public class Intake extends SubsystemBase {
 	}
 
 	public double getAbsolutePivotAngle() {
-		return pivotEncoder.getAbsolutePosition();
+		return pivotEncoder.getAbsolutePosition() * 2 * Math.PI;
 	}
 
-	public boolean atHomeHardLimit() {
-		return homeLimit.get();
-	}
+	// public boolean atHomeHardLimit() {
+	// 	return homeLimit.get();
+	// }
 
-	public boolean atGroundHardLimit() {
-		return groundLimit.get();
-	}
+	// public boolean atGroundHardLimit() {
+	// 	return groundLimit.get();
+	// }
 
 	public ProfiledPIDController getPivotPIDController() {
 		return pivotPIDController;
@@ -130,9 +138,9 @@ public class Intake extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		ACTUAL_PIVOT_ANGLE_ENTRY.setDouble(getAbsolutePivotAngle());
-		GROUND_LIMIT_SWITCH_ALAN_SUCKS.setBoolean(atGroundHardLimit());
-		HOME_LIMIT_SWITCH_ALAN_SUCKS.setBoolean(atHomeHardLimit());
+		ACTUAL_PIVOT_ANGLE_ENTRY.setDouble(getAbsolutePivotAngle() * (180/Math.PI));
+		// GROUND_LIMIT_SWITCH_ALAN_SUCKS.setBoolean(atGroundHardLimit());
+		// HOME_LIMIT_SWITCH_ALAN_SUCKS.setBoolean(atHomeHardLimit());
 
 	}
 

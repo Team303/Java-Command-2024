@@ -7,6 +7,7 @@ import frc.robot.Robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotMap;
+import static frc.subsystems.Intake.MOTOR_OUTPUT;
 
 public class HomeIntake extends Command {
 
@@ -19,14 +20,16 @@ public class HomeIntake extends Command {
 
     @Override
     public void execute() {
-        intake.leftPivotMotor.setVoltage(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
-        intake.rightPivotMotor.setVoltage(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
+        // intake.leftPivotMotor.setVoltage(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
+        intake.rightPivotMotor.setVoltage(-4);
+        MOTOR_OUTPUT.setDouble(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
+        System.out.println("running");
 
     }
 
     @Override
     public boolean isFinished() {
-        return intake.atHomeHardLimit() || Robot.intake.pivotPIDController.atSetpoint();
+        return intake.getAbsolutePivotAngle() > Math.PI/2; //|| Robot.intake.pivotPIDController.atSetpoint();
     }
 
     @Override
@@ -35,6 +38,7 @@ public class HomeIntake extends Command {
         intake.leftPivotMotor.setVoltage(0);
         intake.rightPivotMotor.setVoltage(0);
         intake.pivotAlan.setPosition(0);
+        
     }
 
 }
