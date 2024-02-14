@@ -69,7 +69,7 @@ import frc.robot.SwerveModule;
 import frc.modules.PhotonvisionModule.CameraName;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
-import frc.robot.RobotMap.PhotonvisionConstants;
+// import frc.robot.RobotMap.PhotonvisionConstants;
 
 /** Represents a swerve drive style drivetrain. */
 public class DriveSubsystem extends SubsystemBase {
@@ -208,31 +208,26 @@ public class DriveSubsystem extends SubsystemBase {
       RobotMap.Swerve.LEFT_FRONT_DRIVE_ID, 
       RobotMap.Swerve.LEFT_FRONT_STEER_ID,
       RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID,
-      configLeftFront,
-      frontLeftPID
+      configLeftFront
       );
 
     frontRight = new SwerveModule(
       RobotMap.Swerve.RIGHT_FRONT_DRIVE_ID, 
       RobotMap.Swerve.RIGHT_FRONT_STEER_ID,
       RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID,
-      configRightFront,
-      frontRightPID
+      configRightFront
       );
     backLeft = new SwerveModule(
       RobotMap.Swerve.LEFT_BACK_DRIVE_ID, 
       RobotMap.Swerve.LEFT_BACK_STEER_ID,
       RobotMap.Swerve.LEFT_BACK_STEER_CANCODER_ID,
-      configLeftBack,
-      backLeftPID
+      configLeftBack
     );
     backRight = new SwerveModule(
       RobotMap.Swerve.RIGHT_BACK_DRIVE_ID, 
       RobotMap.Swerve.RIGHT_BACK_STEER_ID,
       RobotMap.Swerve.RIGHT_BACK_STEER_CANCODER_ID,
-      configRightBack,
-      backRightPID
-      
+      configRightBack
     );
 
     // frontLeft.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.LEFT_FRONT_STEER_OFFSET);
@@ -552,10 +547,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     Logger.recordOutput("Odometry", getPose());
     Logger.recordOutput("angular velocity", Robot.navX.getRate());
-    Logger.recordOutput("Front Left Angle Error", frontLeft.m_turningPIDController.getSetpoint());
-    Logger.recordOutput("Front Right Angle Error", frontRight.m_turningPIDController.getSetpoint());
-    Logger.recordOutput("Back Left Angle Error", backLeft.m_turningPIDController.getSetpoint());
-    Logger.recordOutput("BackRight Angle Error", backRight.m_turningPIDController.getSetpoint());
     Logger.recordOutput("Front Left Arya", frontLeft.getPosition().angle.getDegrees());
     Logger.recordOutput("Back Left Arav", backLeft.getPosition().angle.getDegrees());
     Logger.recordOutput("Front Right Alan", frontRight.getPosition().angle.getDegrees());

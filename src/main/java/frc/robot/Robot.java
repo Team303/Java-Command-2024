@@ -17,6 +17,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
@@ -114,7 +115,11 @@ public class Robot extends LoggedRobot {
 	}
 
 	@Override
-	public void disabledInit() {}
+	public void disabledInit() {
+
+		// run resetEncoder counter in case we get a bad reading
+		swerve.robotRelativeDrive(new ChassisSpeeds());
+	}
 
 	@Override
 	public void teleopInit() {
