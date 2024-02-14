@@ -13,7 +13,6 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -40,7 +39,6 @@ import frc.subsystems.DriveSubsystem;
 
 public class Robot extends LoggedRobot {
 	public static final CommandXboxController controller = new CommandXboxController(0);
-	public static final AHRS navX = new AHRS();
 	public static PhotonvisionModule photonvision;
 	public static DriveSubsystem swerve;
 	// public static Logger logger;
