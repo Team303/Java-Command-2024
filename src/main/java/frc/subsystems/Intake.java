@@ -83,7 +83,7 @@ public class Intake extends SubsystemBase {
 		pivotPIDController.enableContinuousInput(0, 2 * Math.PI);
 
 
-		leftPivotMotor.follow(rightPivotMotor, false);
+		leftPivotMotor.follow(rightPivotMotor, true);
 
 		pivotAlan = leftPivotMotor.getEncoder();
 		pivotAlan.setPositionConversionFactor(2*Math.PI*RobotMap.Intake.GEAR_RATIO);

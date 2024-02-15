@@ -21,7 +21,7 @@ public class HomeIntake extends Command {
     @Override
     public void execute() {
         // intake.leftPivotMotor.setVoltage(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
-        intake.rightPivotMotor.setVoltage(-4);
+        intake.rightPivotMotor.setVoltage(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
         MOTOR_OUTPUT.setDouble(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
         System.out.println("running");
 
@@ -29,7 +29,7 @@ public class HomeIntake extends Command {
 
     @Override
     public boolean isFinished() {
-        return intake.getAbsolutePivotAngle() > Math.PI/2; //|| Robot.intake.pivotPIDController.atSetpoint();
+        return intake.getAbsolutePivotAngle() > Math.PI/2 && intake.getAbsolutePivotAngle() < Math.PI; //|| Robot.intake.pivotPIDController.atSetpoint();
     }
 
     @Override
