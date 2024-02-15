@@ -72,6 +72,7 @@ public class Robot extends LoggedRobot {
 
   private void configureButtonBindings() {
     controller.y().onTrue(new InstantCommand(swerve::resetOdometry));
+	controller.x().onTrue(new SequentialCommandGroup(new Climber(), new Retract(0), new PullUp(0,1)));	
   }
 
   	/* Currently running auto routine */

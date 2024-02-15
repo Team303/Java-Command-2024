@@ -103,6 +103,13 @@ public class Climber extends SubsystemBase {
         // armTwo.set(ControlMode.PercentOutput, armTwoSpeed);
     }
 
+    public void keepGoing(double speed, double limit) {
+        double armOneSpeed = getArmEncoderPosition(1) > limit? speed: 0;
+        double armTwoSpeed = getArmEncoderPosition(1) > limit? speed: 0;
+        armOne.setControl(new VoltageOut(armOneSpeed).withEnableFOC(true).withOverrideBrakeDurNeutral(true)); 
+        armTwo.setControl(new VoltageOut(armTwoSpeed).withEnableFOC(true).withOverrideBrakeDurNeutral(true));
+    }
+
     public void retractArms(double speed) {
         speed = -Math.abs(speed);
         double armOneSpeed = !isArmAtLowerLimit(1) ? speed : 0; 
