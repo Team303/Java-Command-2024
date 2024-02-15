@@ -1,7 +1,10 @@
+
+
 package frc.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.subsystems.DriveSubsystem;
 import frc.robot.Robot;
@@ -12,6 +15,8 @@ public class DefaultDrive extends Command {
     Translation2d translation;
     double percentPower;
 
+    boolean isAlliance = true;
+
     public DefaultDrive(boolean fieldOriented) {
         addRequirements(Robot.swerve);
         this.fieldOriented = fieldOriented;        
@@ -20,13 +25,25 @@ public class DefaultDrive extends Command {
     @Override
     public void execute() {
 
-        percentPower = (1-(Robot.controller.getLeftTriggerAxis()*0.5));
+        percentPower = (1-(Robot.controller.getLeftTriggerAxis()*0.8));
+
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+            isAlliance = alliance.get() == DriverStation.Alliance.Blue;
+        }
     
-        translation = new Translation2d(
-        MathUtil.applyDeadband(-Robot.controller.getLeftY(), 0.15) * DriveSubsystem.kMaxSpeed * percentPower,
-        MathUtil.applyDeadband(-Robot.controller.getLeftX(), 0.15) * DriveSubsystem.kMaxSpeed * percentPower);
+        if (isAlliance)
+            translation = new Translation2d(
+                MathUtil.applyDeadband(-Robot.controller.getLeftY(), 0.25) * DriveSubsystem.kMaxSpeed * percentPower,
+                MathUtil.applyDeadband(-Robot.controller.getLeftX(), 0.25) * DriveSubsystem.kMaxSpeed * percentPower
+            );
+        else
+            translation = new Translation2d(
+                MathUtil.applyDeadband(Robot.controller.getLeftY(), 0.25) * DriveSubsystem.kMaxSpeed * percentPower,
+                MathUtil.applyDeadband(Robot.controller.getLeftX(), 0.25) * DriveSubsystem.kMaxSpeed * percentPower
+            );
         
-        double rotation = MathUtil.applyDeadband(Robot.controller.getRightX() * percentPower, 0.15) 
+        double rotation = -MathUtil.applyDeadband(Robot.controller.getRightX() * percentPower, 0.2) 
             * DriveSubsystem.kMaxAngularSpeed * percentPower;
 
         Robot.swerve.drive(translation, rotation, fieldOriented);

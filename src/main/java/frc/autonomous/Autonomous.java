@@ -17,7 +17,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
  * SequentialComandGroup:
  * Will run all comands in order within it's parentheses
  * Note: If a comand does not have a isFinshed statment the code will be stuck
- * on that command forever
+ * on that command foreverk
  *
  * ParallelCommandGroup:
  * Will run commands in parallel if they use diffrent SubSystems
@@ -47,6 +47,8 @@ public class Autonomous {
 
         public static void init() {
             create("Test", () -> new InstantCommand(() -> System.out.println("TEST")));
-            create("pathplanner test", () -> Robot.swerve.followPathFromFile("test.path"));
+            create("Alan is a persecuter", () -> Robot.swerve.getAutonomousCommand("Alan is a persecuter"));           
+            create("Alan is not a persecuter", () -> Robot.swerve.getAutonomousCommand("Alan is not a persecuter"));
+
         }
 }
