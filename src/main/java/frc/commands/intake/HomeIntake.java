@@ -28,9 +28,9 @@ public class HomeIntake extends Command {
         MOTOR_OUTPUT.setDouble(voltage);
 
 
-        if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(338))
+        if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(345))
             intake.rightPivotMotor.setVoltage(voltage);
-        else if (voltage < 0)
+        else if (voltage > 0)
             intake.rightPivotMotor.setVoltage(voltage);
         else 
             intake.rightPivotMotor.setVoltage(0);

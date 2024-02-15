@@ -111,7 +111,9 @@ public class Intake extends SubsystemBase {
 		pivotPIDController.setConstraints(constrain);
 
 		final double pivotOutput = pivotPIDController.calculate(getAbsolutePivotAngle(), angle);
-		final double pivotFeedforward = pivotFeedForward.calculate(angle, pivotPIDController.getSetpoint().velocity);
+
+
+		final double pivotFeedforward = pivotFeedForward.calculate(angle > Math.toRadians(270) ? 0 : angle, pivotPIDController.getSetpoint().velocity);
 
 		return pivotOutput + pivotFeedforward;
 	}

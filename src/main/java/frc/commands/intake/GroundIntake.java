@@ -21,13 +21,14 @@ public class GroundIntake extends Command {
     public void execute() {
 
         double voltage = intake.calculateAngleSpeed(RobotMap.Intake.GROUND_ANGLE);
+        System.out.println("Voltage: " + voltage);
         MOTOR_OUTPUT.setDouble(voltage);
 
         //soft limit 
 
         if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(345))
             intake.rightPivotMotor.setVoltage(voltage);
-        else if (voltage > 0)
+        else if (voltage < 0)
             intake.rightPivotMotor.setVoltage(voltage);
         else 
             intake.rightPivotMotor.setVoltage(0);

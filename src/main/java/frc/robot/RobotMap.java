@@ -67,10 +67,9 @@ public class RobotMap {
 		public static final int GROUND_LIMIT_SWITCH_ID = 1; // NEED TO CHANGE
 
 		public static final double PIVOT_FEED_FORWARD_KS = 0.0; // NEED TO CHANGE
-		public static final double PIVOT_FEED_FORWARD_KG = 1.11; // NEED TO CHANGE
-		public static final double PIVOT_FEED_FORWARD_KV = 0.18; // NEED TO CHANGE
-		public static final double PIVOT_FEED_FORWARD_KA = 0.0; // NEED TO CHANGE
-		public static final double PIVOT_FEED_FORWARD_VEL = 2.0; // NEED TO TWEAK
+		public static final double PIVOT_FEED_FORWARD_KG = 0.932; // NEED TO CHANGE
+		public static final double PIVOT_FEED_FORWARD_KV = 0.335; // NEED TO CHANGE
+		public static final double PIVOT_FEED_FORWARD_KA = 0.1; // NEED TO CHANGE
 
 		public static final double PIVOT_PID_CONTROLLER_P = 1.5; // NEED TO CHANGE
 		public static final double PIVOT_PID_CONTROLLER_I = 0.0; // NEED TO CHANGE
@@ -80,9 +79,8 @@ public class RobotMap {
 		public static final double SIMULATION_SCALE = 0.0; // NEED TO CHANGE
 		public static final double INTAKE_SIM_LENGTH = 0.0; // NEED TO CHANGE
 
-		public static final double HOME_ANGLE = Math.PI/2; // GET ANGLE FROM JOHN
-		public static final double GROUND_ANGLE = Math.toRadians(340);// GET ANGLE FROM JOHN
-		public static final double ANGLE_TOLERANCE = 1.0;// KEEP TESTING
+		public static final double HOME_ANGLE = Math.PI/2;
+		public static final double GROUND_ANGLE = Math.toRadians(345);// GET ANGLE FROM JOHN
 
 		public static final double GEAR_RATIO = (1/9); //GET FROM SOMEONE
 	}
