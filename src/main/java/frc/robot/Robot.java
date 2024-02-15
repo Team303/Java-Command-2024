@@ -71,7 +71,6 @@ public class Robot extends LoggedRobot {
 		Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();
 
-		intake.setDefaultCommand(new HomeIntake());
 
 		Logger.start();
 
@@ -114,6 +113,9 @@ public class Robot extends LoggedRobot {
 		if (autonomousCommand != null) {
 			autonomousCommand.cancel();
 		}
+
+		intake.setDefaultCommand(new HomeIntake());
+
 	}
 
 	@Override

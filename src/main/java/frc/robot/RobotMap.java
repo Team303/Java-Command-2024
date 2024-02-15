@@ -67,12 +67,12 @@ public class RobotMap {
 		public static final int GROUND_LIMIT_SWITCH_ID = 1; // NEED TO CHANGE
 
 		public static final double PIVOT_FEED_FORWARD_KS = 0.0; // NEED TO CHANGE
-		public static final double PIVOT_FEED_FORWARD_KG = 0.0; // NEED TO CHANGE
-		public static final double PIVOT_FEED_FORWARD_KV = 0.0; // NEED TO CHANGE
+		public static final double PIVOT_FEED_FORWARD_KG = 1.11; // NEED TO CHANGE
+		public static final double PIVOT_FEED_FORWARD_KV = 0.18; // NEED TO CHANGE
 		public static final double PIVOT_FEED_FORWARD_KA = 0.0; // NEED TO CHANGE
 		public static final double PIVOT_FEED_FORWARD_VEL = 2.0; // NEED TO TWEAK
 
-		public static final double PIVOT_PID_CONTROLLER_P = 0.0; // NEED TO CHANGE
+		public static final double PIVOT_PID_CONTROLLER_P = 1.5; // NEED TO CHANGE
 		public static final double PIVOT_PID_CONTROLLER_I = 0.0; // NEED TO CHANGE
 		public static final double PIVOT_PID_CONTROLLER_D = 0.0; // NEED TO CHANGE
 

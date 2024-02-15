@@ -24,7 +24,11 @@ public class HomeIntake extends Command {
         
         double voltage = intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE);
 
-        if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > 11 * Math.PI / 6)
+        System.out.println("Voltage: " + voltage);
+        MOTOR_OUTPUT.setDouble(voltage);
+
+
+        if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(338))
             intake.rightPivotMotor.setVoltage(voltage);
         else if (voltage < 0)
             intake.rightPivotMotor.setVoltage(voltage);
