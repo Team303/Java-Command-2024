@@ -96,7 +96,7 @@ public class Intake extends SubsystemBase {
 		// groundLimit = new DigitalInput(RobotMap.Intake.GROUND_LIMIT_SWITCH_ID);
 
 
-		pivotPIDController.setTolerance(2);
+		pivotPIDController.setTolerance(Math.toRadians(2));
 
 
 	}

@@ -67,18 +67,19 @@ public class Robot extends LoggedRobot {
 																									// new log
 		}
 
-		Logger.start();
 
 		Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();
+
+		intake.setDefaultCommand(new HomeIntake());
 
 		Logger.start();
 
 	}
 
 	private void configureButtonBindings() {
-		operatorController.a().onTrue(new HomeIntake());
-		operatorController.b().onTrue(new WheelSpinnyThing());
+		operatorController.b().toggleOnTrue(new GroundIntake());
+		operatorController.x().toggleOnTrue(new WheelSpinnyThing());
 	}
 
 	/* Currently running auto routine */

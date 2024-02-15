@@ -21,24 +21,32 @@ public class HomeIntake extends Command {
     @Override
     public void execute() {
         // intake.leftPivotMotor.setVoltage(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
-        intake.rightPivotMotor.setVoltage(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
-        MOTOR_OUTPUT.setDouble(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
-        System.out.println("running");
-
-    }
-
-    @Override
-    public boolean isFinished() {
-        return intake.getAbsolutePivotAngle() > Math.PI/2 && intake.getAbsolutePivotAngle() < Math.PI; //|| Robot.intake.pivotPIDController.atSetpoint();
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        // Lock the intake
-        intake.leftPivotMotor.setVoltage(0);
-        intake.rightPivotMotor.setVoltage(0);
-        intake.pivotAlan.setPosition(0);
         
+        double voltage = intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE);
+
+        if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > 11 * Math.PI / 6)
+            intake.rightPivotMotor.setVoltage(voltage);
+        else if (voltage < 0)
+            intake.rightPivotMotor.setVoltage(voltage);
+        else 
+            intake.rightPivotMotor.setVoltage(0);
+
+        MOTOR_OUTPUT.setDouble(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
+
     }
+
+    // @Override
+    // public boolean isFinished() {
+    //     return (intake.getAbsolutePivotAngle() > Math.PI/2 && intake.getAbsolutePivotAngle() < Math.PI) || Robot.intake.pivotPIDController.atSetpoint();
+    // }
+
+    // @Override
+    // public void end(boolean interrupted) {
+    //     // Lock the intake
+    //     intake.leftPivotMotor.setVoltage(0);
+    //     intake.rightPivotMotor.setVoltage(0);
+    //     intake.pivotAlan.setPosition(0);
+        
+    // }
 
 }
