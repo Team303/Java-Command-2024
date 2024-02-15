@@ -151,7 +151,7 @@ public class SwerveModule {
 
     m_turnPidController = turningMotor.getPIDController();
 
-    m_turnPidController.setP(0.3);
+    m_turnPidController.setP(2.5);
     m_turnPidController.setI(0);
     m_turnPidController.setD(0);
     m_turnPidController.setFeedbackDevice((MotorFeedbackSensor) turningNeoEncoder);
