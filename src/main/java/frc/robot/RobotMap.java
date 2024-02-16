@@ -58,4 +58,9 @@ public class RobotMap {
 		public static final double STARTING_X=0;
 		public static final double STARTING_Y=0;
 	}
+
+	public static final class Sensors {
+		//Should mean that we actually get 200hz because 200/(200/125) = 200 with integer division
+		public static final byte NAVX_UPDATE_RATE_HZ = 125;
+	}
 }
