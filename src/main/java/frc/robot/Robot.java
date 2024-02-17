@@ -45,7 +45,7 @@ public class Robot extends LoggedRobot {
 	public static final AHRS navX = new AHRS();
 	public static final DriveSubsystem swerve = null;
 	public static final Intake intake = new Intake();
-	public static final Belt belt = new Belt();
+	public static final Belt DrakesSnake = new Belt(); 
 
 	private Mechanism2d mechanism = new Mechanism2d(3, 3);
 

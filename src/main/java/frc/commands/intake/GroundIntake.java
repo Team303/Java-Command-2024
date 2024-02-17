@@ -1,7 +1,7 @@
 package frc.commands.intake;
 
 import static frc.robot.Robot.intake;
-import static frc.robot.Robot.belt;
+import static frc.robot.Robot.DrakesSnake;
 import static frc.subsystems.Intake.DESIRED_PIVOT_ANGLE_ENTRY;
 
 import edu.wpi.first.wpilibj2.command.Command;

@@ -1,6 +1,6 @@
 package frc.subsystems;
 
-import static frc.robot.Robot.belt;
+import static frc.robot.Robot.DrakesSnake;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -42,8 +42,8 @@ public class Belt extends SubsystemBase {
 
     @Override
     public void periodic() {
-        BELT_SPEED_ENTRY.setDouble(belt.beltBBC.getVelocity().refresh().getValueAsDouble());
-        INDEXER_SPEED_ENTRY.setDouble(belt.aritraBBC.getVelocity().refresh().getValueAsDouble());
+        BELT_SPEED_ENTRY.setDouble(DrakesSnake.beltBBC.getVelocity().refresh().getValueAsDouble());
+        INDEXER_SPEED_ENTRY.setDouble(DrakesSnake.aritraBBC.getVelocity().refresh().getValueAsDouble());
 
     }
 }
