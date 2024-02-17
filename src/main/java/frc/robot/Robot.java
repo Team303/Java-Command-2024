@@ -30,7 +30,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.autonomous.Autonomous;
 import frc.autonomous.AutonomousProgram;
-import frc.commands.amoghbelt.WheelSpinnyThing;
+import frc.commands.amoghBBC.BBCGyrate;
 import frc.commands.drive.DefaultDrive;
 import frc.commands.drive.DriveWait;
 import frc.commands.intake.GroundIntake;
@@ -78,7 +78,7 @@ public class Robot extends LoggedRobot {
 
 	private void configureButtonBindings() {
 		operatorController.b().toggleOnTrue(new GroundIntake());
-		operatorController.x().toggleOnTrue(new WheelSpinnyThing());
+		operatorController.x().toggleOnTrue(new BBCGyrate());
 	}
 
 	/* Currently running auto routine */

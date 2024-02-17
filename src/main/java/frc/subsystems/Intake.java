@@ -25,6 +25,7 @@ public class Intake extends SubsystemBase {
 	public final CANSparkMax leftPivotMotor;
 	public final CANSparkMax rightPivotMotor;
 
+
 	public final ProfiledPIDController pivotPIDController;
 
 	public final ArmFeedforward pivotFeedForward;

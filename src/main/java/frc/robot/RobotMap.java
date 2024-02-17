@@ -62,6 +62,7 @@ public class RobotMap {
 		public static final int LEFT_PIVOT_MOTOR_ID = 2; // NEED TO CHANGE
 		public static final int RIGHT_PIVOT_MOTOR_ID = 5; // NEED TO CHANGE
 		public static final int BELT_MOTOR_ID = 17; // NEED TO CHANGE
+		public static final int INDEXER_MOTOR_ID = 999; //NEED TO CHANGE 
 		public static final int PIVOT_ENCODER_ID = 3; // NEED TO CHANGE
 		public static final int HOME_LIMIT_SWITCH_ID = 0; // NEED TO CHANGE
 		public static final int GROUND_LIMIT_SWITCH_ID = 1; // NEED TO CHANGE
