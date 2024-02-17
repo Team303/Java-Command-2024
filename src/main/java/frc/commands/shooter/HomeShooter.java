@@ -28,10 +28,10 @@ public class HomeShooter extends Command {
         shooter.leftAngleMotor.setVoltage(shooter.calculateAngleSpeed(0));
     } 
 
-    // @Override
-    // public boolean isFinished() {
-    //     return shooter.atHardLimit() || timer.hasElapsed(3.0);
-    // }
+    @Override
+    public boolean isFinished() {
+        return shooter.anglePIDController.atSetpoint() || shooter.getAbsoluteShooterAngle() < 2 || shooter.atHardLimit() || timer.get() > 5.0;
+    }
 
     @Override
     public void end(boolean interrupted) {

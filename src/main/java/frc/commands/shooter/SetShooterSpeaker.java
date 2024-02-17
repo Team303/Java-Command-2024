@@ -93,7 +93,8 @@ public class SetShooterSpeaker extends Command {
 
     @Override
     public boolean isFinished() {
-        return shooter.atHardLimit();
+        return false;
+        //return shooter.anglePIDController.atSetpoint() || shooter.getAbsoluteShooterAngle() - de 
     }
 
     public void end(boolean interrupted) {
