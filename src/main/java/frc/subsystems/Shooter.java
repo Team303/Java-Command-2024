@@ -249,7 +249,7 @@ public class Shooter extends SubsystemBase {
 			angleFeedForward.maxAchievableAcceleration(12, getAbsoluteShooterAngle(), leftAngleMotor.getVelocity().refresh().getValueAsDouble())); // Change: Alan's job
 
 		anglePIDController.setConstraints(constrain);
-        
+
         final double angleOutput = anglePIDController.calculate(getAbsoluteShooterAngle(), angle);
         final double angleFeedforward = angleFeedForward.calculate(angle, anglePIDController.getSetpoint().velocity);
         return angleOutput + angleFeedforward;
