@@ -23,7 +23,9 @@ public class HomeShooter extends Command {
 
     @Override
     public void execute() {
-        // shooter.setAngleSpeed(-0.2);
+        shooter.leftFlywheelMotor.setVoltage(0);
+        shooter.rightAngleMotor.setVoltage(0);
+        shooter.leftAngleMotor.setVoltage(shooter.calculateAngleSpeed(0));
     } 
 
     // @Override
@@ -33,7 +35,8 @@ public class HomeShooter extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        // shooter.setAngleSpeed(0);
+        shooter.leftAngleMotor.setVoltage(0);
+        shooter.rightAngleMotor.setVoltage(0);
         shooter.resetFlywheelEncoders();
         timer.stop();
     }

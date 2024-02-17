@@ -87,15 +87,8 @@ public class SetShooterSpeaker extends Command {
         shooter.leftFlywheelMotor.setControl(shooter.flywheelVoltageLeft.withVelocity(-(desiredVelocityLeft / (2 * Math.PI * 0.0508))));
         shooter.rightFlywheelMotor.setControl(shooter.flywheelVoltageRight.withVelocity(desiredVelocityRight /  (2 * Math.PI * 0.0508)));
 
-        //FOC Enabled
-
-
-        //FOC Enabled
-        //shooter.leftFlywheelMotor.setControl(shooter.flywheelVoltageOutputLeft.withVelocity(leftCalcVelocity / (2 * Math.PI * 0.0508)));
-        //shooter.rightFlywheelMotor.setControl(shooter.flywheelVoltageOutputRight.withVelocity(rightCalcVelocity / (2 * Math.PI * 0.0508)));
-
-        // shooter.leftAngleMotor.setVoltage(shooter.calculateAngleSpeedLeft(desiredAngle)); 
-        //shooter.rightAngleMotor.setVoltage(shooter.calculateAngleSpeedRight(desiredAngle)); - Dont need because follower
+        shooter.leftAngleMotor.setVoltage(shooter.calculateAngleSpeed(desiredAngle)); 
+        //shooter.rightAngleMotor.setVoltage(shooter.calculateAngleSpeedRight(desiredAngle)); --> Dont need because follower
     } 
 
     @Override
