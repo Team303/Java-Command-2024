@@ -1,0 +1,87 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.263807773590088,
+      "y": 7.080027103424072
+    },
+    "rotation": -3.0031547678117285e-34
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2Note1Forward1.1"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "PickUpNote"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "TurnToSpeaker"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shooting"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2Note1Forward1.2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PickUpNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "2Note1Forward1.3"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "TurnToSpeaker"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shooting"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": true
+}

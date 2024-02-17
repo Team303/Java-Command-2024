@@ -1,0 +1,204 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 2.780956745147705,
+      "y": 7.1534247398376465
+    },
+    "rotation": -1.6691868611143097e-28
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5 Note.1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PickUpNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5 Note.2"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "TurnToSpeaker"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shooting"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5 Note.3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PickUpNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5 Note.4"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "TurnToSpeaker"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shooting"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5 Note.5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PickUpNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5 Note.6"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "TurnToSpeaker"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shooting"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5 Note.7"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PickUpNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5 Note.8"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "TurnToSpeaker"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shooting"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5 Note.9"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PickUpNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "5 Note.10"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "TurnToSpeaker"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shooting"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": true
+}

@@ -14,6 +14,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -52,6 +53,11 @@ public class Robot extends LoggedRobot {
 		photonvision = null; //new PhotonvisionModule();
 		swerve = new DriveSubsystem();
 		swerve.resetOdometry();
+
+		NamedCommands.registerCommand("PickUpNote", new InstantCommand(() -> {System.out.println("picked up note!");}));
+		NamedCommands.registerCommand("TurnToSpeaker", new TurnToSpeaker());
+		NamedCommands.registerCommand("Shooting", new InstantCommand(() -> {System.out.println("Shooting note!");}));
+
 		configureButtonBindings();
 
 		Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
