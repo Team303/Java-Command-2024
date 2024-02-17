@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class ManualSetAngleSpeaker extends Command {    
+public class SetShooterSpeaker extends Command {    
     double desiredAngle;
     double shotTime;
     double desiredVelocityRight;
@@ -26,7 +26,7 @@ public class ManualSetAngleSpeaker extends Command {
     double range = 30;
 
     //TODO: Make the range/height not a parameter once merged into master
-    public ManualSetAngleSpeaker(double height, double range) {
+    public SetShooterSpeaker(double height, double range) {
         addRequirements(shooter);
         
         desiredVelocityRight = 22;
@@ -94,8 +94,8 @@ public class ManualSetAngleSpeaker extends Command {
         //shooter.leftFlywheelMotor.setControl(shooter.flywheelVoltageOutputLeft.withVelocity(leftCalcVelocity / (2 * Math.PI * 0.0508)));
         //shooter.rightFlywheelMotor.setControl(shooter.flywheelVoltageOutputRight.withVelocity(rightCalcVelocity / (2 * Math.PI * 0.0508)));
 
-        // shooter.leftAngleMotor.setVoltage(shooter.calculateAngleSpeedLeft(desiredAngle));
-        //shooter.rightAngleMotor.setVoltage(shooter.calculateAngleSpeedRight(desiredAngle));
+        // shooter.leftAngleMotor.setVoltage(shooter.calculateAngleSpeedLeft(desiredAngle)); 
+        //shooter.rightAngleMotor.setVoltage(shooter.calculateAngleSpeedRight(desiredAngle)); - Dont need because follower
     } 
 
     @Override

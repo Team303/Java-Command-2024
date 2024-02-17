@@ -155,9 +155,9 @@ public class Shooter extends SubsystemBase {
         rightAngleMotor.setNeutralMode(NeutralModeValue.Brake);
 
         angleFeedForward = new ArmFeedforward(RobotMap.Shooter.ANGLE_FEED_FORWARD_KS, 
-6                                                         RobotMap.Shooter.ANGLE_FEED_FORWARD_KG, 
-                                                         RobotMap.Shooter.ANGLE_FEED_FORWARD_KV, 
-                                                         RobotMap.Shooter.ANGLE_FEED_FORWARD_KA);
+                                              RobotMap.Shooter.ANGLE_FEED_FORWARD_KG, 
+                                              RobotMap.Shooter.ANGLE_FEED_FORWARD_KV, 
+                                              RobotMap.Shooter.ANGLE_FEED_FORWARD_KA);
 
         anglePIDController = new ProfiledPIDController(RobotMap.Shooter.ANGLE_PID_CONTROLLER_P, 
                                                        RobotMap.Shooter.ANGLE_PID_CONTROLLER_I,
@@ -303,7 +303,7 @@ public class Shooter extends SubsystemBase {
         //Limit Entries
         ANGLE_LIMIT_SWITCH_STATUS_ENTRY.setBoolean(atHardLimit());
 
-        SmartDashboard.putData("IntakeSim", shooterSim);
+        SmartDashboard.putData("ShooterSim", shooterSim);
         Logger.recordOutput("ShooterMechanism", shooterSim);
     }
     

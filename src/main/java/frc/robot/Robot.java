@@ -24,7 +24,7 @@ import frc.autonomous.AutonomousProgram;
 import frc.subsystems.DriveSubsystem;
 //import frc.commands.DefaultDrive;
 import frc.subsystems.Shooter;
-import frc.commands.shooter.ManualSetAngleSpeaker;
+import frc.commands.shooter.SetShooterSpeaker;
 
 
 public class Robot extends LoggedRobot {
@@ -102,7 +102,7 @@ public class Robot extends LoggedRobot {
 			autonomousCommand.cancel();
 		}
 
-		shooter.setDefaultCommand(new ManualSetAngleSpeaker(1.98, 3.2));
+		shooter.setDefaultCommand(new SetShooterSpeaker(1.98, 3.2));
 
     	// swerve.setDefaultCommand(new DefaultDrive(true));
 		
