@@ -147,26 +147,27 @@ public class Shooter extends SubsystemBase {
 
 
         //Angle Initalization
-        TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(4, 2); //Change: Alan's job
         leftAngleMotor = new TalonFX(RobotMap.Shooter.LEFT_ANGLE_MOTOR_ID);
         rightAngleMotor = new TalonFX(RobotMap.Shooter.RIGHT_ANGLE_MOTOR_ID);
 
         leftAngleMotor.setNeutralMode(NeutralModeValue.Brake);
         rightAngleMotor.setNeutralMode(NeutralModeValue.Brake);
 
+        rightAngleMotor.setControl(new Follower(leftAngleMotor.getDeviceID(), true));
+
         angleFeedForward = new ArmFeedforward(RobotMap.Shooter.ANGLE_FEED_FORWARD_KS, 
                                               RobotMap.Shooter.ANGLE_FEED_FORWARD_KG, 
                                               RobotMap.Shooter.ANGLE_FEED_FORWARD_KV, 
                                               RobotMap.Shooter.ANGLE_FEED_FORWARD_KA);
 
+        TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(Math.PI/2, 
+            angleFeedForward.maxAchievableAcceleration(12, getAbsoluteShooterAngle(), leftAngleMotor.getVelocity().refresh().getValueAsDouble()));
+
         anglePIDController = new ProfiledPIDController(RobotMap.Shooter.ANGLE_PID_CONTROLLER_P, 
                                                        RobotMap.Shooter.ANGLE_PID_CONTROLLER_I,
                                                        RobotMap.Shooter.ANGLE_PID_CONTROLLER_D, 
                                                        pidConstraints);
-        
-
-
-        rightAngleMotor.setControl(new Follower(leftAngleMotor.getDeviceID(), true));
+    
 
         angleEncoder = new DutyCycleEncoder(RobotMap.Shooter.ANGLE_ENCODER_ID);
 
