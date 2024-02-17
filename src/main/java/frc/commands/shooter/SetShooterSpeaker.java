@@ -29,7 +29,7 @@ public class SetShooterSpeaker extends Command {
     public SetShooterSpeaker(double height, double range) {
         addRequirements(shooter);
         
-        desiredVelocityRight = 22;
+        desiredVelocityRight = 21.27;
 
         desiredAngle = shooter.interpolateAngle(range);
         INTERPOLATED_DEGREES_ENTRY.setDouble(Math.toDegrees((desiredAngle)));

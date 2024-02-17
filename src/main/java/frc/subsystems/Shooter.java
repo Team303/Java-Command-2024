@@ -77,9 +77,11 @@ public class Shooter extends SubsystemBase {
     public InterpolatingDoubleTreeMap timeInterpolator = new InterpolatingDoubleTreeMap();
 
     //We need to interpolate until 12 meters 💀
-    public static double[] interpolationAngles = {1.054, 1.013, 0.974, 0.937, 0.902, 0.869, 0.838, 0.809, 0.782, 0.756, //1.0 - 1.9
-                                                  0.731, 0.709, 0.687, 0.667, 0.648, 0.629, 0.612, 0.596, 0.581, 0.567, //2.0 - 2.9
-                                                  0.553, 0.540, 0.528, 0.516, 0.505, 0.495};                            //3.0 - 3.5
+    public static double[] interpolationAngles = {1.060, 0.961, 0.876, 0.802, 0.738, 0.683, 0.635, 0.594, 0.559, 0.527, 0.500,  //1.00 --> 3.750
+                                                  0.476, 0.454, 0.435, 0.419, 0.404, 0.390, 0.378, 0.367, 0.357, 0.349, 0.341,  //3.00 --> 5.750     
+                                                  0.333, 0.327, 0.321, 0.316, 0.311, 0.307, 0.303, 0.299, 0.296, 0.293, 0.291,  //6.00 --> 8.750
+                                                  0.289, 0.287, 0.285, 0.284, 0.282, 0.281, 0.280, 0.280, 0.279, 0.279, 0.278,  //9.00 --> 11.75
+                                                  0.278};                                                                       //12.0 --> 12.00
 
     public static double[] interpolationTimes = new double[interpolationAngles.length];
 
@@ -272,10 +274,10 @@ public class Shooter extends SubsystemBase {
     //Interpolation Functions
     public void initalizeInterpolationTable() {
         for(int i=0;i<interpolationAngles.length;i++){
-            angleInterpolator.put((double)i*0.1+1.0,interpolationAngles[i]);
+            angleInterpolator.put((double)i*0.25+1.0,interpolationAngles[i]);
         }
         for(int i=0;i<interpolationTimes.length;i++){
-            timeInterpolator.put((double)i*0.1+1.0,interpolationTimes[i]);
+            timeInterpolator.put((double)i*0.25+1.0,interpolationTimes[i]);
         }
     }
 
