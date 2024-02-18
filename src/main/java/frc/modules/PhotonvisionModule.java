@@ -4,13 +4,11 @@ package frc.modules;
 import java.util.List;
 
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.photonvision.targeting.TargetCorner;
 
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -51,11 +49,11 @@ public class PhotonvisionModule extends SubsystemBase {
     private PhotonCamera[] camera;
 
     public PhotonvisionModule() {
-        PhotonCamera[] photonCamera={new PhotonCamera("PhotonVision3"),
-        // new PhotonCamera("PhotonVision2"),
-        // new PhotonCamera("apple"),
-        new PhotonCamera("PhotonVision1")};
-        camera=photonCamera;
+        PhotonCamera[] photonCamera = { new PhotonCamera("PhotonVision3"),
+                // new PhotonCamera("PhotonVision2"),
+                // new PhotonCamera("apple"),
+                new PhotonCamera("PhotonVision1") };
+        camera = photonCamera;
     }
 
     // public static enum PhotonPipeline {
@@ -180,24 +178,24 @@ public class PhotonvisionModule extends SubsystemBase {
         // PhotonTrackedTarget targetLeft = getBestTarget(CameraName.CAM4);
 
         if (targetFront != null) {
-        // if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
-        FRONT_APRILTAG_ID.setInteger(targetFront.getFiducialId());
-        // }
+            // if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
+            FRONT_APRILTAG_ID.setInteger(targetFront.getFiducialId());
+            // }
 
-        FRONT_TARGET_AMBIGUITY.setDouble(targetFront.getPoseAmbiguity());
-        FRONT_TARGET_YAW.setDouble(targetFront.getYaw());
-        FRONT_TARGET_PITCH.setDouble(targetFront.getPitch());
-        FRONT_TARGET_SKEW.setDouble(targetFront.getSkew());
+            FRONT_TARGET_AMBIGUITY.setDouble(targetFront.getPoseAmbiguity());
+            FRONT_TARGET_YAW.setDouble(targetFront.getYaw());
+            FRONT_TARGET_PITCH.setDouble(targetFront.getPitch());
+            FRONT_TARGET_SKEW.setDouble(targetFront.getSkew());
         }
         if (targetBack != null) {
-        // if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
-        BACK_APRILTAG_ID.setInteger(targetBack.getFiducialId());
-        // }
+            // if (getPipeline(CameraName.CAM1) == PhotonPipeline.AprilTag) {
+            BACK_APRILTAG_ID.setInteger(targetBack.getFiducialId());
+            // }
 
-        BACK_TARGET_AMBIGUITY.setDouble(targetBack.getPoseAmbiguity());
-        BACK_TARGET_YAW.setDouble(targetBack.getYaw());
-        BACK_TARGET_PITCH.setDouble(targetBack.getPitch());
-        BACK_TARGET_SKEW.setDouble(targetBack.getSkew());
+            BACK_TARGET_AMBIGUITY.setDouble(targetBack.getPoseAmbiguity());
+            BACK_TARGET_YAW.setDouble(targetBack.getYaw());
+            BACK_TARGET_PITCH.setDouble(targetBack.getPitch());
+            BACK_TARGET_SKEW.setDouble(targetBack.getSkew());
         }
         // if (targetLeft != null) {
 

@@ -6,7 +6,6 @@ package frc.subsystems;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Optional;
 
 import org.littletonrobotics.junction.Logger;
@@ -21,8 +20,6 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -33,41 +30,36 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
-import frc.robot.RobotMap;
-import frc.robot.SwerveModule;
-import frc.robot.RobotMap.Swerve;
-import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import com.pathplanner.lib.auto.AutoBuilder;
+
+import frc.robot.RobotMap.PhotonvisionConstants;
 import frc.robot.RobotMap.Swerve;
 
-import frc.robot.SwerveModule;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.modules.PhotonvisionModule.CameraName;
 import frc.robot.Robot;
+import frc.modules.SwerveModule;
 import frc.robot.RobotMap;
 // import frc.robot.RobotMap.PhotonvisionConstants;
 
@@ -85,13 +77,12 @@ public class DriveSubsystem extends SubsystemBase {
   private final SwerveModule frontRight;
   private final SwerveModule backLeft;
   private final SwerveModule backRight;
-  int jump=0;
   // private final SwerveDriveOdometry odometry;
   private final PIDController m_driftCorrectionPid = new PIDController(0.12, 0, 0);
   // private Pose2d pose = new Pose2d(0.0, 0.0, new Rotation2d());
 
   private ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
-  private ChassisSpeeds relativeSpeeds = new ChassisSpeeds(); 
+  private ChassisSpeeds relativeSpeeds = new ChassisSpeeds();
 
   public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drive Base");
 
@@ -158,15 +149,14 @@ public class DriveSubsystem extends SubsystemBase {
 
   private final Timer AVTimer = new Timer();
 
-  // public final AprilTagFieldLayout aprilTagField;
+  public final AprilTagFieldLayout aprilTagField;
   private final Field2d field2d = new Field2d();
   private static final Vector<N3> odometryStandardDeviations = VecBuilder.fill(5, 5, Units.degreesToRadians(10));
-  // private static final Vector<N3> photonStandardDeviations =
-  // VecBuilder.fill(0.25, 0.25, 0);
   private static final Vector<N3> photonStandardDeviations = VecBuilder.fill(5, 5, 100);
   private static final Vector<N3> kSingleStandardDeviations = VecBuilder.fill(5,5,100);
   private static final Vector<N3> kMultiTagStandardDeviations = VecBuilder.fill(2.5,2.5,100);
 
+  public PhotonPoseEstimator[] visionPoseEstimator = new PhotonPoseEstimator[4];
 
   public CANcoderConfiguration configLeftFront;
   public CANcoderConfiguration configRightFront;
@@ -245,46 +235,48 @@ public class DriveSubsystem extends SubsystemBase {
     frontRight.invertDriveMotor(false);
     backRight.invertDriveMotor(false);
 
-    AprilTagFieldLayout initialLayout;
-    // try {
-      
-    //   initialLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
-    //   Optional<Alliance> alliance = DriverStation.getAlliance();
-    //   // TODO: Change to make the origin position based off of station rather than
-    //   // just based off of alliance.
-    //   initialLayout
-    //       .setOrigin(alliance.isPresent() && alliance.get() == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide
-    //           : OriginPosition.kRedAllianceWallRightSide);
-    // } catch (IOException e) {
-    //   DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
-    //   initialLayout = null;
-    // }
-    // aprilTagField = initialLayout;
-    // if (Robot.isReal()) {
-    //   visionPoseEstimatorFront = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-    //       Robot.photonvision.getCamera(CameraName.CAM1),
-    //       PhotonvisionConstants.ROBOT_TO_FRONT_CAMERA);
-    //   // visionPoseEstimatorRight = new PhotonPoseEstimator(aprilTagField,
-    //   // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-    //   // Robot.photonvision.getCamera(CameraName.CAM2),
-    //   // PhotonvisionConstants.ROBOT_TO_RIGHT_CAMERA);
-    //   visionPoseEstimatorBack = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-    //       Robot.photonvision.getCamera(CameraName.CAM3),
-    //       PhotonvisionConstants.ROBOT_TO_BACK_CAMERA);
-    //   // visionPoseEstimatorLeft = new PhotonPoseEstimator(aprilTagField,
-    //   // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-    //   // Robot.photonvision.getCamera(CameraName.CAM4),
-    //   // PhotonvisionConstants.ROBOT_TO_LEFT_CAMERA);
-    //   visionPoseEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-    //   // visionPoseEstimatorRight.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-    //   visionPoseEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-    //   // visionPoseEstimatorLeft.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-    // }
+    frontLeft.getDrivePosition();
+    frontRight.getDrivePosition();
+    backLeft.getDrivePosition();
+    backRight.getDrivePosition();
 
-    // odometry = new SwerveDriveOdometry(
-    // kinematics,
-    // Robot.navX.getRotation2d(),
-    // getModulePositions());
+    AprilTagFieldLayout initialLayout;
+    try {
+      
+      initialLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
+      Optional<Alliance> alliance = DriverStation.getAlliance();
+      // TODO: Change to make the origin position based off of station rather than
+      // just based off of alliance.
+      initialLayout
+          .setOrigin(alliance.isPresent() && alliance.get() == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide
+              : OriginPosition.kRedAllianceWallRightSide);
+    } catch (IOException e) {
+      DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
+      initialLayout = null;
+    }
+    aprilTagField = initialLayout;
+    if (Robot.isReal()) {
+      visionPoseEstimator[0]= new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+          Robot.photonvision.getCamera(CameraName.CAM1),
+          PhotonvisionConstants.ROBOT_TO_FRONT_CAMERA);
+      // visionPoseEstimatorRight = new PhotonPoseEstimator(aprilTagField,
+      // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+      // Robot.photonvision.getCamera(CameraName.CAM2),
+      // PhotonvisionConstants.ROBOT_TO_RIGHT_CAMERA);
+      visionPoseEstimator[1] = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+          Robot.photonvision.getCamera(CameraName.CAM3),
+          PhotonvisionConstants.ROBOT_TO_BACK_CAMERA);
+      // visionPoseEstimatorLeft = new PhotonPoseEstimator(aprilTagField,
+      // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+      // Robot.photonvision.getCamera(CameraName.CAM4),
+      // PhotonvisionConstants.ROBOT_TO_LEFT_CAMERA);
+      visionPoseEstimator[0].setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+      // visionPoseEstimatorRight.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+      visionPoseEstimator[1].setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+      // visionPoseEstimatorLeft.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    }
+
+
     poseEstimator = new SwerveDrivePoseEstimator(kinematics, Robot.navX.getRotation2d(), getModulePositions(),
         new Pose2d(new Translation2d(), new Rotation2d()),
         odometryStandardDeviations, photonStandardDeviations);
@@ -306,13 +298,13 @@ public class DriveSubsystem extends SubsystemBase {
                 // This will flip the path being followed to the red side of the field.
                 // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-                var alliance = DriverStation.getAlliance();
-                if (alliance.isPresent()) {
-                    return alliance.get() == DriverStation.Alliance.Red;
-                }
-                return false;
-            },
-            this // Reference to this subsystem to set requirements
+          var alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+          }
+          return false;
+        },
+        this // Reference to this subsystem to set requirements
     );
   }
 
@@ -340,6 +332,21 @@ public class DriveSubsystem extends SubsystemBase {
     frontRight.setDesiredState(swerveModuleStates[1]);
     backLeft.setDesiredState(swerveModuleStates[2]);
     backRight.setDesiredState(swerveModuleStates[3]);
+  }
+
+  private ChassisSpeeds rotationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
+  // Assuming the control loop runs in 20ms
+  final double deltaTime = 0.02;
+
+  // The position of the bot one control loop in the future given the chassisspeed
+  Pose2d robotPoseVel = new Pose2d(chassisSpeeds.vxMetersPerSecond * deltaTime,
+      chassisSpeeds.vyMetersPerSecond * deltaTime,
+      new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * deltaTime));
+
+  Twist2d twistVel = new Pose2d(0, 0, new Rotation2d()).log(robotPoseVel);
+  return new ChassisSpeeds(
+      twistVel.dx / deltaTime, twistVel.dy / deltaTime,
+      twistVel.dtheta / deltaTime);
   }
 
   /**
@@ -391,11 +398,15 @@ public class DriveSubsystem extends SubsystemBase {
  
   public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
 
-    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-        new ChassisSpeeds(translation.getX(), translation.getY(), rotation),
-        Rotation2d.fromDegrees(-Robot.navX.getAngle()));
 
-    chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
+    // if (fieldOriented) {
+      ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+          new ChassisSpeeds(translation.getX(), translation.getY(), rotation),
+          Rotation2d.fromDegrees(-Robot.navX.getAngle()));
+
+      chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
+
+    // }
 
     Logger.recordOutput("Swerve Module States", kinematics.toSwerveModuleStates(chassisSpeeds));
 
@@ -418,9 +429,41 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /** Updates the field relative position of the robot. */
-  public void updateOdometry(boolean jumpFront, boolean jumpBack) {
+  public void updateOdometry() {
+    Optional<EstimatedRobotPose> resultFront = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition(),CameraName.CAM1);
+    Optional<EstimatedRobotPose> resultBack = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition(),CameraName.CAM3);
     poseEstimator.update(Robot.navX.getRotation2d(), getModulePositions());
-    
+
+    // Optional<EstimatedRobotPose> resultRight =
+    // getEstimatedGlobalPoseRight(poseEstimator.getEstimatedPosition());
+    // Optional<EstimatedRobotPose> resultLeft =
+    // getEstimatedGlobalPoseLeft(poseEstimator.getEstimatedPosition());
+    if (resultFront.isPresent()) {
+      EstimatedRobotPose visionPoseEstimate = resultFront.get();
+      Vector<N3> stddevs =  getEstimationStdDevs(visionPoseEstimate.targetsUsed);
+      double[] data = stddevs.getData();
+      for(int i=0;i<data.length;i++){
+        System.out.println(i+" "+data[i]);
+      }
+      poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+          visionPoseEstimate.timestampSeconds, getEstimationStdDevs(visionPoseEstimate.targetsUsed));
+    }
+    // if (resultRight.isPresent()) {
+    // EstimatedRobotPose visionPoseEstimate = resultRight.get();
+    // poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+    // visionPoseEstimate.timestampSeconds);
+    // }
+    if (resultBack.isPresent()) {
+      EstimatedRobotPose visionPoseEstimate = resultBack.get();
+      poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+          visionPoseEstimate.timestampSeconds, getEstimationStdDevs(visionPoseEstimate.targetsUsed));
+    }
+    // if (resultLeft.isPresent()) {
+    // EstimatedRobotPose visionPoseEstimate = resultLeft.get();
+    // poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+    // visionPoseEstimate.timestampSeconds);
+    // }
+
     field2d.setRobotPose(getPose());
   }
 
@@ -458,8 +501,6 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetOdometry(Pose2d pose) {
     Robot.navX.setAngleAdjustment(pose.getRotation().getDegrees());
     poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), pose);
-    // odometry.resetPosition(Robot.navX.getRotation2d(), getModulePositions(),
-    // pose);
   }
   
   public void resetOdometryWidget() {
@@ -480,6 +521,69 @@ public class DriveSubsystem extends SubsystemBase {
 
     resetOdometry(new Pose2d(new Translation2d(resetPoseX.getDouble(0), resetPoseY.getDouble(0)), angleAdjustment));
   }
+
+  public Vector<N3> getEstimationStdDevs(List<PhotonTrackedTarget> targetList) {
+    var estStdDevs = kSingleStandardDeviations;
+    var targets = targetList;
+    int numTags = 0;
+    double avgDist = 0;
+    for (var tgt : targets) {
+        var tagPose = visionPoseEstimator[0].getFieldTags().getTagPose(tgt.getFiducialId());
+        if (tagPose.isEmpty()) continue;
+        numTags++;
+        avgDist +=
+                tagPose.get().toPose2d().getTranslation().getDistance(getPose().getTranslation());
+    }
+    if (numTags == 0) return VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);;
+    avgDist /= numTags;
+    // Decrease std devs if multiple targets are visible
+    if (numTags > 1) estStdDevs = kMultiTagStandardDeviations;
+    // Increase std devs based on (average) distance
+    // if (numTags == 1 && avgDist > 4)
+    //     estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+    estStdDevs = estStdDevs.times(1 + (avgDist * avgDist*RobotMap.Swerve.PHOTON_STDDEV_SCALING_FACTOR));
+
+return estStdDevs;
+}
+
+public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose,CameraName camera) {
+  int estimator;
+  switch(camera){
+    case CAM1:
+      estimator=0;
+      break;
+    case CAM3:
+      estimator=1;
+      break;
+    default:
+      System.out.println("DriveSubsystem get global pose is accessing illegal camera.");
+      return Optional.empty();
+  }
+  visionPoseEstimator[estimator].setReferencePose(prevEstimatedRobotPose);
+  if (Robot.photonvision.hasTargets(camera)) {
+    PhotonPipelineResult rawResult = Robot.photonvision.getLatestResult(camera);
+    List<PhotonTrackedTarget> targets = rawResult.targets;
+    for (int i = 0; i < targets.size(); i++) {
+      if (targets.get(i).getPoseAmbiguity() > 0.25) {
+        targets.remove(i);
+        --i;
+      }
+    }
+    PhotonPipelineResult cameraResult = new PhotonPipelineResult(rawResult.getLatencyMillis(), targets);
+    cameraResult.setTimestampSeconds(rawResult.getTimestampSeconds());
+    return visionPoseEstimator[estimator].update(cameraResult);
+  } else {
+    return Optional.empty();
+  }
+}
+
+
+public void resetPose(Pose2d pose) {
+  Robot.navX.reset();
+  poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), new Pose2d());
+}
+
+
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
     return kinematics.toChassisSpeeds(getModuleStates());
@@ -515,10 +619,15 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
 
-    FRONT_LEFT_ENC.setDouble(frontLeft.turningEncoder.getAbsolutePosition().refresh().getValue());
-    FRONT_RIGHT_ENC.setDouble(frontRight.turningEncoder.getAbsolutePosition().refresh().getValue());
-    BACK_LEFT_ENC.setDouble(backLeft.turningEncoder.getAbsolutePosition().refresh().getValue());
-    BACK_RIGHT_ENC.setDouble(backRight.turningEncoder.getAbsolutePosition().refresh().getValue());
+    // FRONT_LEFT_ENC.setDouble(frontLeft.turningEncoder.getAbsolutePosition().refresh().getValue());
+    // FRONT_RIGHT_ENC.setDouble(frontRight.turningEncoder.getAbsolutePosition().refresh().getValue());
+    // BACK_LEFT_ENC.setDouble(backLeft.turningEncoder.getAbsolutePosition().refresh().getValue());
+    // BACK_RIGHT_ENC.setDouble(backRight.turningEncoder.getAbsolutePosition().refresh().getValue());
+
+    FRONT_LEFT_ENC.setDouble(SwerveModule.normalizeAngle2(frontLeft.turningNeoEncoder.getPosition()) * (180 / Math.PI));
+    FRONT_RIGHT_ENC.setDouble(SwerveModule.normalizeAngle2(frontRight.turningNeoEncoder.getPosition()) * (180 / Math.PI));
+    BACK_LEFT_ENC.setDouble(SwerveModule.normalizeAngle2(backLeft.turningNeoEncoder.getPosition()) * (180 / Math.PI));
+    BACK_RIGHT_ENC.setDouble(SwerveModule.normalizeAngle2(backRight.turningNeoEncoder.getPosition()) * (180 / Math.PI));
 
     frontLeftDriveEncoder.setDouble(frontLeft.getPosition().distanceMeters);
     backLeftDriveEncoder.setDouble(backLeft.getPosition().distanceMeters);
@@ -533,12 +642,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     globalAngle.setDouble(Robot.navX.getAngle() % 360);
     angleVelo.setDouble(Robot.navX.getRate());
-    // if(jump<100){
-      updateOdometry(true,true);
-      // jump++;
-    // } else {
-    //   updateOdometry(false,false);
-    // }
+    updateOdometry();
+
 
     Logger.recordOutput("Odometry", getPose());
     Logger.recordOutput("angular velocity", Robot.navX.getRate());

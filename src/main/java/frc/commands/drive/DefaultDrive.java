@@ -1,6 +1,4 @@
-
-
-package frc.commands;
+package frc.commands.drive;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -25,7 +23,7 @@ public class DefaultDrive extends Command {
     @Override
     public void execute() {
 
-        percentPower = (1-(Robot.controller.getLeftTriggerAxis()*0.8));
+        percentPower = (1-(Robot.driverController.getLeftTriggerAxis()*0.8));
 
         var alliance = DriverStation.getAlliance();
         if (alliance.isPresent()) {
@@ -34,20 +32,18 @@ public class DefaultDrive extends Command {
     
         if (isAlliance)
             translation = new Translation2d(
-                MathUtil.applyDeadband(-Robot.controller.getLeftY(), 0.25) * DriveSubsystem.kMaxSpeed * percentPower,
-                MathUtil.applyDeadband(-Robot.controller.getLeftX(), 0.25) * DriveSubsystem.kMaxSpeed * percentPower
+                MathUtil.applyDeadband(-Robot.driverController.getLeftY(), 0.25) * DriveSubsystem.kMaxSpeed * percentPower,
+                MathUtil.applyDeadband(-Robot.driverController.getLeftX(), 0.25) * DriveSubsystem.kMaxSpeed * percentPower
             );
         else
             translation = new Translation2d(
-                MathUtil.applyDeadband(Robot.controller.getLeftY(), 0.25) * DriveSubsystem.kMaxSpeed * percentPower,
-                MathUtil.applyDeadband(Robot.controller.getLeftX(), 0.25) * DriveSubsystem.kMaxSpeed * percentPower
+                MathUtil.applyDeadband(Robot.driverController.getLeftY(), 0.25) * DriveSubsystem.kMaxSpeed * percentPower,
+                MathUtil.applyDeadband(Robot.driverController.getLeftX(), 0.25) * DriveSubsystem.kMaxSpeed * percentPower
             );
         
-        double rotation = -MathUtil.applyDeadband(Robot.controller.getRightX() * percentPower, 0.2) 
+        double rotation = -MathUtil.applyDeadband(Robot.driverController.getRightX() * percentPower, 0.2) 
             * DriveSubsystem.kMaxAngularSpeed * percentPower;
 
         Robot.swerve.drive(translation, rotation, fieldOriented);
     }
 }
-
-

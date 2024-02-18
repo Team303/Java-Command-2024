@@ -20,37 +20,48 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.autonomous.Autonomous;
 import frc.autonomous.AutonomousProgram;
-import frc.commands.DefaultDrive;
+import frc.commands.amoghbelt.WheelSpinnyThing;
+import frc.commands.drive.DefaultDrive;
+import frc.commands.drive.DriveWait;
+import frc.commands.drive.TurnToSpeaker;
 import frc.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.commands.DriveWait;
-import frc.commands.TurnToSpeaker;
 import frc.subsystems.DriveSubsystem;
 import frc.modules.PhotonvisionModule;
+import frc.subsystems.Intake;
+import frc.subsystems.Belt;
+import frc.commands.intake.GroundIntake;
+import frc.commands.intake.HomeAlone;
+import frc.commands.intake.HomeIntake;
+
 
 public class Robot extends LoggedRobot {
-	public static final CommandXboxController controller = new CommandXboxController(0);
+	public static final CommandXboxController driverController = new CommandXboxController(0);
+	public static final CommandXboxController operatorController = new CommandXboxController(1);
+
 	public static final AHRS navX = new AHRS();
 	public static PhotonvisionModule photonvision;
 	public static DriveSubsystem swerve;
+	public static Intake intake;
+	public static Belt belt;
 	// public static Logger logger;
 
 	@Override
 	public void robotInit() {
 		photonvision = null; //new PhotonvisionModule();
 		swerve = new DriveSubsystem();
+		intake = new Intake();
+		belt = new Belt();
 		swerve.resetOdometry();
 		configureButtonBindings();
 
@@ -83,9 +94,13 @@ public class Robot extends LoggedRobot {
 	}
 
 	private void configureButtonBindings() {
-		controller.y().onTrue(new InstantCommand(swerve::resetOdometry));
-		controller.b().onTrue(new InstantCommand(swerve::resetOdometryWidget));
-		controller.a().onTrue(new TurnToSpeaker());
+		driverController.y().onTrue(new InstantCommand(swerve::resetOdometry));
+		driverController.b().onTrue(new InstantCommand(swerve::resetOdometryWidget));
+		driverController.a().onTrue(new TurnToSpeaker());
+
+		operatorController.x().toggleOnTrue(new WheelSpinnyThing());
+		operatorController.y().toggleOnTrue(new GroundIntake());
+
 	}
 
 	/* Currently running auto routine */
@@ -115,24 +130,20 @@ public class Robot extends LoggedRobot {
 	}
 
 	@Override
-	public void disabledInit() {
-
-		// run resetEncoder counter in case we get a bad reading
-		swerve.robotRelativeDrive(new ChassisSpeeds());
-	}
-
-	@Override
 	public void teleopInit() {
 		// This makes sure that the autonomous stops running when teleop starts running.
 		if (autonomousCommand != null) {
 			autonomousCommand.cancel();
 		}
-    	swerve.setDefaultCommand(new DefaultDrive(false));
+
+		intake.setDefaultCommand(new SequentialCommandGroup(new HomeIntake(), new HomeAlone()));
+		swerve.setDefaultCommand(new DefaultDrive(true));
+
 	}
 
 	@Override
-	public void robotPeriodic() { 
-
+	public void robotPeriodic() {
+		//Logger.recordOutput("Example/Mechanism", mechanism);
 		CommandScheduler.getInstance().run();
 
 	}
