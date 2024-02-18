@@ -41,10 +41,6 @@ public class RobotMap {
 		public static final int LEFT_FLYWHEEL_MOTOR_ID = 1; // NEED TO CHANGE
 		public static final int RIGHT_FLYWHEEL_MOTOR_ID = 2; // NEED TO CHANGE
 
-		public static final double FLYWHEEL_FEED_FORWARD_KS = 0; 
-		public static final double FLYWHEEL_FEED_FORWARD_KV = 1;
-		public static final double FLYWHEEL_FEED_FORWARD_KA = 4.34;
-
 		//Angle Constants
 		public static final int LEFT_ANGLE_MOTOR_ID = 3; // NEED TO CHANGE
 		public static final int RIGHT_ANGLE_MOTOR_ID = 4; // NEED TO CHANGE
@@ -70,6 +66,8 @@ public class RobotMap {
 		//Extra
 		public static final double accelerationCompensationFactor = 0.1; //NEED TO CHANGE
 		public static final double SHOOTER_SIM_LENGTH = 12; //NEED TO CHANGE
+
+		public static final double ANGLE_CONVERSION_FACTOR = (58.0 / 12.0) * (58.0 / 16.0) * 2 * 2;
 
 
 

@@ -37,7 +37,6 @@ public class HomeShooter extends Command {
     public void end(boolean interrupted) {
         shooter.leftAngleMotor.setVoltage(0);
         shooter.rightAngleMotor.setVoltage(0);
-        shooter.resetFlywheelEncoders();
         timer.stop();
     }
 
