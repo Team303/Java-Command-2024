@@ -30,7 +30,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.autonomous.Autonomous;
 import frc.autonomous.AutonomousProgram;
-import frc.commands.amoghBBC.BBCGyrate;
+import frc.commands.belt.IndexAndBelt;
 import frc.commands.drive.DefaultDrive;
 import frc.commands.drive.DriveWait;
 import frc.commands.intake.GroundIntake;
@@ -45,7 +45,7 @@ public class Robot extends LoggedRobot {
 	public static final AHRS navX = new AHRS();
 	public static final DriveSubsystem swerve = null;
 	public static final Intake intake = new Intake();
-	public static final Belt DrakesSnake = new Belt(); 
+	public static final Belt indexerBelt = new Belt(); 
 
 	private Mechanism2d mechanism = new Mechanism2d(3, 3);
 
@@ -78,7 +78,7 @@ public class Robot extends LoggedRobot {
 
 	private void configureButtonBindings() {
 		operatorController.b().toggleOnTrue(new GroundIntake());
-		operatorController.x().toggleOnTrue(new BBCGyrate());
+		operatorController.x().toggleOnTrue(new IndexAndBelt());
 	}
 
 	/* Currently running auto routine */

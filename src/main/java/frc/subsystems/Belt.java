@@ -1,6 +1,6 @@
 package frc.subsystems;
 
-import static frc.robot.Robot.DrakesSnake;
+import static frc.robot.Robot.indexerBelt;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 
 public class Belt extends SubsystemBase {
-    public final TalonFX beltBBC;
-    public final TalonFX aritraBBC;
+    public final TalonFX belt;
+    public final TalonFX indexer;
     private final DigitalInput beamBBC; //beam break connection
     public static final ShuffleboardTab INTAKE_TAB = Shuffleboard.getTab("Amogh Belt"); // Shuffleboard tab
     public static final GenericEntry BELT_SPEED_ENTRY = INTAKE_TAB.add("Belt Speed", 0.0).getEntry();
@@ -24,15 +24,15 @@ public class Belt extends SubsystemBase {
 
     public Belt() {
         beamBBC = new DigitalInput(RobotMap.Intake.BEAM_PORT);
-        beltBBC = new TalonFX(RobotMap.Intake.BELT_MOTOR_ID);
-		beltBBC.setNeutralMode(NeutralModeValue.Coast);
+        belt = new TalonFX(RobotMap.Intake.BELT_MOTOR_ID);
+		belt.setNeutralMode(NeutralModeValue.Coast);
 
-        aritraBBC = new TalonFX(RobotMap.Intake.INDEXER_MOTOR_ID);
-        aritraBBC.setNeutralMode(NeutralModeValue.Coast);
+        indexer = new TalonFX(RobotMap.Intake.INDEXER_MOTOR_ID);
+        indexer.setNeutralMode(NeutralModeValue.Coast);
 
 		CurrentLimitsConfigs clc40 = new CurrentLimitsConfigs().withStatorCurrentLimit(40).withSupplyCurrentLimit(40);
-		beltBBC.getConfigurator().apply(clc40);
-        aritraBBC.getConfigurator().apply(clc40);
+		belt.getConfigurator().apply(clc40);
+        indexer.getConfigurator().apply(clc40);
         
     }
 
@@ -42,8 +42,8 @@ public class Belt extends SubsystemBase {
 
     @Override
     public void periodic() {
-        BELT_SPEED_ENTRY.setDouble(DrakesSnake.beltBBC.getVelocity().refresh().getValueAsDouble());
-        INDEXER_SPEED_ENTRY.setDouble(DrakesSnake.aritraBBC.getVelocity().refresh().getValueAsDouble());
+        BELT_SPEED_ENTRY.setDouble(indexerBelt.belt.getVelocity().refresh().getValueAsDouble());
+        INDEXER_SPEED_ENTRY.setDouble(indexerBelt.indexer.getVelocity().refresh().getValueAsDouble());
 
     }
 }
