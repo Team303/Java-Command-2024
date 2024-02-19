@@ -180,19 +180,6 @@ public class DriveSubsystem extends SubsystemBase {
     configRightBack = new CANcoderConfiguration();
     configRightBack.MagnetSensor.MagnetOffset = Swerve.RIGHT_BACK_STEER_OFFSET;
 
-    PIDController frontLeftPID = new PIDController(6, 0.5, 0);
-    frontLeftPID.setIntegratorRange(0,1);
-
-    PIDController frontRightPID = new PIDController(6, 0.5, 0);
-    frontLeftPID.setIntegratorRange(0,1);
-
-    PIDController backLeftPID = new PIDController(6, 0.5, 0);
-    frontLeftPID.setIntegratorRange(0,1);
-
-    PIDController backRightPID = new PIDController(6, 0.5, 0);
-    frontLeftPID.setIntegratorRange(0,1);
-
-
 
     frontLeft = new SwerveModule(
       RobotMap.Swerve.LEFT_FRONT_DRIVE_ID, 
@@ -334,21 +321,6 @@ public class DriveSubsystem extends SubsystemBase {
     backRight.setDesiredState(swerveModuleStates[3]);
   }
 
-  private ChassisSpeeds rotationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
-  // Assuming the control loop runs in 20ms
-  final double deltaTime = 0.02;
-
-  // The position of the bot one control loop in the future given the chassisspeed
-  Pose2d robotPoseVel = new Pose2d(chassisSpeeds.vxMetersPerSecond * deltaTime,
-      chassisSpeeds.vyMetersPerSecond * deltaTime,
-      new Rotation2d(chassisSpeeds.omegaRadiansPerSecond * deltaTime));
-
-  Twist2d twistVel = new Pose2d(0, 0, new Rotation2d()).log(robotPoseVel);
-  return new ChassisSpeeds(
-      twistVel.dx / deltaTime, twistVel.dy / deltaTime,
-      twistVel.dtheta / deltaTime);
-  }
-
   /**
    * Adds rotational velocity to the chassis speed to compensate for
    * unwanted changes in gyroscope heading.
@@ -482,14 +454,16 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void resetOdometry() {
 
-    boolean isAlliance = true;
+    boolean isBlue = true;
+
+    // depending on which alliance, set which global direction to zero to (0 or 180)
 
     var alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
-        isAlliance = alliance.get() == DriverStation.Alliance.Blue;
+        isBlue = alliance.get() == DriverStation.Alliance.Blue;
     }
 
-    if (isAlliance) 
+    if (isBlue) 
       Robot.navX.setAngleAdjustment(0);
     else
       Robot.navX.setAngleAdjustment(180);
@@ -505,19 +479,21 @@ public class DriveSubsystem extends SubsystemBase {
   
   public void resetOdometryWidget() {
 
-    boolean isAlliance = true;
+    // resets pose based on values inputted on shuffleboard
+    // depending on which alliance, set which global direction to zero (0 or 180)
+
+    boolean isBlue = true;
     Rotation2d angleAdjustment;
 
     var alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
-        isAlliance = alliance.get() == DriverStation.Alliance.Blue;
+        isBlue = alliance.get() == DriverStation.Alliance.Blue;
     }
 
-    if (isAlliance) 
+    if (isBlue) 
       angleAdjustment = Rotation2d.fromDegrees(0);
     else
       angleAdjustment = Rotation2d.fromDegrees(180);
-
 
     resetOdometry(new Pose2d(new Translation2d(resetPoseX.getDouble(0), resetPoseY.getDouble(0)), angleAdjustment));
   }
@@ -614,10 +590,19 @@ public void resetPose(Pose2d pose) {
     return -Math.atan2(speakerPose.getY() - robotPose.getY(), speakerPose.getX() - robotPose.getX()) * (180 / Math.PI);
 
   }
+
+  private void periodicReset() {
+    frontLeft.periodicReset();
+    frontRight.periodicReset();
+    backLeft.periodicReset();
+    backRight.periodicReset();
+  }
  
 
   @Override
   public void periodic() {
+
+    periodicReset();
 
     // FRONT_LEFT_ENC.setDouble(frontLeft.turningEncoder.getAbsolutePosition().refresh().getValue());
     // FRONT_RIGHT_ENC.setDouble(frontRight.turningEncoder.getAbsolutePosition().refresh().getValue());
@@ -653,8 +638,5 @@ public void resetPose(Pose2d pose) {
     Logger.recordOutput("Back Right Aritra", backRight.getPosition().angle.getDegrees());
     Logger.recordOutput("Alan is a persecuter", true);
     Logger.recordOutput("Real Swerve Module States", getModuleStates());
-    
-
-    // Logger.recordOuptu("Swervemodule states", Swer)
   }
 }
