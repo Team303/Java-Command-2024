@@ -238,102 +238,21 @@ public class SwerveModule {
     return angle;
   }
 
-  /**
-   * Returns difference (targetAngle - getSteerAngle())
-    normalized in range -pi .. pi
-   *
-   * @param targetAngle the angle to be moved to
-   * @return The steer angle after accounting for error.
-   */
-  public double normalizeAngleError(double targetAngle) {
-    // Angle is inbetween 0 to 2pi
-
-    double difference = targetAngle - normalizeAngle(turningNeoEncoder.getPosition());
-    // Change the target angle so the difference is in the range [-pi, pi) instead
-    // of [0, 2pi)
-    if (difference >= Math.PI) {
-      targetAngle -= 2.0 * Math.PI;
-    } else if (difference < -Math.PI) {
-      targetAngle += 2.0 * Math.PI;
-    } 
-    return targetAngle - normalizeAngle(turningNeoEncoder.getPosition());
-  }
-
-  double ENCODER_RESET_MAX_ANGULAR_VELOCITY = Math.toRadians(2);
-  double ENCODER_RESET_ITERATIONS = 200;
+  final double ENCODER_RESET_MAX_ANGULAR_VELOCITY = Math.toRadians(2);
+  final double ENCODER_RESET_ITERATIONS = 200;
   double resetIteration = 0;
 
-  private void periodicReset() {
+  public void periodicReset() {
     if (Math.abs(turningNeoEncoder.getVelocity())
             < ENCODER_RESET_MAX_ANGULAR_VELOCITY && ++resetIteration >= ENCODER_RESET_ITERATIONS) {
         resetIteration = 0;
+        System.out.println("resetting positions to CANCoders");
         double absoluteAngle = normalizeAngle(getPosition().angle.getRadians());    
         turningNeoEncoder.setPosition(absoluteAngle);
     } else {
       resetIteration = 0;
     }
   }
-
-
-  //   /**
-  //  * Converts the steer angle to the next angle the swerve module should turn to.
-  //  *
-  //  * @param steerAngle the current steer angle.
-  //  */
-  // private double convertSteerAngle(double steerAngle) {
-  //   steerAngle = normalizeAngle(steerAngle);
-  //   double difference = normalizeAngleError(steerAngle);        
-
-  //   // If the difference is greater than 90 deg or less than -90 deg the drive can
-  //   // be inverted so the total
-  //   // movement of the module is less than 90 deg
-  //   if (difference > Math.PI / 2.0 || difference < -Math.PI / 2.0) {
-  //     // Only need to add 180 deg here because the target angle will be put back into
-  //     // the range [0, 2pi)
-  //     steerAngle += Math.PI;
-  //   }
-
-  //   // Put the target angle back into the range [0, 2pi)
-  //   steerAngle = normalizeAngle(steerAngle);
-
-  //   // Angle to be changed is now in radians
-  //   double referenceAngleRadians = steerAngle;
-
-  //   double currentAngleRadians = turningNeoEncoder.getPosition();
-
-  //   // Reset the NEO's encoder periodically when the module is not rotating.
-  //   // Sometimes (~5% of the time) when we initialize, the absolute encoder isn't
-  //   // fully set up, and we don't
-  //   // end up getting a good reading. If we reset periodically this won't matter
-  //   // anymore.
-  //   if (turningNeoEncoder.getVelocity() 
-  //           < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
-  //     if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
-  //       resetIteration = 0;
-  //       double absoluteAngle = normalizeAngle(getPosition().angle.getRadians());    
-  //       turningNeoEncoder.setPosition(normalizeAngle(getPosition().angle.getRadians()));
-  //       currentAngleRadians = absoluteAngle;
-  //     }
-  //   } else {
-  //     resetIteration = 0;
-  //   }
-
-  //   double currentAngleRadiansMod = normalizeAngle(currentAngleRadians);
-
-  //   // The reference angle has the range [0, 2pi)
-  //   // but the Falcon's encoder can go above that
-  //   double adjustedReferenceAngleRadians = referenceAngleRadians 
-  //       + currentAngleRadians - currentAngleRadiansMod;
-  //   if (referenceAngleRadians - currentAngleRadiansMod > Math.PI) {
-  //     adjustedReferenceAngleRadians -= 2.0 * Math.PI;
-  //   } else if (referenceAngleRadians - currentAngleRadiansMod < -Math.PI) {
-  //     adjustedReferenceAngleRadians += 2.0 * Math.PI;
-  //   }
-
-  //   // The position that the motor should turn to
-  //   // when taking into account the ticks of the motor
-  //   return adjustedReferenceAngleRadians;
-  // }
 
   public static double normalizeAngle2(double angleRadians) {
 
@@ -350,12 +269,6 @@ public class SwerveModule {
     return angleRadians;
   }
 
-
-  /**
-   * Converts the drive votlage to be inverted or not.
-   *
-   * @
-
   /**
    * Sets the desired state for the module.
    *
@@ -363,22 +276,13 @@ public class SwerveModule {
    */
   public void setDesiredState(SwerveModuleState desiredState) {
 
-    Rotation2d encoderRotation = Rotation2d.fromDegrees(turningEncoder.getPosition().getValueAsDouble() % 360);
-
-
     // Optimize the reference state to avoid spinning further than 90 degrees
     SwerveModuleState state =
         SwerveModuleState.optimize(desiredState, Rotation2d.fromRadians(normalizeAngle2(turningNeoEncoder.getPosition())));
 
-    
-
-
     // Logger.recordOutput("desired drive velocity", state.speedMetersPerSecond / (2* Math.PI*kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR));
 
     driveMotor.setControl(voltageVelocityDriveControl.withVelocity(state.speedMetersPerSecond / (2* Math.PI*kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR)).withAcceleration(10));
-
-
-    periodicReset();
 
     turningMotor.getPIDController().setReference(normalizeAngle2(state.angle.getRadians()), CANSparkMax.ControlType.kPosition);
     

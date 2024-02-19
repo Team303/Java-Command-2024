@@ -81,7 +81,6 @@ public class DriveSubsystem extends SubsystemBase {
   private final PIDController m_driftCorrectionPid = new PIDController(0.12, 0, 0);
   // private Pose2d pose = new Pose2d(0.0, 0.0, new Rotation2d());
 
-  private ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
   private ChassisSpeeds relativeSpeeds = new ChassisSpeeds();
 
   public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drive Base");
@@ -370,19 +369,15 @@ public class DriveSubsystem extends SubsystemBase {
  
   public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
 
+      var swerveModuleStates = kinematics.toSwerveModuleStates(
+          fieldOriented
+          ? ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, Rotation2d.fromDegrees(-Robot.navX.getAngle()))
+          : new ChassisSpeeds(translation.getX(), translation.getY(), rotation));
 
-    // if (fieldOriented) {
-      ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-          new ChassisSpeeds(translation.getX(), translation.getY(), rotation),
-          Rotation2d.fromDegrees(-Robot.navX.getAngle()));
 
-      chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
+    Logger.recordOutput("Swerve Module States", swerveModuleStates);
 
-    // }
-
-    Logger.recordOutput("Swerve Module States", kinematics.toSwerveModuleStates(chassisSpeeds));
-
-    drive(kinematics.toSwerveModuleStates(chassisSpeeds));
+    drive(swerveModuleStates);
   }
 
   public void robotRelativeDrive(ChassisSpeeds chassisSpeeds) {
