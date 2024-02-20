@@ -23,6 +23,7 @@ public class HomeShooter extends Command {
 
     @Override
     public void execute() {
+
         shooter.leftFlywheelMotor.setVoltage(0);
         shooter.rightAngleMotor.setVoltage(0);
         shooter.leftAngleMotor.setVoltage(shooter.calculateAngleSpeed(0));

@@ -13,14 +13,14 @@ public class SetShooterAmp extends Command {
     double desiredVelocityLeft;
     double desiredVelocityRight;
 
-    public SetShooterAmp(double angle, double velocity) {
+    public SetShooterAmp(double angleRad, double velocityMetersPerSecond) {
         addRequirements(shooter);
 
-        desiredVelocityRight = velocity;
+        desiredVelocityRight = velocityMetersPerSecond;
 
-        desiredAngle = Math.toRadians(angle);
+        desiredAngle = angleRad;
         INTERPOLATED_DEGREES_ENTRY.setDouble(Math.toDegrees(desiredAngle));
-        shooter.pivotAngle = Math.toDegrees(desiredAngle);
+        shooter.pivotAngle = desiredAngle;
     }
 
     @Override

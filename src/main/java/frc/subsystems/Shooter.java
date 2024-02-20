@@ -136,19 +136,18 @@ public class Shooter extends SubsystemBase {
                                               RobotMap.Shooter.ANGLE_FEED_FORWARD_KV, 
                                               RobotMap.Shooter.ANGLE_FEED_FORWARD_KA);
 
+
+        // go up to 90 degrees in one second 1/4 second to accelerate to max speed
         TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(Math.PI/2, 
-            angleFeedForward.maxAchievableAcceleration(12, getAbsoluteShooterAngle(), getAngleMotorVelocity()));
+            Math.PI * 2);
 
         anglePIDController = new ProfiledPIDController(RobotMap.Shooter.ANGLE_PID_CONTROLLER_P, 
                                                        RobotMap.Shooter.ANGLE_PID_CONTROLLER_I,
                                                        RobotMap.Shooter.ANGLE_PID_CONTROLLER_D, 
                                                        pidConstraints);
 
-
-
-        
+        anglePIDController.enableContinuousInput(0, 2 * Math.PI);
     
-
         angleEncoder = new DutyCycleEncoder(RobotMap.Shooter.ANGLE_ENCODER_ID);
 
         //Limit Switch Initalization
@@ -172,10 +171,14 @@ public class Shooter extends SubsystemBase {
 
     //Flywheel Functions
     public double getVelocitySpeedLeft() {
+
+        //return speed in rot/sec
+
         return leftFlywheelMotor.getVelocity().refresh().getValueAsDouble();
     }
 
     public double getVelocitySpeedRight() {
+        //return speed in rot/sec
         return rightFlywheelMotor.getVelocity().refresh().getValueAsDouble();
     }
 
@@ -183,11 +186,6 @@ public class Shooter extends SubsystemBase {
     //Angle Functions
     public double calculateAngleSpeed(double angle) {
 
-        TrapezoidProfile.Constraints constrain = new TrapezoidProfile.Constraints(
-			Math.PI/2, 
-			angleFeedForward.maxAchievableAcceleration(12, getAbsoluteShooterAngle(), getAngleMotorVelocity())); // Change: Alan's job
-
-		anglePIDController.setConstraints(constrain);
 
         final double angleOutput = anglePIDController.calculate(getAbsoluteShooterAngle(), angle);
         final double angleFeedforward = angleFeedForward.calculate(angle, anglePIDController.getSetpoint().velocity);
@@ -195,11 +193,17 @@ public class Shooter extends SubsystemBase {
     }
 
     public double getAbsoluteShooterAngle() {
-        return angleEncoder.getAbsolutePosition();
+
+        //get angular position in rad
+
+        return angleEncoder.getAbsolutePosition() * (Math.PI/180);
     }
 
     public double getAngleMotorVelocity() {
-        return leftAngleMotor.getVelocity().refresh().getValueAsDouble() / RobotMap.Shooter.ANGLE_CONVERSION_FACTOR;
+
+        //get angular velocity in rad/sec
+
+        return leftAngleMotor.getVelocity().refresh().getValueAsDouble() / RobotMap.Shooter.ANGLE_CONVERSION_FACTOR * 2 * Math.PI;
     }
 
 	public boolean atHardLimit() {
@@ -237,10 +241,12 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
         //Flywheel Entries
+
+        //scale by 60 for rpm
         ACTUAL_LEFT_RPM_ENTRY.setDouble(-getVelocitySpeedLeft() * 60);
         ACTUAL_RIGHT_RPM_ENTRY.setDouble(getVelocitySpeedRight() * 60);
         RPM_DIFF_FACTOR_ENTRY.setDouble(diffFactor);
-
+ 
         //Angle Entries
         ACTUAL_SHOOTER_ANGLE_ENTRY.setDouble(Math.toDegrees(getAbsoluteShooterAngle()));
 

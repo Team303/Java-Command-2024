@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.autonomous.Autonomous;
@@ -25,6 +26,8 @@ import frc.subsystems.DriveSubsystem;
 //import frc.commands.DefaultDrive;
 import frc.subsystems.Shooter;
 import frc.commands.shooter.SetShooterSpeaker;
+import frc.commands.shooter.SetShooterAmp;
+import frc.commands.shooter.HomeShooter;
 
 
 public class Robot extends LoggedRobot {
@@ -57,13 +60,14 @@ public class Robot extends LoggedRobot {
   }
 
   private void configureButtonBindings() {
-    // controller.y().onTrue(new InstantCommand(swerve::resetOdometry));
-	// controller.x().toggleOnTrue(new ManualSetAngle(5, 2));
 
-	//controller.a().onTrue(new ManualSetAngle(1.98, 3.96));
-	//controller.b().onTrue(new ManualSetAngle(1.98, 3.96));
-	controller.a().onTrue(new InstantCommand(() -> shooter.setFactor(1.0)));
-	controller.b().onTrue(new InstantCommand(() -> shooter.setFactor(0.8)));
+	controller.a().toggleOnTrue(new InstantCommand(() -> shooter.setFactor(1.0)))
+		.toggleOnFalse(new InstantCommand(() -> shooter.setFactor(0.8)));
+	controller.b().onTrue(new HomeShooter());
+	controller.y().onTrue(new SetShooterAmp(Math.toRadians(90), 21.27));
+
+	//after merge make a parallel command group with turn to speaker
+	controller.x().onTrue(new SetShooterSpeaker());
 
 
 }
@@ -102,7 +106,7 @@ public class Robot extends LoggedRobot {
 			autonomousCommand.cancel();
 		}
 
-		shooter.setDefaultCommand(new SetShooterSpeaker(1.98, 3.2));
+		shooter.setDefaultCommand(new SetShooterSpeaker());
 
     	// swerve.setDefaultCommand(new DefaultDrive(true));
 		

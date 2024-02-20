@@ -13,32 +13,73 @@ import frc.robot.util.FieldRelativeAcceleration;
 import frc.robot.util.FieldRelativeSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RobotMap.FieldConstants;
+import edu.wpi.first.math.geometry.Pose2d;
+import frc.robot.Robot;
+
+
 
 public class SetShooterSpeaker extends Command {    
     double desiredAngle;
+
+    // for shooting on the move
+    double desiredTime;
+
     double shotTime;
     double desiredVelocityRight;
     double desiredVelocityLeft;
     // will work once merged with master
-    Translation2d target = FieldConstants.centerSpeakOpening.getTranslation();
+
+    Translation2d target;
     // double range = FieldConstants.centerSpeakOpening.getTranslation().getDistance(swerve.getPose());
-    double range = 30;
+    double range;
 
     //TODO: Make the range/height not a parameter once merged into master
-    public SetShooterSpeaker(double height, double range) {
+    public SetShooterSpeaker() {
+
         addRequirements(shooter);
         
+        // pre determined max velocity;
         desiredVelocityRight = 21.27;
 
-        desiredAngle = shooter.interpolateAngle(range);
+        // interpolation table assumes the height is 1.73 meters
+
+
         INTERPOLATED_DEGREES_ENTRY.setDouble(Math.toDegrees((desiredAngle)));
         shooter.pivotAngle = Math.toDegrees(desiredAngle);
 
+
+    }
+
+    @Override
+    public void initialize() {
+
+        // find distance to the nearest speaker
+
+        var alliance = DriverStation.getAlliance();
+
+        boolean isBlue = true;
+        if (alliance.isPresent()) {
+            isBlue = alliance.get() == DriverStation.Alliance.Blue;
+        }
+
+        target = isBlue ? FieldConstants.centerSpeakOpenInBlue.getTranslation() : FieldConstants.centerSpeakOpenInRed.getTranslation();
+
+        Pose2d curPose = Robot.swerve.getPose();
+
+        double range = Math.hypot(target.getX() - curPose.getX(), target.getY() - curPose.getY());
+
+        desiredTime = shooter.interpolateTime(range);
+        desiredAngle = shooter.interpolateAngle(range);
+
+        //TODO: Uncomment once tested and complete
+        //
+
         //FieldRelativeSpeeds curVel = swerve.currentSpeed;
         //FieldRelativeAcceleration curAccel = swerve.currentAccel;
-        double desiredTime = shooter.interpolateTime(range);
-        //TODO: Uncomment once merged into master
+
         // Translation2d movingGoalLocation = new Translation2d();
         
         // for(int i=0;i<5;i++){
@@ -73,7 +114,6 @@ public class SetShooterSpeaker extends Command {
 
         // SmartDashboard.putNumber("NewDist", newDist);
     }
-
 
     @Override
     public void execute() {
