@@ -54,6 +54,9 @@ public class RobotMap {
 		public static final double ANGLE_PID_CONTROLLER_I = 0.0; // NEED TO CHANGE
 		public static final double ANGLE_PID_CONTROLLER_D = 0.0; // NEED TO CHANGE
 
+		public static final int ANGLE_ENCODER_ID = 0;
+		public static final double ANGLE_CONVERSION_FACTOR = 1/38;
+
 		public static final int BEAM_BREAK_ID = 0;
 	}
 
@@ -84,5 +87,8 @@ public class RobotMap {
 		public static final double GROUND_ANGLE = Math.toRadians(345);// GET ANGLE FROM JOHN
 
 		public static final double GEAR_RATIO = (1/9); //GET FROM SOMEONE
+
+		public static final int RIGHT_CENTER_WHEEL_ID = 0;
+		public static final int LEFT_CENTER_WHEEL_ID = 0;
 	}
 }

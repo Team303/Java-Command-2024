@@ -14,8 +14,7 @@ public class IndexAndBelt extends Command{
 
     @Override
     public void execute() {
-        indexerBelt.belt.setVoltage(12);
-        indexerBelt.indexer.setVoltage(12);
+        indexerBelt.runIntake();
     }
 
     @Override
@@ -25,8 +24,6 @@ public class IndexAndBelt extends Command{
 
     @Override
     public void end(boolean interrupted) {
-        indexerBelt.belt.setVoltage(0);
-        indexerBelt.indexer.setVoltage(0);
-      
+      indexerBelt.stopIntake();
     }
 }
