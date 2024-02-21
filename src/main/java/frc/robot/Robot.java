@@ -43,6 +43,7 @@ import frc.subsystems.Belt;
 import frc.commands.intake.GroundIntake;
 import frc.commands.intake.HomeAlone;
 import frc.commands.intake.HomeIntake;
+import frc.commands.amoghbelt.ShootNote;
 
 
 public class Robot extends LoggedRobot {
@@ -100,6 +101,7 @@ public class Robot extends LoggedRobot {
 
 		operatorController.x().toggleOnTrue(new IntakeNote());
 		operatorController.y().toggleOnTrue(new GroundIntake());
+		operatorController.pov(0).toggleOnTrue(new ShootNote());
 
 	}
 
