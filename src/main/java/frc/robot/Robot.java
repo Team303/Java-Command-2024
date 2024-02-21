@@ -30,7 +30,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.autonomous.Autonomous;
 import frc.autonomous.AutonomousProgram;
-import frc.commands.amoghbelt.WheelSpinnyThing;
+import frc.commands.amoghbelt.IntakeNote;
 import frc.commands.drive.DefaultDrive;
 import frc.commands.drive.DriveWait;
 import frc.commands.drive.TurnToSpeaker;
@@ -98,7 +98,7 @@ public class Robot extends LoggedRobot {
 		driverController.b().onTrue(new InstantCommand(swerve::resetOdometryWidget));
 		driverController.a().onTrue(new TurnToSpeaker());
 
-		operatorController.x().toggleOnTrue(new WheelSpinnyThing());
+		operatorController.x().toggleOnTrue(new IntakeNote());
 		operatorController.y().toggleOnTrue(new GroundIntake());
 
 	}

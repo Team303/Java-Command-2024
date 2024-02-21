@@ -5,9 +5,9 @@ import static frc.subsystems.Belt.BELT_SPEED_ENTRY;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotMap;
 
-public class WheelSpinnyThing extends Command {
+public class ShootNote extends Command {
 
-    public WheelSpinnyThing() {
+    public ShootNote() {
         addRequirements(belt);
 
         BELT_SPEED_ENTRY.setDouble(belt.beltMotor.getVelocity().refresh().getValueAsDouble());
@@ -15,13 +15,11 @@ public class WheelSpinnyThing extends Command {
 
     @Override
     public void execute() {
-        belt.beltMotor.setVoltage(12);
+        belt.shoot();
     }
 
     @Override
     public void end(boolean interrupted) {
-        belt.beltMotor.setVoltage(0);
-      
+        belt.stopMotors();
     }
-
 }

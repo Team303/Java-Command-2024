@@ -88,7 +88,12 @@ public class RobotMap {
 	}
 
 	public static final class Intake {
-		public static final int BEAM_PORT = 0;
+
+		public static final int INDEX_MOTOR_ID = 0;
+		public static final int LEFT_CENTER_ID = 1;
+		public static final int RIGHT_CENTER_ID = 2;
+
+		public static final int BEAM_PORT = 4;
 		public static final int LEFT_PIVOT_MOTOR_ID = 2; // NEED TO CHANGE
 		public static final int RIGHT_PIVOT_MOTOR_ID = 5; // NEED TO CHANGE
 		public static final int BELT_MOTOR_ID = 17; // NEED TO CHANGE
