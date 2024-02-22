@@ -25,9 +25,10 @@ import frc.autonomous.AutonomousProgram;
 import frc.subsystems.DriveSubsystem;
 //import frc.commands.DefaultDrive;
 import frc.subsystems.Shooter;
-import frc.commands.shooter.SetShooterSpeaker;
+import frc.commands.shooter.DynamicShootSpeaker;
 import frc.commands.shooter.SetShooterAmp;
 import frc.commands.shooter.HomeShooter;
+import frc.commands.shooter.ManualShootSpeaker;
 
 
 public class Robot extends LoggedRobot {
@@ -67,7 +68,7 @@ public class Robot extends LoggedRobot {
 	controller.y().onTrue(new SetShooterAmp(Math.toRadians(90), 21.27));
 
 	//after merge make a parallel command group with turn to speaker
-	controller.x().onTrue(new SetShooterSpeaker());
+	controller.x().onTrue(new ManualShootSpeaker(10));
 
 
 }
@@ -106,7 +107,6 @@ public class Robot extends LoggedRobot {
 			autonomousCommand.cancel();
 		}
 
-		shooter.setDefaultCommand(new SetShooterSpeaker());
 
     	// swerve.setDefaultCommand(new DefaultDrive(true));
 		

@@ -21,7 +21,7 @@ import frc.robot.Robot;
 
 
 
-public class SetShooterSpeaker extends Command {    
+public class DynamicShootSpeaker extends Command {    
     double desiredAngle;
 
     // for shooting on the move
@@ -37,7 +37,7 @@ public class SetShooterSpeaker extends Command {
     double range;
 
     //TODO: Make the range/height not a parameter once merged into master
-    public SetShooterSpeaker() {
+    public DynamicShootSpeaker() {
 
         addRequirements(shooter);
         
@@ -46,9 +46,6 @@ public class SetShooterSpeaker extends Command {
 
         // interpolation table assumes the height is 1.73 meters
 
-
-        INTERPOLATED_DEGREES_ENTRY.setDouble(Math.toDegrees((desiredAngle)));
-        shooter.pivotAngle = Math.toDegrees(desiredAngle);
 
 
     }
@@ -73,6 +70,9 @@ public class SetShooterSpeaker extends Command {
 
         desiredTime = shooter.interpolateTime(range);
         desiredAngle = shooter.interpolateAngle(range);
+        
+        INTERPOLATED_DEGREES_ENTRY.setDouble(Math.toDegrees((desiredAngle)));
+        shooter.pivotAngle = Math.toDegrees(desiredAngle);
 
         //TODO: Uncomment once tested and complete
         //
