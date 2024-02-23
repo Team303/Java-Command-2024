@@ -65,6 +65,9 @@ import frc.robot.RobotMap;
 
 /** Represents a swerve drive style drivetrain. */
 public class DriveSubsystem extends SubsystemBase {
+
+  private boolean speakerLock = false;
+  private boolean ampLock = false;
   public static final double kMaxSpeed = 5.2; // 5.2 meters per second
   public static final double kMaxAngularSpeed = kMaxSpeed / (Math.hypot(0.3302, 0.3302)); // radians per second
 
@@ -78,7 +81,8 @@ public class DriveSubsystem extends SubsystemBase {
   private final SwerveModule backLeft;
   private final SwerveModule backRight;
   // private final SwerveDriveOdometry odometry;
-  private final PIDController m_driftCorrectionPid = new PIDController(0.12, 0, 0);
+  private final PIDController driftCorrectionPid = new PIDController(0.12, 0, 0);
+  private final PIDController speakerAlignPid = new PIDController(0.5, 0, 0);
   // private Pose2d pose = new Pose2d(0.0, 0.0, new Rotation2d());
 
   private ChassisSpeeds relativeSpeeds = new ChassisSpeeds();
@@ -295,32 +299,6 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Method to drive the robot using joystick info.
-   *
-   * @param xSpeed        Speed of the robot in the x direction (forward).
-   * @param ySpeed        Speed of the robot in the y direction (sideways).
-   * @param rot           Angular rate of the robot.
-   * @param fieldRelative Whether the provided x and y speeds are relative to the
-   *                      field.
-   */
-  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
-    var swerveModuleStates = kinematics.toSwerveModuleStates(
-        fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Robot.navX.getRotation2d())
-            : new ChassisSpeeds(xSpeed, ySpeed, rot));
-
-    // swerveModuleStates =
-    // kinematics.toSwerveModuleStates(translationalDriftCorrection(kinematics.toChassisSpeeds(swerveModuleStates)));
-
-    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxSpeed);
-
-    frontLeft.setDesiredState(swerveModuleStates[0]);
-    frontRight.setDesiredState(swerveModuleStates[1]);
-    backLeft.setDesiredState(swerveModuleStates[2]);
-    backRight.setDesiredState(swerveModuleStates[3]);
-  }
-
-  /**
    * Adds rotational velocity to the chassis speed to compensate for
    * unwanted changes in gyroscope heading.
    * 
@@ -338,7 +316,7 @@ public class DriveSubsystem extends SubsystemBase {
       m_desiredHeading = Robot.navX.getYaw();
     } else if (Math.abs(translationalVelocity) > 1) {
 
-      double calc = m_driftCorrectionPid.calculate(Robot.navX.getYaw(),
+      double calc = driftCorrectionPid.calculate(Robot.navX.getYaw(),
           m_desiredHeading);
 
       if (Math.abs(calc) >= 0.1) 
@@ -366,18 +344,76 @@ public class DriveSubsystem extends SubsystemBase {
     System.out.println("Driving");
     
   }
- 
+
+  private double normalizeAngle(double angleDeg) {
+    angleDeg %= 360;
+    if (Math.abs(angleDeg) < 180)
+      return angleDeg;
+    else if (angleDeg > 0)
+      return angleDeg - 360;
+    else 
+      return angleDeg + 360;
+  }
+
+  public ChassisSpeeds speakerAlign(ChassisSpeeds chassisSpeeds) {
+
+      double angle = normalizeAngle(calculateAngleSpeaker());
+
+      chassisSpeeds.omegaRadiansPerSecond -= speakerAlignPid.calculate(Robot.navX.getYaw(), angle);
+
+      return chassisSpeeds;
+  }
+
+  public ChassisSpeeds ampAlign(ChassisSpeeds chassisSpeeds) {
+
+      boolean isBlue = true;
+
+      var alliance = DriverStation.getAlliance();
+      if (alliance.isPresent()) {
+          isBlue = alliance.get() == DriverStation.Alliance.Blue;
+      }
+
+      double angle = isBlue ? -90 : 90;
+
+      chassisSpeeds.omegaRadiansPerSecond -= speakerAlignPid.calculate(Robot.navX.getYaw(), angle);
+
+      return chassisSpeeds;
+  }
+
+  public void setSpeakerLock() {
+      speakerLock = true;
+  }
+
+  public void setAmpLock() {
+      ampLock = true;
+  }
+
+  public void removeLock() {
+      ampLock = false;
+      speakerLock = false;
+  }
+
   public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
 
-      var swerveModuleStates = kinematics.toSwerveModuleStates(
-          fieldOriented
+      ChassisSpeeds chassisSpeeds =  fieldOriented
           ? ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, Rotation2d.fromDegrees(-Robot.navX.getAngle()))
-          : new ChassisSpeeds(translation.getX(), translation.getY(), rotation));
+          : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 
+      chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
 
-    Logger.recordOutput("Swerve Module States", swerveModuleStates);
+      //lock onto different field elements (methods will change the anglular velocity)
 
-    drive(swerveModuleStates);
+      if (speakerLock)
+        chassisSpeeds = speakerAlign(chassisSpeeds);
+      else if (ampLock)
+        chassisSpeeds = ampAlign(chassisSpeeds);
+        
+
+      var swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
+  
+      Logger.recordOutput("Swerve Module States", swerveModuleStates);
+
+      drive(swerveModuleStates);
   }
 
   public void robotRelativeDrive(ChassisSpeeds chassisSpeeds) {
@@ -556,9 +592,9 @@ public void resetPose(Pose2d pose) {
 
 
 
-  public ChassisSpeeds getRobotRelativeSpeeds() {
-    return kinematics.toChassisSpeeds(getModuleStates());
-  }
+public ChassisSpeeds getRobotRelativeSpeeds() {
+  return kinematics.toChassisSpeeds(getModuleStates());
+}
 
   public SwerveModuleState[] getModuleStates() {
     return new SwerveModuleState[] {
@@ -570,19 +606,21 @@ public void resetPose(Pose2d pose) {
   }
 
   public double calculateAngleSpeaker() {
-    boolean isAlliance = true;
+    boolean isBlue = true;
 
     var alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
-        isAlliance = alliance.get() == DriverStation.Alliance.Blue;
+        isBlue = alliance.get() == DriverStation.Alliance.Blue;
     }
 
     Pose2d robotPose = getPose();
     Translation2d speakerPose;
 
-    speakerPose = isAlliance ? new Translation2d(0.5, 5.5) :new Translation2d(16.2, 5.5);
+    speakerPose = isBlue ? new Translation2d(0.5, 5.5) :new Translation2d(16.2, 5.5);
 
-    return -Math.atan2(speakerPose.getY() - robotPose.getY(), speakerPose.getX() - robotPose.getX()) * (180 / Math.PI);
+    //add 180 because shooter is on the back of the robot
+
+    return -Math.atan2(speakerPose.getY() - robotPose.getY(), speakerPose.getX() - robotPose.getX()) * (180 / Math.PI) + 180;
 
   }
 
