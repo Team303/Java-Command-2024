@@ -19,6 +19,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.struct.ArmFeedforwardStruct;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -40,46 +41,46 @@ import frc.commands.DriveWait;
 import frc.subsystems.Climber;
 
 public class Robot extends LoggedRobot {
-  public static final CommandXboxController controller = new CommandXboxController(0);
-  public static final AHRS navX = new AHRS(); 
-  public static final Drivetrain swerve = new Drivetrain();
-  public static final Climber climber = new Climber();
-  // public static Logger logger; 
+	public static final CommandXboxController controller = new CommandXboxController(0);
+	public static final AHRS navX = new AHRS();
+	public static final Drivetrain swerve = new Drivetrain();
+	public static final Climber climber = new Climber();
+	// public static Logger logger;
 
+	@Override
+	public void robotInit() {
+		configureButtonBindings();
 
-  @Override
-  public void robotInit() {
-    configureButtonBindings();
+		Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
 
-	Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
+		if (isReal()) {
+			Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+			Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+			new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+		} else {
+			setUseTiming(false); // Run as fast as possible
+			String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the
+															// user)
+			Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+			Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a
+																									// new log
+		}
 
-	if (isReal()) {
-		Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
-		Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-		new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
-	} else {
-		setUseTiming(false); // Run as fast as possible
-		String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-		Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-		Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+		Logger.start();
+
+		Autonomous.init();
+		AutonomousProgram.addAutosToShuffleboard();
 	}
 
-	Logger.start();
+	private void configureButtonBindings() {
+		controller.y().onTrue(new InstantCommand(swerve::resetOdometry));
+	}
 
-    Autonomous.init();
-	AutonomousProgram.addAutosToShuffleboard();
-  }
-
-  private void configureButtonBindings() {
-    controller.y().onTrue(new InstantCommand(swerve::resetOdometry));
-	controller.x().onTrue(new SequentialCommandGroup(new Climber(), new Retract(0), new PullUp(0,1)));	
-  }
-
-  	/* Currently running auto routine */
+	/* Currently running auto routine */
 
 	private Command autonomousCommand;
 
-  @Override
+	@Override
 	public void autonomousInit() {
 		navX.reset();
 		swerve.resetOdometry();
@@ -102,19 +103,35 @@ public class Robot extends LoggedRobot {
 		CommandScheduler.getInstance().schedule(this.autonomousCommand);
 	}
 
-  @Override
+	@Override
 	public void teleopInit() {
 		// This makes sure that the autonomous stops running when teleop starts running.
 		if (autonomousCommand != null) {
 			autonomousCommand.cancel();
 		}
-    	swerve.setDefaultCommand(new DefaultDrive(false));
+		swerve.setDefaultCommand(new DefaultDrive(false));
 	}
 
 	@Override
-	public void teleopPeriodic() { 
+	public void teleopPeriodic() {
 
+		// Run the command scheduler to schedule the commands every 0.02 seconds
 		CommandScheduler.getInstance().run();
-		
+
+		double armControlValue = -controller.getLeftY();
+
+		double deadzone = 0.05;
+		if (Math.abs(armControlValue) < deadzone) {
+			armControlValue = 0.0;
+		}
+
+		double armSpeed = armControlValue;
+
+		if (!Robot.climber.isArmAtLowerLimit(1) && !Robot.climber.isArmAtLowerLimit(2)) {
+			Robot.climber.extendArms(armSpeed);
+		} else {
+			Robot.climber.stopArms();
+		}
+
 	}
 }
