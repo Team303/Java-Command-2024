@@ -1,14 +1,15 @@
-package frc.commands;
+package frc.commands.climb;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotMap.Climber;
 
-public class Retract extends Command{
+public class Retract extends Command {
     private double speed;
+
     public Retract(double speed) {
         addRequirements(Robot.climber);
-        this.speed = speed; 
+        this.speed = speed;
     }
 
     @Override

@@ -1,11 +1,13 @@
-package frc.commands;
+package frc.commands.climb;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotMap.Climber;
 
-public class PullUp extends Command{
+public class PullUp extends Command {
     private double speed;
+    private double limit;
+
     public PullUp(double speed, double limit) {
         addRequirements(Robot.climber);
         this.speed = speed;
@@ -14,7 +16,7 @@ public class PullUp extends Command{
 
     @Override
     public void execute() {
-        Robot.climber.keepGoing(speed,limit);
+        Robot.climber.keepGoing(speed, limit);
     }
 
     @Override
