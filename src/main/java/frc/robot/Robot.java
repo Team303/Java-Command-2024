@@ -97,6 +97,11 @@ public class Robot extends LoggedRobot {
 	private void configureButtonBindings() {
 		driverController.y().onTrue(new InstantCommand(swerve::resetOdometry));
 		driverController.b().onTrue(new InstantCommand(swerve::resetOdometryWidget));
+
+		//old turn to speaker
+
+		//driverController.a().onTrue(new TurnToSpeaker());
+
 		driverController.a().onTrue(new InstantCommand(swerve::setAmpLock));
 		driverController.b().onTrue(new InstantCommand(swerve::setSpeakerLock));
 		driverController.rightBumper().onTrue(new InstantCommand(swerve::removeLock));

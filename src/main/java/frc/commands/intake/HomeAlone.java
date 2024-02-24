@@ -26,9 +26,9 @@ public class HomeAlone extends Command{
 
     @Override
     public void execute() {
-        // intake.leftPivotMotor.setVoltage(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
         
-        intake.pivotPIDController.setP((navX.getRate() / 360)*3);
+        //increase P will make it oscillate more probably
+        // intake.pivotPIDController.setP((navX.getRate() / 360)*3);
 
 
         double voltage = intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE);
@@ -36,11 +36,10 @@ public class HomeAlone extends Command{
         System.out.println("Voltage: " + voltage);
         MOTOR_OUTPUT.setDouble(voltage);
 
+        
 
         if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(345))
-            intake.rightPivotMotor.setVoltage(voltage);
-        else if (voltage > 0)
-            intake.rightPivotMotor.setVoltage(voltage);
+            intake.rightPivotMotor.setVoltage(voltage + (navX.getRate() / 360 * 1.5)); // increase voltage by 1.5 for each rpm the robot is turning
         else 
             intake.rightPivotMotor.setVoltage(0);
 
