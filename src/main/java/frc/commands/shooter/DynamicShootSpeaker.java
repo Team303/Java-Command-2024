@@ -68,8 +68,8 @@ public class DynamicShootSpeaker extends Command {
 
         double range = Math.hypot(target.getX() - curPose.getX(), target.getY() - curPose.getY());
 
-        desiredTime = shooter.interpolateTime(range);
-        desiredAngle = shooter.interpolateAngle(range);
+        desiredTime = shooter.interpolateTime(range, desiredVelocityRight > 21.0);
+        desiredAngle = shooter.interpolateAngle(range, desiredVelocityRight > 21.0);
         
         INTERPOLATED_DEGREES_ENTRY.setDouble(Math.toDegrees((desiredAngle)));
         shooter.pivotAngle = Math.toDegrees(desiredAngle);

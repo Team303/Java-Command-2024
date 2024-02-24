@@ -63,17 +63,29 @@ public class Shooter extends SubsystemBase {
     //public final DigitalInput angleLimitSwitch;
 
     //Interploation Stuff
-    public InterpolatingDoubleTreeMap angleInterpolator = new InterpolatingDoubleTreeMap();
-    public InterpolatingDoubleTreeMap timeInterpolator = new InterpolatingDoubleTreeMap();
+    public InterpolatingDoubleTreeMap angleInterpolator21 = new InterpolatingDoubleTreeMap();
+    public InterpolatingDoubleTreeMap angleInterpolator17 = new InterpolatingDoubleTreeMap();
 
-    //We need to interpolate until 12 meters 💀
-    public static double[] interpolationAngles = {1.060, 0.961, 0.876, 0.802, 0.738, 0.683, 0.635, 0.594, 0.559, 0.527, 0.500,  //1.00 --> 3.750
-                                                  0.476, 0.454, 0.435, 0.419, 0.404, 0.390, 0.378, 0.367, 0.357, 0.349, 0.341,  //3.00 --> 5.750     
-                                                  0.333, 0.327, 0.321, 0.316, 0.311, 0.307, 0.303, 0.299, 0.296, 0.293, 0.291,  //6.00 --> 8.750
-                                                  0.289, 0.287, 0.285, 0.284, 0.282, 0.281, 0.280, 0.280, 0.279, 0.279, 0.278,  //9.00 --> 11.75
-                                                  0.278};                                                                       //12.0 --> 12.00
+    public InterpolatingDoubleTreeMap timeInterpolator21 = new InterpolatingDoubleTreeMap();
+    public InterpolatingDoubleTreeMap timeInterpolator17 = new InterpolatingDoubleTreeMap();
 
-    public static double[] interpolationTimes = new double[interpolationAngles.length];
+
+    //Interpolation Table 1: 21.27 meters per second 💀
+    public static double[] interpolationAngles21 = {1.060, 0.961, 0.876, 0.802, 0.738, 0.683, 0.635, 0.594, 0.559, 0.527, 0.500,  //1.00 --> 3.750
+                                                    0.476, 0.454, 0.435, 0.419, 0.404, 0.390, 0.378, 0.367, 0.357, 0.349, 0.341,  //3.00 --> 5.750     
+                                                    0.333, 0.327, 0.321, 0.316, 0.311, 0.307, 0.303, 0.299, 0.296, 0.293, 0.291,  //6.00 --> 8.750
+                                                    0.289, 0.287, 0.285, 0.284, 0.282, 0.281, 0.280, 0.280, 0.279, 0.279, 0.278,  //9.00 --> 11.75
+                                                    0.278};                                                                       //12.0 --> 12.00
+    //Interpolation Table 2: 17 meters per second 
+    public static double[] interpolationAngles17 = {1.0642, 0.9670, 0.8827, 0.8103, 0.7481, 0.6949, 0.6491, 0.6097, 0.5756, 0.5461, 0.5204,  //1.00 --> 3.750
+                                                    0.4980, 0.4784, 0.4612, 0.4460, 0.4327, 0.4210, 0.4107, 0.4015, 0.3935, 0.3864, 0.3802,  //3.00 --> 5.750
+                                                    0.3748, 0.3701, 0.3660, 0.3625, 0.3595, 0.3569, 0.3548, 0.3531, 0.3518, 0.3508, 0.3501,  //6.00 --> 8.750
+                                                    0.3497, 0.3496, 0.3497, 0.3501, 0.3507, 0.3515, 0.3525, 0.3537, 0.3550, 0.3565, 0.3582,  //9.00 --> 11.75
+                                                    0.3601};                                                                                 //12.0 --> 12.00
+
+
+    public static double[] interpolationTimes21 = new double[interpolationAngles21.length];
+    public static double[] interpolationTimes17 = new double[interpolationAngles17.length];
 
     //Shuffleboard Stuff
     public static final ShuffleboardTab SHOOTER_TAB = Shuffleboard.getTab("Shooter"); //Shuffleboard tab
@@ -154,7 +166,8 @@ public class Shooter extends SubsystemBase {
         //angleLimitSwitch = new DigitalInput(RobotMap.Shooter.ANGLE_HARD_STOP_SWITCH_ID);
 
         //Interpolation Initalization
-        initalizeInterpolationTable();
+        initalizeInterpolationTable21();
+        initalizeInterpolationTable17();
 
         //Current Limit Initalization
         CurrentLimitsConfigs clc40 = new CurrentLimitsConfigs().withStatorCurrentLimit(40).withSupplyCurrentLimit(40);
@@ -212,21 +225,38 @@ public class Shooter extends SubsystemBase {
     }
 
     //Interpolation Functions
-    public void initalizeInterpolationTable() {
-        for(int i=0;i<interpolationAngles.length;i++){
-            angleInterpolator.put((double)i*0.25+1.0,interpolationAngles[i]);
+    public void initalizeInterpolationTable21() {
+        for(int i=0;i<interpolationAngles21.length;i++){
+            angleInterpolator21.put((double)i*0.25+1.0,interpolationAngles21[i]);
         }
-        for(int i=0;i<interpolationTimes.length;i++){
-            timeInterpolator.put((double)i*0.25+1.0,interpolationTimes[i]);
+        for(int i=0;i<interpolationTimes21.length;i++){
+            timeInterpolator21.put((double)i*0.25+1.0,interpolationTimes21[i]);
         }
     }
 
-    public double interpolateAngle(double range) {
-       return angleInterpolator.get(range);
+    public void initalizeInterpolationTable17() {
+        for(int i=0;i<interpolationAngles17.length;i++){
+            angleInterpolator17.put((double)i*0.25+1.0,interpolationAngles17[i]);
+        }
+        for(int i=0;i<interpolationTimes17.length;i++){
+            timeInterpolator17.put((double)i*0.25+1.0,interpolationTimes17[i]);
+        }
     }
 
-    public double interpolateTime(double range) {
-        return timeInterpolator.get(range);
+    public double interpolateAngle(double range, boolean is21) {
+        if (is21) {
+            return angleInterpolator21.get(range);
+        } else {
+            return angleInterpolator17.get(range);
+        }
+    }
+
+    public double interpolateTime(double range, boolean is21) {
+        if (is21) {
+            return timeInterpolator21.get(range);
+        } else {
+            return timeInterpolator17.get(range);
+        }
     }
 
     //Factor Functions
