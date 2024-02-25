@@ -38,6 +38,7 @@ import frc.autonomous.AutonomousProgram;
 import frc.commands.DefaultDrive;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.commands.DriveWait;
+import frc.commands.climb.JoystickArmControl;
 import frc.subsystems.Climber;
 
 public class Robot extends LoggedRobot {
@@ -70,10 +71,16 @@ public class Robot extends LoggedRobot {
 
 		Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();
+
+		JoystickArmControl joystickArmControl = new JoystickArmControl();
+
+		climber.setDefaultCommand(joystickArmControl);
 	}
 
 	private void configureButtonBindings() {
 		controller.y().onTrue(new InstantCommand(swerve::resetOdometry));
+		controller.a().onTrue(new InstantCommand(() -> climber.extendArms(0.5)));
+		controller.b().whileTrue(new InstantCommand(() -> climber.retractArms(0.5)));
 	}
 
 	/* Currently running auto routine */
@@ -117,21 +124,6 @@ public class Robot extends LoggedRobot {
 
 		// Run the command scheduler to schedule the commands every 0.02 seconds
 		CommandScheduler.getInstance().run();
-
-		double armControlValue = -controller.getLeftY();
-
-		double deadzone = 0.05;
-		if (Math.abs(armControlValue) < deadzone) {
-			armControlValue = 0.0;
-		}
-
-		double armSpeed = armControlValue;
-
-		if (!Robot.climber.isArmAtLowerLimit(1) && !Robot.climber.isArmAtLowerLimit(2)) {
-			Robot.climber.extendArms(armSpeed);
-		} else {
-			Robot.climber.stopArms();
-		}
 
 	}
 }
