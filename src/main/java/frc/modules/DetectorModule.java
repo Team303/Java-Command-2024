@@ -44,6 +44,8 @@ public class DetectorModule extends SubsystemBase {
     private List<TrackedNote> entries2D = new ArrayList<>();
     private List<PNPResult> entries3D = new ArrayList<>();
 
+    private PNPResult best3DTarget;
+
     public List<TrackedNote> getLatestResult2D() {
         return entries2D;
     }
@@ -57,10 +59,7 @@ public class DetectorModule extends SubsystemBase {
     }
 
     public PNPResult getBestTarget() {
-        if (hasTargets()) {
-            return entries3D.get(0);
-        }
-        return null;
+        return best3DTarget;
     }
 
     public Transform3d getPosition() {
@@ -69,7 +68,7 @@ public class DetectorModule extends SubsystemBase {
 
     /**
      * Assuming that only notes are being detected
-     * TODO: Calibrate PiCam, also no idea if this works
+     * TODO: Praying this works
      */
     public List<PNPResult> solvePNP(List<TrackedNote> boundingBoxes) {
         List<PNPResult> results = new ArrayList<>();
@@ -101,5 +100,10 @@ public class DetectorModule extends SubsystemBase {
             }
         }
         entries3D = solvePNP(entries2D);
+        if(hasTargets()){
+            best3DTarget=entries3D.get(0);
+        } else {
+            best3DTarget=null;
+        }
     }
 }
