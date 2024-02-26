@@ -15,14 +15,14 @@ public class DriveToNote extends Command {
     PIDController turnController;
 
     public DriveToNote() {  
-        addRequirements(Robot.swerve);
-        addRequirements(Robot.detector);
-
+        addRequirements(Robot.swerve, Robot.detector);
         driveController = new PIDController(0.1, 0, 0.1);
         turnController = new PIDController(0.1, 0, 0.1);
 
         turnController.enableContinuousInput(-Math.PI, Math.PI);
         turnController.setTolerance(0.2);
+
+        driveController.setTolerance(0.1);
 
     }
 
@@ -39,7 +39,7 @@ public class DriveToNote extends Command {
         double angle = Math.atan(notePos.getZ()/notePos.getX());
         double distance = Math.hypot(notePos.getX(), notePos.getZ());
 
-        Robot.swerve.drive(new Translation2d(driveController.calculate(distance, 0), 0), turnController.calculate(Robot.navX.getRotation2d().getRadians(), angle), false);
+        Robot.swerve.drive(new Translation2d(driveController.calculate(distance, 0), 0), turnController.calculate(angle, 0), false);
     }
 
 }
