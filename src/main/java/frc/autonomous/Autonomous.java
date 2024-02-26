@@ -47,6 +47,8 @@ public class Autonomous {
 
         public static void init() {
             create("Test", () -> new InstantCommand(() -> System.out.println("TEST")));
-            create("pathplanner test", () -> Robot.swerve.getAutonomousCommand("testAuto"));
+            create("Alan is a persecuter", () -> Robot.swerve.getAutonomousCommand("Alan is a persecuter"));           
+            create("Alan is not a persecuter", () -> Robot.swerve.getAutonomousCommand("Alan is not a persecuter"));
+
         }
 }
