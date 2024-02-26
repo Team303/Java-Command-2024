@@ -18,8 +18,7 @@ public class Belt extends SubsystemBase {
 
     public final TalonFX indexerMotor;
 
-    public final CANSparkMax leftCenterMotor;
-    public final CANSparkMax rightCenterMotor;
+    public final CANSparkMax centerMotor;
 
     private final DigitalInput beam;
     public static final ShuffleboardTab INTAKE_TAB = Shuffleboard.getTab("Amogh Belt"); // Shuffleboard tab
@@ -32,9 +31,7 @@ public class Belt extends SubsystemBase {
         beltMotor = new TalonFX(Intake.BELT_MOTOR_ID);
 		beltMotor.setNeutralMode(NeutralModeValue.Coast);
 
-        leftCenterMotor = new CANSparkMax(Intake.LEFT_CENTER_ID, MotorType.kBrushless);
-        rightCenterMotor = new CANSparkMax(Intake.RIGHT_CENTER_ID, MotorType.kBrushless);
-
+        centerMotor = new CANSparkMax(Intake.LEFT_CENTER_ID, MotorType.kBrushless);
 
 		CurrentLimitsConfigs clc40 = new CurrentLimitsConfigs().withStatorCurrentLimit(40).withSupplyCurrentLimit(40);
 		beltMotor.getConfigurator().apply(clc40);
@@ -42,8 +39,7 @@ public class Belt extends SubsystemBase {
 
     public void runBelt() {
         beltMotor.setVoltage(12);
-        leftCenterMotor.setVoltage(12);
-        rightCenterMotor.setVoltage(12);
+        centerMotor.setVoltage(12);
         indexerMotor.setVoltage(8);
     }
 
@@ -53,8 +49,7 @@ public class Belt extends SubsystemBase {
 
     public void stopMotors() {
         beltMotor.setVoltage(0);
-        leftCenterMotor.setVoltage(0);
-        rightCenterMotor.setVoltage(0);
+        centerMotor.setVoltage(0);
         indexerMotor.setVoltage(0);
     }
 
