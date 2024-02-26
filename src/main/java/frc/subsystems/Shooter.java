@@ -185,13 +185,13 @@ public class Shooter extends SubsystemBase {
     //Flywheel Functions
     public double getVelocitySpeedLeft() {
 
-        //return speed in rot/sec
+        // return speed in rot/sec
 
         return leftFlywheelMotor.getVelocity().refresh().getValueAsDouble();
     }
 
     public double getVelocitySpeedRight() {
-        //return speed in rot/sec
+        // return speed in rot/sec
         return rightFlywheelMotor.getVelocity().refresh().getValueAsDouble();
     }
 
@@ -244,19 +244,13 @@ public class Shooter extends SubsystemBase {
     }
 
     public double interpolateAngle(double range, boolean is21) {
-        if (is21) {
-            return angleInterpolator21.get(range);
-        } else {
-            return angleInterpolator17.get(range);
-        }
+
+        return is21 ? angleInterpolator21.get(range) : angleInterpolator17.get(range);
     }
 
     public double interpolateTime(double range, boolean is21) {
-        if (is21) {
-            return timeInterpolator21.get(range);
-        } else {
-            return timeInterpolator17.get(range);
-        }
+
+        return is21 ? timeInterpolator21.get(range) : timeInterpolator17.get(range);
     }
 
     //Factor Functions
