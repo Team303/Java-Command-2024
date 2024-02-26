@@ -42,9 +42,7 @@ public class RobotMap {
  
 		 public static final double PHOTON_STDDEV_SCALING_FACTOR = (1.0/2.0);
 
-		public static final double STEER_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
-
- 
+		 public static final double STEER_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
 	 }
 
 	 public static final class DDrive {

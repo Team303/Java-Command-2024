@@ -38,6 +38,7 @@ import frc.commands.drive.TurnToSpeaker;
 import frc.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.subsystems.DriveSubsystem;
+import frc.modules.DetectorModule;
 import frc.modules.PhotonvisionModule;
 import frc.subsystems.Intake;
 import frc.subsystems.Belt;
@@ -54,6 +55,7 @@ public class Robot extends LoggedRobot {
 	public static final AHRS navX = new AHRS();
 	public static PhotonvisionModule photonvision;
 	public static DriveSubsystem swerve;
+	public static DetectorModule detector; 
 	public static Intake intake;
 	public static Belt belt;
 	// public static Logger logger;
@@ -64,6 +66,7 @@ public class Robot extends LoggedRobot {
 		swerve = new DriveSubsystem();
 		intake = new Intake();
 		belt = new Belt();
+		detector = new DetectorModule();
 		swerve.resetOdometry();
 
 		NamedCommands.registerCommand("PickUpNote", new InstantCommand(() -> {System.out.println("picked up note!");}));
