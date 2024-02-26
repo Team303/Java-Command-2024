@@ -1,8 +1,8 @@
-i// Copyright (c) FIRST and other WPILib contributors.
+// Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot;
+package frc.modules;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -11,22 +11,43 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.Velocity;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import frc.subsystems.DriveSubsystem;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.MotorFeedbackSensor;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.IdleMode;
-import com.ctre.phoenix.sensors.CANCoder;
+
+import org.littletonrobotics.junction.Logger;
+
+import frc.robot.RobotMap;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import frc.robot.Robot;
+import com.ctre.phoenix6.hardware.CANcoder;
+import frc.robot.RobotMap.Swerve;
 import frc.subsystems.DriveSubsystem;
+import com.revrobotics.SparkAbsoluteEncoder;
 
 public class SwerveModule {
   private static final double kWheelRadius = 0.0508;
   public static final double kWheelDiameter = kWheelRadius * 2;
   private static final int kEncoderResolution = 42;
+
+  private double lastTurnVelocity = 0;
+
 
   private double mainDriveOutput;
   
@@ -44,25 +65,25 @@ public class SwerveModule {
   private static final double kModuleMaxAngularAcceleration =
       2 * Math.PI; // radians per second squared
 
-  private final CANSparkMax driveMotor;
+  private final TalonFX driveMotor;
+
   private final CANSparkMax turningMotor;
 
-  private final RelativeEncoder driveEncoder;
-  private final CANCoder turningEncoder;
+  private final VelocityVoltage voltageVelocityDriveControl = new VelocityVoltage(0, 10, true, 0, 0, true, false, false);
 
-  public CANCoder getTurningEncoder() {
+  private final VelocityTorqueCurrentFOC torqueVelocityDriveControl = new VelocityTorqueCurrentFOC(0, 0, 0, 1, false, false, false);
+
+  public final CANcoder turningEncoder;
+
+  public CANcoder getTurningEncoder() {
     return turningEncoder;
-  }
-
-  public RelativeEncoder getDriveEncoder() {
-    return driveEncoder;
   }
 
   // Gains are for example purposes only - must be determined for your own robot!
   private final PIDController m_drivePIDController = new PIDController(2, 0, 0);
 
   // Gains are for example purposes only - must be determined for your own robot!
-  private final PIDController m_turningPIDController = new PIDController(8, 0, 0);
+  public final SparkPIDController m_turnPidController;
   
   /*  =
       new ProfiledPIDController(
@@ -74,8 +95,10 @@ public class SwerveModule {
   */
 
   // Gains are for example purposes only - must be determined for your own robot!
-  private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0,3.12, 0.36);
-  private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(1.5, 0.2);
+  private final SimpleMotorFeedforward m_driveFeedforward = new SimpleMotorFeedforward(0,2.35,0.19);  
+  private final SimpleMotorFeedforward m_turnFeedforward = new SimpleMotorFeedforward(0, 0.07);
+
+  public final RelativeEncoder turningNeoEncoder;
 
   /**
    * Constructs a SwerveModule with a drive motor, turning motor, drive encoder and turning encoder.
@@ -90,31 +113,60 @@ public class SwerveModule {
   public SwerveModule(
       int driveMotorChannel,
       int turningMotorChannel,
-      int turningEncoderChannelA) {
-    driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
+      int turningEncoderChannelA,
+      CANcoderConfiguration config
+      ) {
+
+    driveMotor = new TalonFX(driveMotorChannel);
     turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
-
-    driveEncoder = driveMotor.getEncoder();
-    turningEncoder = new CANCoder(turningEncoderChannelA);
-
-    driveMotor.setIdleMode(IdleMode.kBrake);
+      
+    driveMotor.setNeutralMode(NeutralModeValue.Brake);
     turningMotor.setIdleMode(IdleMode.kBrake);
+    
+    driveMotor.setPosition(0);
+    CurrentLimitsConfigs clc = new CurrentLimitsConfigs().withStatorCurrentLimit(40).withSupplyCurrentLimit(40);
 
-    driveEncoder.setPositionConversionFactor(2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR);
-    driveEncoder.setVelocityConversionFactor(2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR);
+    driveMotor.getConfigurator().apply(clc);
+    turningMotor.setSmartCurrentLimit(40); 
 
-    driveMotor.enableVoltageCompensation(12);
-    driveMotor.setSmartCurrentLimit(40);
+    turningEncoder = new CANcoder(turningEncoderChannelA);
+    turningEncoder.getConfigurator().apply(config);
 
-    turningMotor.enableVoltageCompensation(12);
-    turningMotor.setSmartCurrentLimit(40);
+    turningNeoEncoder = turningMotor.getEncoder();
 
-    m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
-    turningEncoder.setPositionToAbsolute();
-  }
+    turningNeoEncoder.setPositionConversionFactor(
+        Swerve.STEER_REDUCTION * Math.PI * 2);
+    turningNeoEncoder.setVelocityConversionFactor(
+        Swerve.STEER_REDUCTION * Math.PI * 2);
+    turningNeoEncoder.setPosition(getPosition().angle.getRadians());
 
-  public double getDriveCurrent() {
-    return driveMotor.getOutputCurrent();
+    TalonFXConfiguration configs = new TalonFXConfiguration();
+    
+    configs.Slot0.kP = 0.1; // An error of 1 rotation per second results in 2V output
+    configs.Slot0.kI = 0.5; // An error of 1 rotation per second increases output by 0.5V every second
+    configs.Slot0.kD = 0.0001; // A change of 1 rotation per second squared results in 0.01 volts output
+    configs.Slot0.kV = 0.12; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / Rotation per second
+    // Peak output of 8 volts
+    configs.Voltage.PeakForwardVoltage = 8;
+    configs.Voltage.PeakReverseVoltage = -8;
+
+    driveMotor.getConfigurator().apply(configs);
+
+    m_turnPidController = turningMotor.getPIDController();
+
+    m_turnPidController.setP(2);
+    m_turnPidController.setI(0);
+    m_turnPidController.setD(0);
+    m_turnPidController.setFF(0.01);
+    m_turnPidController.setFeedbackDevice((MotorFeedbackSensor) turningNeoEncoder);
+    m_turnPidController.setPositionPIDWrappingMaxInput(Math.PI);
+    m_turnPidController.setPositionPIDWrappingMinInput(-Math.PI);
+    m_turnPidController.setPositionPIDWrappingEnabled(true);
+    m_turnPidController.setSmartMotionAllowedClosedLoopError(Math.toRadians(1.5), 0);
+
+
+    
+    // turningEncoder.setPositionToAbsolute();
   }
 
   public void invertSteerMotor(boolean inversion) {
@@ -125,11 +177,15 @@ public class SwerveModule {
     driveMotor.setInverted(inversion);
   }
 
+  public double getDrivePosition() {
+    return driveMotor.getPosition().refresh().getValue() * 2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR;
+  }
+
   /**\
    * Returns the drive motor
-   * @return The CANSparkMax of the drive motor
+   * @return The TalonFX of the drive motor
    */
-  public CANSparkMax getDriveMotor() {
+  public TalonFX getDriveMotor() {
     return driveMotor;
   }
   /**
@@ -139,7 +195,7 @@ public class SwerveModule {
    */
   public SwerveModuleState getState() {
     return new SwerveModuleState(
-        driveEncoder.getVelocity(), Rotation2d.fromDegrees(turningEncoder.getPosition() % 360));
+      getDriveVelocity(), Rotation2d.fromRotations(turningEncoder.getAbsolutePosition().refresh().getValue() % 1.0));
   }
 
   /**
@@ -147,7 +203,15 @@ public class SwerveModule {
    * @return the current Velocity of the module in m/s
    */
   public double getDriveVelocity() {
-    return driveEncoder.getVelocity(); // / 60 * 2 * Math.PI * kWheelRadius;
+    return driveMotor.getVelocity().refresh().getValue() * 2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR; // / 60 * 2 * Math.PI * kWheelRadius;
+  }
+
+    /**
+   * Returns the current Velocity of the steer motor in m/s
+   * @return the current Velocity of the steer motor in m/s
+   */
+  public double getTurnVelocity() {
+    return turningEncoder.getVelocity().refresh().getValue() * 2 * Math.PI;// * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR; // / 60 * 2 * Math.PI * kWheelRadius;
   }
 
   /**
@@ -157,9 +221,53 @@ public class SwerveModule {
    */
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(
-        driveEncoder.getPosition(), Rotation2d.fromDegrees(turningEncoder.getPosition() % 360));
+        getDrivePosition(), Rotation2d.fromRotations(turningEncoder.getAbsolutePosition().refresh().getValueAsDouble()));
   }
 
+  /**
+   * Normalizes angle value to be inbetween values 0 to 2pi.
+   *
+   * @param angle angle to be normalized
+   * @return angle value between 0 to 2pi
+   */
+  private double normalizeAngle(double angle) {
+    angle %= (2.0 * Math.PI);
+    if (angle < 0.0) {
+      angle += 2.0 * Math.PI;
+    }
+    return angle;
+  }
+
+  final double ENCODER_RESET_MAX_ANGULAR_VELOCITY = Math.toRadians(2);
+  final double ENCODER_RESET_ITERATIONS = 200;
+  double resetIteration = 0;
+
+  public void periodicReset() {
+    if (Math.abs(turningNeoEncoder.getVelocity())
+            < ENCODER_RESET_MAX_ANGULAR_VELOCITY && ++resetIteration >= ENCODER_RESET_ITERATIONS) {
+        resetIteration = 0;
+        System.out.println("resetting positions to CANCoders");
+        double absoluteAngle = normalizeAngle(getPosition().angle.getRadians());    
+        turningNeoEncoder.setPosition(absoluteAngle);
+    } else {
+      resetIteration = 0;
+    }
+  }
+
+  public static double normalizeAngle2(double angleRadians) {
+
+    angleRadians %= Math.PI * 2;
+
+    if (angleRadians >= Math.PI) {
+      angleRadians -= Math.PI * 2;
+    }
+
+    if (angleRadians <= -Math.PI) {
+      angleRadians += Math.PI * 2;
+    }
+
+    return angleRadians;
+  }
 
   /**
    * Sets the desired state for the module.
@@ -168,36 +276,15 @@ public class SwerveModule {
    */
   public void setDesiredState(SwerveModuleState desiredState) {
 
-    Rotation2d encoderRotation = Rotation2d.fromDegrees(turningEncoder.getPosition() % 360);
-
-
     // Optimize the reference state to avoid spinning further than 90 degrees
     SwerveModuleState state =
-        SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(turningEncoder.getPosition() % 360));
+        SwerveModuleState.optimize(desiredState, Rotation2d.fromRadians(normalizeAngle2(turningNeoEncoder.getPosition())));
 
-    // Scale speed by cosine of angle error. This scales down movement perpendicular to the desired
-    // direction of travel that can occur when modules change directions. This results in smoother
-    // driving.
-    state.speedMetersPerSecond *= state.angle.minus(encoderRotation).getCos();
+    // Logger.recordOutput("desired drive velocity", state.speedMetersPerSecond / (2* Math.PI*kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR));
 
-    // Calculate the drive output from the drive PID controller. Divide by 60 to get Meters per Second
-    final double driveOutput =
-        m_drivePIDController.calculate(driveEncoder.getVelocity() / 60, state.speedMetersPerSecond);
+    driveMotor.setControl(voltageVelocityDriveControl.withVelocity(state.speedMetersPerSecond / (2* Math.PI*kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR)).withAcceleration(10));
 
-    final double driveFeedforward = m_driveFeedforward.calculate(state.speedMetersPerSecond);
-
-    // Calculate the turning motor output from the turning PID controller.
-    final double turnOutput =
-        m_turningPIDController.calculate(Math.toRadians(turningEncoder.getPosition() % 360), state.angle.getRadians());
-
-    // final double turnFeedforward =
-    //     m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
-
-    mainDriveOutput = driveOutput;
-
-    mainTurnOutput = turnOutput;
-
-    driveMotor.setVoltage(driveOutput + driveFeedforward);
-    turningMotor.setVoltage(turnOutput);
+    turningMotor.getPIDController().setReference(normalizeAngle2(state.angle.getRadians()), CANSparkMax.ControlType.kPosition);
+    
   }
 }
