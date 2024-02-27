@@ -494,10 +494,7 @@ public class DriveSubsystem extends SubsystemBase {
         isBlue = alliance.get() == DriverStation.Alliance.Blue;
     }
 
-    if (isBlue) 
-      Robot.navX.setAngleAdjustment(0);
-    else
-      Robot.navX.setAngleAdjustment(180);
+    Robot.navX.setAngleAdjustment(isBlue ? 0 : 180);
     Robot.navX.reset();
 
     poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), new Pose2d(new Translation2d(), Rotation2d.fromDegrees(Robot.navX.getAngle())));
@@ -521,12 +518,14 @@ public class DriveSubsystem extends SubsystemBase {
         isBlue = alliance.get() == DriverStation.Alliance.Blue;
     }
 
-    if (isBlue) 
-      angleAdjustment = Rotation2d.fromDegrees(0);
-    else
-      angleAdjustment = Rotation2d.fromDegrees(180);
+    angleAdjustment = Rotation2d.fromDegrees(isBlue ? 0 : 180);
 
-    resetOdometry(new Pose2d(new Translation2d(resetPoseX.getDouble(0), resetPoseY.getDouble(0)), angleAdjustment));
+    resetOdometry(new Pose2d(
+      new Translation2d(
+        resetPoseX.getDouble(0), 
+        resetPoseY.getDouble(0)), 
+        angleAdjustment
+    ));
   }
 
   public Vector<N3> getEstimationStdDevs(List<PhotonTrackedTarget> targetList) {

@@ -19,7 +19,6 @@ public class Belt extends SubsystemBase {
     public final TalonFX indexerMotor;
 
     public final CANSparkMax centerMotor;
-    // public final CANSparkMax rightCenterMotor;
 
     private final DigitalInput beam;
     public static final ShuffleboardTab INTAKE_TAB = Shuffleboard.getTab("Amogh Belt"); // Shuffleboard tab
@@ -43,7 +42,6 @@ public class Belt extends SubsystemBase {
     public void runBelt() {
         beltMotor.setVoltage(12);
         centerMotor.setVoltage(12);
-        // rightCenterMotor.setVoltage(12);
         indexerMotor.setVoltage(8);
     }
 
@@ -54,7 +52,6 @@ public class Belt extends SubsystemBase {
     public void stopMotors() {
         beltMotor.setVoltage(0);
         centerMotor.setVoltage(0);
-        // rightCenterMotor.setVoltage(0);
         indexerMotor.setVoltage(0);
     }
 
