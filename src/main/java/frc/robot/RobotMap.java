@@ -9,23 +9,25 @@ public class RobotMap {
 	public static final class Swerve {
 
 		/* CAN IDs of Drive Motors */
-		 public static final int LEFT_FRONT_DRIVE_ID = 4;
-		 public static final int LEFT_BACK_DRIVE_ID = 6;
-		 public static final int RIGHT_FRONT_DRIVE_ID = 10;
-		 public static final int RIGHT_BACK_DRIVE_ID = 13;
+		 public static final int LEFT_FRONT_DRIVE_ID = 2;
+		 public static final int RIGHT_FRONT_DRIVE_ID = 5;
+		 public static final int LEFT_BACK_DRIVE_ID = 8;
+		 public static final int RIGHT_BACK_DRIVE_ID = 11;
+
+		 /* Steer Encoder CAN IDs */
+		 public static final int LEFT_FRONT_STEER_CANCODER_ID = 3;
+		public static final int RIGHT_FRONT_STEER_CANCODER_ID = 6;
+		 public static final int LEFT_BACK_STEER_CANCODER_ID = 9;
+		 public static final int RIGHT_BACK_STEER_CANCODER_ID = 12;
  
 		 /* CAN IDs of steer Motors turning */
-		 public static final int LEFT_FRONT_STEER_ID = 7;
-		 public static final int LEFT_BACK_STEER_ID = 9;
-		 public static final int RIGHT_FRONT_STEER_ID = 11;
-		 public static final int RIGHT_BACK_STEER_ID = 3;
+		 public static final int LEFT_FRONT_STEER_ID = 4;
+		public static final int RIGHT_FRONT_STEER_ID = 7;
+		 public static final int LEFT_BACK_STEER_ID = 10;
+		 public static final int RIGHT_BACK_STEER_ID = 13;
  
-		 /* Steer Encoder CAN IDs */
-		 public static final int LEFT_FRONT_STEER_CANCODER_ID = 2;
-		 public static final int LEFT_BACK_STEER_CANCODER_ID = 5;
-		 public static final int RIGHT_FRONT_STEER_CANCODER_ID = 12;
-		 public static final int RIGHT_BACK_STEER_CANCODER_ID = 8;
- 
+		 
+
 		 /* Steer Motor Offset */
 		 public static final double LEFT_BACK_STEER_OFFSET = -0.01342 + 0.75;
 		 public static final double RIGHT_BACK_STEER_OFFSET = -0.2842 + 0.25;
@@ -67,8 +69,6 @@ public class RobotMap {
 		public static final int RIGHT_ANGLE_MOTOR_ID = 15; // NEED TO CHANGE
 		public static final int LEFT_FLYWHEEL_MOTOR_ID = 16; // NEED TO CHANGE
 		public static final int RIGHT_FLYWHEEL_MOTOR_ID = 17; // NEED TO CHANGE
-		public static final int LEFT_INDEXER_MOTOR_ID = 18; // NEED TO CHANGE
-		public static final int RIGHT_INDEXER_MOTOR_ID = 19; // NEED TO CHANGE
 
 		public static final double ANGLE_FEED_FORWARD_KS = 0.0; // NEED TO CHANGE
 		public static final double ANGLE_FEED_FORWARD_KG = 0.0; // NEED TO CHANGE
@@ -89,17 +89,18 @@ public class RobotMap {
 
 	public static final class Intake {
 
-		public static final int INDEX_MOTOR_ID = 0;
-		public static final int LEFT_CENTER_ID = 1;
-		public static final int RIGHT_CENTER_ID = 2;
+		public static final int INDEX_MOTOR_ID = 22;
+		// public static final int LEFT_CENTER_ID = 1;
+		// public static final int RIGHT_CENTER_ID = 2;
+		public static final int CENTER_ID = 20;
 
 		public static final int BEAM_PORT = 4;
-		public static final int LEFT_PIVOT_MOTOR_ID = 2; // NEED TO CHANGE
-		public static final int RIGHT_PIVOT_MOTOR_ID = 5; // NEED TO CHANGE
-		public static final int BELT_MOTOR_ID = 17; // NEED TO CHANGE
-		public static final int PIVOT_ENCODER_ID = 3; // NEED TO CHANGE
-		public static final int HOME_LIMIT_SWITCH_ID = 0; // NEED TO CHANGE
-		public static final int GROUND_LIMIT_SWITCH_ID = 1; // NEED TO CHANGE
+		public static final int LEFT_PIVOT_MOTOR_ID = 18; // NEED TO CHANGE
+		public static final int RIGHT_PIVOT_MOTOR_ID = 19; // NEED TO CHANGE
+		public static final int BELT_MOTOR_ID = 21; // NEED TO CHANGE
+		public static final int PIVOT_ENCODER_ID = ; // NEED TO CHANGE
+		public static final int HOME_LIMIT_SWITCH_ID = ; // NEED TO CHANGE
+		public static final int GROUND_LIMIT_SWITCH_ID = ; // NEED TO CHANGE
 
 		public static final double PIVOT_FEED_FORWARD_KS = 0.0; // NEED TO CHANGE
 		public static final double PIVOT_FEED_FORWARD_KG = 0.932; // NEED TO CHANGE
@@ -120,5 +121,10 @@ public class RobotMap {
 		public static final double GEAR_RATIO = (1/9); //GET FROM SOMEONE
 
 		public static final double ROTATION_SCALE = 3;
+	}
+
+	public static final class Climer {
+		public static final int RIGHT_CLIMER_ID = 23;
+		public static final int LEFT_CLIMBER_ID = 24;
 	}
 }
