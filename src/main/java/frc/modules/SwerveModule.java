@@ -282,9 +282,9 @@ public class SwerveModule {
 
     // Logger.recordOutput("desired drive velocity", state.speedMetersPerSecond / (2* Math.PI*kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR));
 
-    driveMotor.setControl(voltageVelocityDriveControl.withVelocity(state.speedMetersPerSecond / (2* Math.PI*kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR)).withAcceleration(10));
+    // driveMotor.setControl(voltageVelocityDriveControl.withVelocity(state.speedMetersPerSecond / (2* Math.PI*kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR)).withAcceleration(10));
 
-    turningMotor.getPIDController().setReference(normalizeAngle2(state.angle.getRadians()), CANSparkMax.ControlType.kPosition);
+    // turningMotor.getPIDController().setReference(normalizeAngle2(state.angle.getRadians()), CANSparkMax.ControlType.kPosition);
     
   }
 }

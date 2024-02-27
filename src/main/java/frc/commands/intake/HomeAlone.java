@@ -38,12 +38,12 @@ public class HomeAlone extends Command{
 
         
 
-        if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(345))
-            intake.rightPivotMotor.setVoltage(voltage + (navX.getRate() / 360 * 1.5)); // increase voltage by 1.5 for each rpm the robot is turning
-        else 
-            intake.rightPivotMotor.setVoltage(0);
+        // if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(345))
+        //     intake.rightPivotMotor.setVoltage(voltage + (navX.getRate() / 360 * 1.5)); // increase voltage by 1.5 for each rpm the robot is turning
+        // else 
+        //     intake.rightPivotMotor.setVoltage(0);
 
-        MOTOR_OUTPUT.setDouble(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
+        // MOTOR_OUTPUT.setDouble(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
 
     }
 }

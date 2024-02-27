@@ -1,6 +1,8 @@
 package frc.subsystems;
 
 
+import static frc.subsystems.Belt.BBC_ENTRY;
+
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -55,6 +57,7 @@ public class Intake extends SubsystemBase {
 	public Intake() {
 
 		pivotEncoder = new DutyCycleEncoder(RobotMap.Intake.PIVOT_ENCODER_ID);
+
 		// pivotEncoder.setDutyCycleRange(0, 2*Math.PI);
 
 
@@ -118,8 +121,17 @@ public class Intake extends SubsystemBase {
 		return pivotOutput + pivotFeedforward;
 	}
 
+	private double normalizeAngle(double angleRad) {
+		angleRad %= Math.PI * 2;
+
+		if (angleRad < 0)
+			angleRad += Math.PI * 2;
+		
+		return angleRad;
+	}
+
 	public double getAbsolutePivotAngle() {
-		return pivotEncoder.getAbsolutePosition() * 2 * Math.PI;
+		return normalizeAngle(-pivotEncoder.getAbsolutePosition() * 2 * Math.PI - Math.toRadians(145));
 	}
 
 	// public boolean atHomeHardLimit() {

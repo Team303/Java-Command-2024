@@ -23,12 +23,15 @@ public class Belt extends SubsystemBase {
     private final DigitalInput beam;
     public static final ShuffleboardTab INTAKE_TAB = Shuffleboard.getTab("Amogh Belt"); // Shuffleboard tab
     public static final GenericEntry BELT_SPEED_ENTRY = INTAKE_TAB.add("Belt Speed", 0.0).getEntry();
+    public static final GenericEntry BBC_ENTRY = INTAKE_TAB.add("BBC Status", true).getEntry();
+
 
     public Belt() {
         indexerMotor = new TalonFX(Intake.INDEX_MOTOR_ID);
         
         beam = new DigitalInput(Intake.BEAM_PORT);
         beltMotor = new TalonFX(Intake.BELT_MOTOR_ID);
+        beltMotor.setInverted(true);
 		beltMotor.setNeutralMode(NeutralModeValue.Coast);
 
         centerMotor = new CANSparkMax(Intake.CENTER_ID, MotorType.kBrushless);
@@ -41,7 +44,7 @@ public class Belt extends SubsystemBase {
 
     public void runBelt() {
         beltMotor.setVoltage(12);
-        centerMotor.setVoltage(12);
+        centerMotor.setVoltage(13);
         indexerMotor.setVoltage(8);
     }
 
@@ -58,5 +61,11 @@ public class Belt extends SubsystemBase {
     public boolean getBeam() {
         return beam.get();
     }
+
+    @Override
+    public void periodic() {
+        BBC_ENTRY.setBoolean(getBeam());
+    }
+
 
 }

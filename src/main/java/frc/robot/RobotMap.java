@@ -25,8 +25,6 @@ public class RobotMap {
 		public static final int RIGHT_FRONT_STEER_ID = 7;
 		 public static final int LEFT_BACK_STEER_ID = 10;
 		 public static final int RIGHT_BACK_STEER_ID = 13;
- 
-		 
 
 		 /* Steer Motor Offset */
 		 public static final double LEFT_BACK_STEER_OFFSET = -0.01342 + 0.75;
@@ -90,17 +88,19 @@ public class RobotMap {
 	public static final class Intake {
 
 		public static final int INDEX_MOTOR_ID = 22;
+		public static final int BELT_MOTOR_ID = 21;
 		// public static final int LEFT_CENTER_ID = 1;
 		// public static final int RIGHT_CENTER_ID = 2;
 		public static final int CENTER_ID = 20;
+		public static final int PIVOT_ENCODER_ID = 9;
 
-		public static final int BEAM_PORT = 4;
+		public static final int BEAM_PORT = 7;
 		public static final int LEFT_PIVOT_MOTOR_ID = 18; // NEED TO CHANGE
 		public static final int RIGHT_PIVOT_MOTOR_ID = 19; // NEED TO CHANGE
-		public static final int BELT_MOTOR_ID = 21; // NEED TO CHANGE
-		public static final int PIVOT_ENCODER_ID = ; // NEED TO CHANGE
-		public static final int HOME_LIMIT_SWITCH_ID = ; // NEED TO CHANGE
-		public static final int GROUND_LIMIT_SWITCH_ID = ; // NEED TO CHANGE
+ // NEED TO CHANGE
+		// public static final int PIVOT_ENCODER_ID = ; // NEED TO CHANGE
+		// public static final int HOME_LIMIT_SWITCH_ID = ; // NEED TO CHANGE
+		// public static final int GROUND_LIMIT_SWITCH_ID = ; // NEED TO CHANGE
 
 		public static final double PIVOT_FEED_FORWARD_KS = 0.0; // NEED TO CHANGE
 		public static final double PIVOT_FEED_FORWARD_KG = 0.932; // NEED TO CHANGE
