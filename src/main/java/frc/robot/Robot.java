@@ -116,7 +116,7 @@ public class Robot extends LoggedRobot {
 		driverController.b().onTrue(new InstantCommand(swerve::setSpeakerLock));
 		driverController.rightBumper().onTrue(new InstantCommand(swerve::removeLock));
 		// operatorController.x().toggleOnTrue(Commands.runOnce(() -> new IntakeNote()).andThen(Commands.race(new NudgeNote()),Commands.waitSeconds(0.5)));
-		operatorController.x().toggleOnTrue(new IntakeNote());
+		operatorController.x().toggleOnTrue(new SequentialCommandGroup(new IntakeNote(), new NudgeNote()));
 		operatorController.y().toggleOnTrue(new GroundIntake());
 		operatorController.pov(0).whileTrue(new ShootNote());
 	

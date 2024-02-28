@@ -20,22 +20,20 @@ public class HomeIntake extends Command {
 
     @Override
     public void initialize() {
-        intake.pivotPIDController.setP(0.3);
+        intake.pivotPIDController.setP(3);
     }
 
     @Override
     public void execute() {
-        intake.leftPivotMotor.setVoltage(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
-        
         double voltage = intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE);
 
         System.out.println("Voltage: " + voltage);
         MOTOR_OUTPUT.setDouble(voltage);
 
 
-        if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(345)) {
-        System.out.println("yippee");
-            intake.rightPivotMotor.setVoltage(voltage*2);
+        if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(335)) {
+            System.out.println("yippee");
+            intake.rightPivotMotor.setVoltage(voltage);
         } else {
             System.out.println("boooo");
             intake.rightPivotMotor.setVoltage(0);

@@ -4,13 +4,20 @@ import static frc.robot.Robot.belt;
 
 public class NudgeNote extends Command {
 
+    double start = Integer.MAX_VALUE;
+
     public NudgeNote(){
         addRequirements(belt);
     }
 
     @Override
+    public void initialize() {
+        start = belt.indexerMotor.getPosition().refresh().getValueAsDouble();
+    }
+
+    @Override
     public void execute() {
-        belt.runBelt();
+        belt.runBelt(0, 0, 8);
         System.out.println("nudge");
         
         // if (!belt.getBeam()) {
@@ -19,6 +26,16 @@ public class NudgeNote extends Command {
 
         // System.out.println("Encoder value: " + Math.abs(belt.indexerMotor.getPosition().refresh().getValueAsDouble()));
         
+    }
+
+    @Override
+    public boolean isFinished() {
+        return belt.indexerMotor.getPosition().refresh().getValueAsDouble() - start > 6;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        belt.stopMotors();
     }
 
 }

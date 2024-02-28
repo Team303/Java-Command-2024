@@ -48,6 +48,12 @@ public class Belt extends SubsystemBase {
         indexerMotor.setVoltage(10);
     }
 
+    public void runBelt(double belt, double center, double indexer) {
+        beltMotor.setVoltage(belt);
+        centerMotor.setVoltage(center);
+        indexerMotor.setVoltage(indexer);
+    }
+
     public void shoot() {
         indexerMotor.setVoltage(10);
     }

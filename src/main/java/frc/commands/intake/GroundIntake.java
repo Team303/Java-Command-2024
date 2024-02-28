@@ -20,7 +20,7 @@ public class GroundIntake extends Command {
 
     @Override
     public void initialize() {
-        intake.pivotPIDController.setP(0.2);
+        intake.pivotPIDController.setP(3);
     }
 
     @Override
@@ -33,9 +33,7 @@ public class GroundIntake extends Command {
         //soft limit 
         
 
-        if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(345))
-            intake.rightPivotMotor.setVoltage(voltage);
-        else if (voltage < 0)
+        if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(335))
             intake.rightPivotMotor.setVoltage(voltage);
         else 
             intake.rightPivotMotor.setVoltage(0);
