@@ -110,6 +110,7 @@ public class Shooter extends SubsystemBase {
 
     public Shooter() {
         //Flywheel Initalization
+
         leftFlywheelMotor = new TalonFX(RobotMap.Shooter.LEFT_FLYWHEEL_MOTOR_ID);
         rightFlywheelMotor = new TalonFX(RobotMap.Shooter.RIGHT_FLYWHEEL_MOTOR_ID);
 
@@ -159,6 +160,7 @@ public class Shooter extends SubsystemBase {
                                                        pidConstraints);
 
         anglePIDController.enableContinuousInput(0, 2 * Math.PI);
+        anglePIDController.setTolerance(2.0);
     
         angleEncoder = new DutyCycleEncoder(RobotMap.Shooter.ANGLE_ENCODER_ID);
 

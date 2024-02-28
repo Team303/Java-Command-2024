@@ -18,8 +18,8 @@ public class ShootNote extends Command {
         belt.shoot();
     }
 
-    @Override
-    public void end(boolean interrupted) {
-        belt.stopMotors();
-    }
+    // @Override
+    // public void end(boolean interrupted) {
+    //     belt.stopMotors();
+    // }
 }

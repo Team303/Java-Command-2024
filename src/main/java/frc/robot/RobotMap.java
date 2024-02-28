@@ -84,8 +84,8 @@ public class RobotMap {
 
 		public static final int BEAM_BREAK_ID = 0;
 
-		public static final int ANGLE_ENCODER_ID = 2; //wtf is this
-		
+		public static final int ANGLE_ENCODER_ID = 8; //wtf is this
+
 		public static final double ANGLE_CONVERSION_FACTOR = (58.0 / 12.0) * (58.0 / 16.0) * 2 * 2;
 
 	}
