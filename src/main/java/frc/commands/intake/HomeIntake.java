@@ -14,18 +14,18 @@ public class HomeIntake extends Command {
     public HomeIntake() {
         addRequirements(intake);
 
-        DESIRED_PIVOT_ANGLE_ENTRY.setDouble(RobotMap.Intake.GROUND_ANGLE);
-        intake.pivotAngle = RobotMap.Intake.GROUND_ANGLE;
+        DESIRED_PIVOT_ANGLE_ENTRY.setDouble(RobotMap.Intake.HOME_ANGLE);
+        intake.pivotAngle = RobotMap.Intake.HOME_ANGLE;
     }
 
     @Override
     public void initialize() {
-        intake.pivotPIDController.setP(3);
+        intake.pivotPIDController.setP(0.3);
     }
 
     @Override
     public void execute() {
-        // intake.leftPivotMotor.setVoltage(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
+        intake.leftPivotMotor.setVoltage(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
         
         double voltage = intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE);
 
@@ -33,12 +33,14 @@ public class HomeIntake extends Command {
         MOTOR_OUTPUT.setDouble(voltage);
 
 
-        // if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(345))
-        //     intake.rightPivotMotor.setVoltage(voltage);
-        // else 
-        //     intake.rightPivotMotor.setVoltage(0);
-
-        // MOTOR_OUTPUT.setDouble(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
+        if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(345)) {
+        System.out.println("yippee");
+            intake.rightPivotMotor.setVoltage(voltage*2);
+        } else {
+            System.out.println("boooo");
+            intake.rightPivotMotor.setVoltage(0);
+        }
+        MOTOR_OUTPUT.setDouble(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
 
     }
 

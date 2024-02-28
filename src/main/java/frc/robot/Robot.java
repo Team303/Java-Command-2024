@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
@@ -32,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.autonomous.Autonomous;
 import frc.autonomous.AutonomousProgram;
 import frc.commands.amoghbelt.IntakeNote;
+import frc.commands.amoghbelt.NudgeNote;
 import frc.commands.drive.DefaultDrive;
 import frc.commands.drive.DriveWait;
 import frc.commands.drive.TurnToSpeaker;
@@ -111,7 +113,7 @@ public class Robot extends LoggedRobot {
 		driverController.a().onTrue(new InstantCommand(swerve::setAmpLock));
 		driverController.b().onTrue(new InstantCommand(swerve::setSpeakerLock));
 		driverController.rightBumper().onTrue(new InstantCommand(swerve::removeLock));
-
+		// operatorController.x().toggleOnTrue(Commands.runOnce(() -> new IntakeNote()).andThen(Commands.race(new NudgeNote()),Commands.waitSeconds(0.5)));
 		operatorController.x().toggleOnTrue(new IntakeNote());
 		operatorController.y().toggleOnTrue(new GroundIntake());
 		operatorController.pov(0).toggleOnTrue(new ShootNote());

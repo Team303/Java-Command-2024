@@ -92,8 +92,8 @@ public class Intake extends SubsystemBase {
 		pivotAlan.setPositionConversionFactor(2*Math.PI*RobotMap.Intake.GEAR_RATIO);
 		pivotAlan.setVelocityConversionFactor(2*Math.PI*RobotMap.Intake.GEAR_RATIO);
 
-		leftPivotMotor.setSmartCurrentLimit(40);
-		rightPivotMotor.setSmartCurrentLimit(40);
+		leftPivotMotor.setSmartCurrentLimit(30);
+		rightPivotMotor.setSmartCurrentLimit(30);
 
 		// homeLimit = new DigitalInput(RobotMap.Intake.HOME_LIMIT_SWITCH_ID);
 		// groundLimit = new DigitalInput(RobotMap.Intake.GROUND_LIMIT_SWITCH_ID);
