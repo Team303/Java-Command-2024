@@ -38,7 +38,6 @@ public class HomeIntake extends Command {
             System.out.println("boooo");
             intake.rightPivotMotor.setVoltage(0);
         }
-        MOTOR_OUTPUT.setDouble(intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE));
 
     }
 

@@ -100,6 +100,7 @@ public class Intake extends SubsystemBase {
 
 
 		pivotPIDController.setTolerance(Math.toRadians(2));
+		pivotPIDController.reset(getAbsolutePivotAngle());
 
 
 	}
