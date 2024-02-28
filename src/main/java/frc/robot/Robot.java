@@ -4,15 +4,12 @@
 
 package frc.robot;
 
-import java.rmi.server.ServerCloneException;
-
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -74,7 +71,7 @@ public class Robot extends LoggedRobot {
 
 		configureButtonBindings();
 
-		Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
+	Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
 
 		if (isReal()) {
 			// Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
@@ -117,19 +114,26 @@ public class Robot extends LoggedRobot {
 		operatorController.x().toggleOnTrue(new IntakeNote());
 		operatorController.y().toggleOnTrue(new GroundIntake());
 		operatorController.pov(0).toggleOnTrue(new ShootNote());
+	// 	controller.a().toggleOnTrue(new InstantCommand(() -> shooter.setFactor(1.0)))
+	// 	.toggleOnFalse(new InstantCommand(() -> shooter.setFactor(0.8)));
+	// controller.b().onTrue(new HomeShooter());
+	// controller.y().onTrue(new SetShooterAmp(Math.toRadians(90), 21.27));
+
+	// //after merge make a parallel command group with turn to speaker
+	// controller.x().onTrue(new ManualShootSpeaker(10));
 	}
 
-	/* Currently running auto routine */
+  	/* Currently running auto routine */
 
 	private Command autonomousCommand;
 
-	@Override
+  @Override
 	public void autonomousInit() {
 		navX.reset();
 		Command autonomousRoutine = AutonomousProgram.constructSelectedRoutine();
 
 		// Home the arm while waiting for the drivebase delay
-		Command delay = new ParallelCommandGroup(new DriveWait(AutonomousProgram.getAutonomousDelay()));
+		Command delay = new ParallelCommandGroup(/*new DriveWait(AutonomousProgram.getAutonomousDelay())*/);
 
 		// Schedule the selected autonomous command group
 		if (autonomousRoutine != null) {
@@ -145,7 +149,7 @@ public class Robot extends LoggedRobot {
 		CommandScheduler.getInstance().schedule(this.autonomousCommand);
 	}
 
-	@Override
+  @Override
 	public void teleopInit() {
 		// This makes sure that the autonomous stops running when teleop starts running.
 		if (autonomousCommand != null) {
@@ -161,6 +165,6 @@ public class Robot extends LoggedRobot {
 	public void robotPeriodic() {
 		//Logger.recordOutput("Example/Mechanism", mechanism);
 		CommandScheduler.getInstance().run();
-
+		
 	}
 }

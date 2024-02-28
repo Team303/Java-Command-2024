@@ -1,11 +1,11 @@
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 
 public class RobotMap {
+	public static final class Swerve {
 	public static final class Swerve {
 
 		/* CAN IDs of Drive Motors */

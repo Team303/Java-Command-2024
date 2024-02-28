@@ -38,6 +38,19 @@ import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
+import frc.robot.RobotMap;
+import frc.robot.SwerveModule;
+import frc.robot.RobotMap.Swerve;
+import frc.robot.util.FieldRelativeAcceleration;
+import frc.robot.util.FieldRelativeSpeeds;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -634,7 +647,6 @@ public ChassisSpeeds getRobotRelativeSpeeds() {
 
   @Override
   public void periodic() {
-
     periodicReset();
 
     // FRONT_LEFT_ENC.setDouble(frontLeft.turningEncoder.getAbsolutePosition().refresh().getValue());
