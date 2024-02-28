@@ -44,6 +44,7 @@ import frc.subsystems.Belt;
 import frc.commands.intake.GroundIntake;
 import frc.commands.intake.HomeAlone;
 import frc.commands.intake.HomeIntake;
+import frc.commands.intake.MoveVolts;
 import frc.commands.amoghbelt.ShootNote;
 import frc.commands.shooter.ManualShootSpeaker;
 
@@ -117,6 +118,8 @@ public class Robot extends LoggedRobot {
 		driverController.rightBumper().onTrue(new InstantCommand(swerve::removeLock));
 		// operatorController.x().toggleOnTrue(Commands.runOnce(() -> new IntakeNote()).andThen(Commands.race(new NudgeNote()),Commands.waitSeconds(0.5)));
 		operatorController.x().toggleOnTrue(new SequentialCommandGroup(new IntakeNote(), new NudgeNote()));
+		// operatorController.y().toggleOnTrue(new GroundIntake());
+		// operatorController.y().toggleOnTrue(new MoveVolts(12));
 		operatorController.y().toggleOnTrue(new GroundIntake());
 		operatorController.pov(0).whileTrue(new ShootNote());
 	
@@ -162,6 +165,7 @@ public class Robot extends LoggedRobot {
 			autonomousCommand.cancel();
 		}
 
+		// intake.setDefaultCommand(new SequentialCommandGroup(new HomeIntake(), new HomeAlone()));
 		intake.setDefaultCommand(new SequentialCommandGroup(new HomeIntake(), new HomeAlone()));
 		swerve.setDefaultCommand(new DefaultDrive(true));
 		shooter.setDefaultCommand(new ManualShootSpeaker(10));

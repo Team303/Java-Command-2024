@@ -21,7 +21,7 @@ public class HomeAlone extends Command{
 
     @Override
     public void initialize() {
-        intake.pivotPIDController.setP(3);
+        intake.pivotPIDController.setP(12);
     }
 
     @Override
@@ -38,8 +38,8 @@ public class HomeAlone extends Command{
 
         
 
-        if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(335))
-            intake.rightPivotMotor.setVoltage(voltage + (navX.getRate() / 360 * 1.5)); // increase voltage by 1.5 for each rpm the robot is turning
+        if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(320))
+            intake.rightPivotMotor.setVoltage(voltage); // + (navX.getRate() / 360 * 1.5)); // increase voltage by 1.5 for each rpm the robot is turning
         else 
             intake.rightPivotMotor.setVoltage(0);
 

@@ -20,7 +20,7 @@ public class GroundIntake extends Command {
 
     @Override
     public void initialize() {
-        intake.pivotPIDController.setP(3);
+        intake.pivotPIDController.setP(5);
     }
 
     @Override
@@ -33,22 +33,22 @@ public class GroundIntake extends Command {
         //soft limit 
         
 
-        if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(335))
+        if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(320))
             intake.rightPivotMotor.setVoltage(voltage);
         else 
             intake.rightPivotMotor.setVoltage(0);
     }
 
-    @Override
-    public boolean isFinished() {
-        return (intake.getAbsolutePivotAngle() > Math.toRadians(340) && intake.getAbsolutePivotAngle() < Math.toRadians(350))  || intake.getPivotPIDController().atSetpoint();
-    }
+    // @Override
+    // public boolean isFinished() {
+    //     return (intake.getAbsolutePivotAngle() > Math.toRadians(340) && intake.getAbsolutePivotAngle() < Math.toRadians(350))  || intake.getPivotPIDController().atSetpoint();
+    // }
 
-    @Override
-    public void end(boolean interrupted) {
-        // Lock the intake
-        intake.leftPivotMotor.setVoltage(0);
-        intake.rightPivotMotor.setVoltage(0);
+    // @Override
+    // public void end(boolean interrupted) {
+    //     // Lock the intake
+    //     intake.leftPivotMotor.setVoltage(0);
+    //     intake.rightPivotMotor.setVoltage(0);
 
-    }
+    // }
 }

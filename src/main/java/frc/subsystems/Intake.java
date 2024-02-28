@@ -72,14 +72,15 @@ public class Intake extends SubsystemBase {
 
 		leftPivotMotor.setIdleMode(IdleMode.kBrake);
 		rightPivotMotor.setIdleMode(IdleMode.kBrake);
+		rightPivotMotor.setInverted(false);
 
 
 		TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(Math.PI/2, 
-			pivotFeedForward.maxAchievableAcceleration(12, getAbsolutePivotAngle(), leftPivotMotor.getEncoder().getVelocity())); 
+			Math.PI * 8); 
 			// Change: Alan's job
 
 		pivotPIDController = new ProfiledPIDController(RobotMap.Intake.PIVOT_PID_CONTROLLER_P,
-				RobotMap.Intake.PIVOT_PID_CONTROLLER_I,
+				RobotMap.Intake.PIVOT_PID_CONTROLLER_I, 
 				RobotMap.Intake.PIVOT_PID_CONTROLLER_D,
 				pidConstraints);
 
@@ -92,15 +93,15 @@ public class Intake extends SubsystemBase {
 		pivotAlan.setPositionConversionFactor(2*Math.PI*RobotMap.Intake.GEAR_RATIO);
 		pivotAlan.setVelocityConversionFactor(2*Math.PI*RobotMap.Intake.GEAR_RATIO);
 
-		leftPivotMotor.setSmartCurrentLimit(30);
-		rightPivotMotor.setSmartCurrentLimit(30);
+		leftPivotMotor.setSmartCurrentLimit(40);
+		rightPivotMotor.setSmartCurrentLimit(40);
 
-		// homeLimit = new DigitalInput(RobotMap.Intake.HOME_LIMIT_SWITCH_ID);
+		// homeLimit = new DigitalInput(RobotMap.Intake.HOME_LIMIT  i_SWITCH_ID);
 		// groundLimit = new DigitalInput(RobotMap.Intake.GROUND_LIMIT_SWITCH_ID);
 
 
 		pivotPIDController.setTolerance(Math.toRadians(2));
-		pivotPIDController.reset(getAbsolutePivotAngle());
+		// pivotPIDController.reset(getAbsolutePivotAngle());
 
 
 	}
@@ -108,18 +109,24 @@ public class Intake extends SubsystemBase {
 	// pivot functions
 	public double calculateAngleSpeed(double angle) {
 
-		TrapezoidProfile.Constraints constrain = new TrapezoidProfile.Constraints(
-			3.14/2, 
-			pivotFeedForward.maxAchievableAcceleration(12, getAbsolutePivotAngle(), leftPivotMotor.getEncoder().getVelocity())); // Change: Alan's job
+		// TrapezoidProfile.Constraints constrain = new TrapezoidProfile.Constraints(
+		// 	3.14/2, 
+		// 	pivotFeedForward.maxAchievableAcceleration(12, getAbsolutePivotAngle(), leftPivotMotor.getEncoder().getVelocity())); // Change: Alan's job
 
-		pivotPIDController.setConstraints(constrain);
+		// pivotPIDController.setConstraints(constrain);
 
 		final double pivotOutput = pivotPIDController.calculate(getAbsolutePivotAngle(), angle);
 
 
 		final double pivotFeedforward = pivotFeedForward.calculate(angle > Math.toRadians(270) ? 0 : angle, pivotPIDController.getSetpoint().velocity);
 
-		return pivotOutput + pivotFeedforward;
+		if (angle > Math.toRadians(45) && angle < Math.toRadians(320) && getAbsolutePivotAngle() > Math.toRadians(45)) {
+			return pivotOutput - 3 < 0 ? pivotOutput : pivotOutput - 3;
+		}
+		{
+			return pivotOutput; //+ pivotFeedforward;
+		}
+
 	}
 
 	private double normalizeAngle(double angleRad) {

@@ -20,26 +20,28 @@ public class HomeIntake extends Command {
 
     @Override
     public void initialize() {
-        intake.pivotPIDController.setP(3);
+        intake.pivotPIDController.setP(12);
     }
 
     @Override
     public void execute() {
         double voltage = intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE);
 
-        System.out.println("Voltage: " + voltage);
+        // System.out.println("Voltage: " + voltage);
+        System.out.println("Voltage: " + intake.leftPivotMotor.getBusVoltage());
         MOTOR_OUTPUT.setDouble(voltage);
 
 
-        if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(335)) {
-            System.out.println("yippee");
+        if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(320)) {
+            // System.out.println("yippee");
             intake.rightPivotMotor.setVoltage(voltage);
         } else {
-            System.out.println("boooo");
+            // System.out.println("boooo");
             intake.rightPivotMotor.setVoltage(0);
         }
 
     }
+
 
     @Override
     public boolean isFinished() {
@@ -53,6 +55,6 @@ public class HomeIntake extends Command {
         intake.rightPivotMotor.setVoltage(0);
         intake.pivotAlan.setPosition(0);
         
- }
+    }
 
 }
