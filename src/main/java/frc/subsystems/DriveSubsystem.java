@@ -43,7 +43,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
-import frc.robot.SwerveModule;
 import frc.robot.RobotMap.Swerve;
 import frc.robot.util.FieldRelativeAcceleration;
 import frc.robot.util.FieldRelativeSpeeds;
@@ -238,10 +237,10 @@ public class DriveSubsystem extends SubsystemBase {
     frontRight.invertDriveMotor(false);
     backRight.invertDriveMotor(false);
 
-    frontLeft.getDrivePosition();
-    frontRight.getDrivePosition();
-    backLeft.getDrivePosition();
-    backRight.getDrivePosition();
+    // frontLeft.getDrivePosition();
+    // frontRight.getDrivePosition();
+    // backLeft.getDrivePosition();
+    // backRight.getDrivePosition();
 
     // AprilTagFieldLayout initialLayout;
     // try {

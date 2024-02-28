@@ -35,6 +35,7 @@ import frc.commands.drive.DefaultDrive;
 import frc.commands.drive.DriveWait;
 import frc.commands.drive.TurnToSpeaker;
 import frc.subsystems.DriveSubsystem;
+import frc.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.subsystems.DriveSubsystem;
 import frc.modules.PhotonvisionModule;
@@ -46,6 +47,7 @@ import frc.commands.intake.HomeIntake;
 import frc.commands.amoghbelt.ShootNote;
 
 
+
 public class Robot extends LoggedRobot {
 	public static final CommandXboxController driverController = new CommandXboxController(0);
 	public static final CommandXboxController operatorController = new CommandXboxController(1);
@@ -55,6 +57,7 @@ public class Robot extends LoggedRobot {
 	public static DriveSubsystem swerve;
 	public static Intake intake;
 	public static Belt belt;
+	public static Shooter shooter;
 	// public static Logger logger;
 
 	@Override
@@ -63,6 +66,7 @@ public class Robot extends LoggedRobot {
 		swerve = new DriveSubsystem();
 		intake = new Intake();
 		belt = new Belt();
+		shooter = new Shooter();
 		swerve.resetOdometry();
 
 		NamedCommands.registerCommand("PickUpNote", new InstantCommand(() -> {System.out.println("picked up note!");}));

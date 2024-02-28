@@ -2,10 +2,12 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 
 public class RobotMap {
-	public static final class Swerve {
 	public static final class Swerve {
 
 		/* CAN IDs of Drive Motors */
@@ -37,8 +39,6 @@ public class RobotMap {
 		 public static final double PHOTON_STDDEV_SCALING_FACTOR = (1.0/2.0);
 
 		public static final double STEER_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
-
- 
 	 }
  
 	 public static final class PhotonvisionConstants {
@@ -49,7 +49,7 @@ public class RobotMap {
 		 public static final double GRID_TARGET_HEIGHT_METERS = 0.36;
 		 public static final double DOUBLE_SUBSTATION_TARGET_HEIGHT_METERS = 0.59;
 		 public static final double CAMERA_PITCH_RADIANS = 0; // NOT FINAL
-		 
+		
 		 public static final Transform3d ROBOT_TO_FRONT_CAMERA= new Transform3d(new Translation3d(0.381, 0, FRONT_CAMERA_HEIGHT_METERS),new Rotation3d(0.0,0.0,0.0));
 		 public static final Transform3d ROBOT_TO_BACK_CAMERA= new Transform3d(new Translation3d(-0.381,0,BACK_CAMERA_HEIGHT_METERS),new Rotation3d(0,Units.degreesToRadians(180),0));
 		 public static final Transform3d ROBOT_TO_LEFT_CAMERA= new Transform3d(new Translation3d(0,0.381,LEFT_CAMERA_HEIGHT_METERS),new Rotation3d(0,Units.degreesToRadians(90),0));
@@ -83,6 +83,11 @@ public class RobotMap {
 		public static final double ANGLE_PID_CONTROLLER_D = 0.0; // NEED TO CHANGE
 
 		public static final int BEAM_BREAK_ID = 0;
+
+		public static final int ANGLE_ENCODER_ID = 2; //wtf is this
+		
+		public static final double ANGLE_CONVERSION_FACTOR = (58.0 / 12.0) * (58.0 / 16.0) * 2 * 2;
+
 	}
 
 	public static final class Intake {
@@ -126,5 +131,15 @@ public class RobotMap {
 	public static final class Climer {
 		public static final int RIGHT_CLIMBER_ID = 23;
 		public static final int LEFT_CLIMBER_ID = 24;
+	}
+
+	public static final class FieldConstants {
+		public static double fieldLength = Units.inchesToMeters(651.223);
+		public static double fieldWidth = Units.inchesToMeters(323.277);
+		public static Pose2d centerSpeakOpenInBlue = new Pose2d(0.0, fieldWidth - Units.inchesToMeters(104.0),
+				new Rotation2d());
+
+		public static Pose2d centerSpeakOpenInRed = new Pose2d(fieldLength, fieldWidth - Units.inchesToMeters(104.0),
+				new Rotation2d());
 	}
 }

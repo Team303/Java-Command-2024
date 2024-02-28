@@ -62,7 +62,7 @@ public class ManualShootSpeaker extends Command {
         if (alliance.isPresent()) {
             isBlue = alliance.get() == DriverStation.Alliance.Blue;
         }
-
+        
         target = isBlue ? FieldConstants.centerSpeakOpenInBlue.getTranslation() : FieldConstants.centerSpeakOpenInRed.getTranslation();
 
         Pose2d curPose = Robot.swerve.getPose();
@@ -127,7 +127,7 @@ public class ManualShootSpeaker extends Command {
         shooter.rightFlywheelMotor.setControl(shooter.flywheelVoltageRight.withVelocity(desiredVelocityRight /  (2 * Math.PI * 0.0508)));
 
         shooter.leftAngleMotor.setVoltage(shooter.calculateAngleSpeed(desiredAngle)); 
-        //shooter.rightAngleMotor.setVoltage(shooter.calculateAngleSpeedRight(desiredAngle)); --> Dont need because follower
+        // shooter.rightAngleMotor.setVoltage(shooter.calculateAngleSpeedRight(desiredAngle)); --> Dont need because follower
     } 
 
     @Override
