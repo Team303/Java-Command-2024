@@ -36,8 +36,12 @@ public class DynamicShootSpeakerBad extends Command {
     // double range = FieldConstants.centerSpeakOpening.getTranslation().getDistance(swerve.getPose());
     double range;
 
+    //Bad code that doesn't work lmao
+
     //TODO: Make the range/height not a parameter once merged into master
     public DynamicShootSpeakerBad() {
+
+        
 
         addRequirements(shooter);
         
@@ -131,13 +135,15 @@ public class DynamicShootSpeakerBad extends Command {
         //shooter.rightAngleMotor.setVoltage(shooter.calculateAngleSpeedRight(desiredAngle)); --> Dont need because follower
     } 
 
-    @Override
-    public boolean isFinished() {
-        return false;
-        //return shooter.anglePIDController.atSetpoint() || shooter.getAbsoluteShooterAngle() - de 
-    }
+    // @Override
+    // public boolean isFinished() {
+    //     return false;
+    //     //return shooter.anglePIDController.atSetpoint() || shooter.getAbsoluteShooterAngle() - de 
+    // }
 
     public void end(boolean interrupted) {
+        shooter.leftFlywheelMotor.setVoltage(0);
+        shooter.rightFlywheelMotor.setVoltage(0);
         //shooter.leftFlywheelMotor.setVoltage(0);
     }
 

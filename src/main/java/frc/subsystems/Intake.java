@@ -101,7 +101,7 @@ public class Intake extends SubsystemBase {
 
 
 		pivotPIDController.setTolerance(Math.toRadians(2));
-		pivotPIDController.reset(100);
+		pivotPIDController.reset(117);
 
 	}
 
@@ -119,12 +119,12 @@ public class Intake extends SubsystemBase {
 
 		final double pivotFeedforward = pivotFeedForward.calculate(angle > Math.toRadians(270) ? 0 : angle, pivotPIDController.getSetpoint().velocity);
 
-		if (angle > Math.toRadians(45) && angle < Math.toRadians(320) && getAbsolutePivotAngle() > Math.toRadians(45)) {
-			return pivotOutput - 3 < 0 ? pivotOutput : pivotOutput - 3;
-		}
-		{
-			return pivotOutput; //+ pivotFeedforward;
-		}
+		// if (angle > Math.toRadians(45) && angle < Math.toRadians(320) && getAbsolutePivotAngle() > Math.toRadians(45)) {
+		// 	return pivotOutput - 3 < 0 ? pivotOutput : pivotOutput - 3;
+		// }
+		// {
+			return pivotOutput + pivotFeedforward;
+		// }
 
 	}
 
@@ -138,7 +138,7 @@ public class Intake extends SubsystemBase {
 	}
 
 	public double getAbsolutePivotAngle() {
-		return normalizeAngle(-pivotEncoder.getAbsolutePosition() * 2 * Math.PI - Math.toRadians(145));
+		return normalizeAngle(pivotEncoder.getAbsolutePosition() * 2 * Math.PI - Math.toRadians(47));
 	}
 
 	// public boolean atHomeHardLimit() {

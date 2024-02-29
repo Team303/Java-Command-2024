@@ -56,9 +56,10 @@ public class SetShooterAmp extends Command {
     //     return shooter.atSetpoint();
     // }
 
-    // @Override
-    // public void end(boolean interreupted) {
-    //     shooter.leftAngleMotor.setVoltage(0);
-    // }
+    public void end(boolean interrupted) {
+        shooter.leftFlywheelMotor.setVoltage(0);
+        shooter.rightFlywheelMotor.setVoltage(0);
+        //shooter.leftFlywheelMotor.setVoltage(0);
+    }
 
 }

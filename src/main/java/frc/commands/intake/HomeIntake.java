@@ -20,7 +20,7 @@ public class HomeIntake extends Command {
 
     @Override
     public void initialize() {
-        intake.pivotPIDController.setP(12);
+        intake.pivotPIDController.setP(3);
     }
 
     @Override

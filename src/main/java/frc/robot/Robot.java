@@ -45,6 +45,7 @@ import frc.commands.intake.HomeAlone;
 import frc.commands.intake.HomeIntake;
 import frc.commands.amoghbelt.ShootNote;
 import frc.commands.shooter.HomeShooter;
+import frc.commands.shooter.ManualShootSpeaker;
 import frc.commands.shooter.DynamicShootSpeaker;
 import frc.commands.shooter.OnlyFlyWheels;
 import frc.commands.shooter.SetShooterAmp;
@@ -119,7 +120,9 @@ public class Robot extends LoggedRobot {
 		driverController.rightBumper().onTrue(new InstantCommand(swerve::removeLock));
 		// operatorController.x().toggleOnTrue(Commands.runOnce(() -> new IntakeNote()).andThen(Commands.race(new NudgeNote()),Commands.waitSeconds(0.5)));
 		operatorController.x().toggleOnTrue(new IntakeNote());
-		// operatorController.y().toggleOnTrue(new GroundIntake());
+		operatorController.b().onTrue(new InstantCommand(swerve::resetOdometryWidget));
+
+		operatorController.a().toggleOnTrue(new GroundIntake());
 		operatorController.pov(0).toggleOnTrue(new ShootNote());
 	
 	// 	controller.a().toggleOnTrue(new InstantCommand(() -> shooter.setFactor(1.0)))
@@ -127,7 +130,7 @@ public class Robot extends LoggedRobot {
 	// controller.b().onTrue(new HomeShooter());
 
 	    // operatorController.y().onTrue(new SetShooterAmp(Math.toRadians(45), 0));
-		operatorController.y().toggleOnTrue(new DynamicShootSpeaker(3));
+		operatorController.y().toggleOnTrue(new DynamicShootSpeaker());
 		// operatorController.y().toggleOnTrue(new OnlyFlyWheels(30));
 
 	// //after merge make a parallel command group with turn to speaker

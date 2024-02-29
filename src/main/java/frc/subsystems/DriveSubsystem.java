@@ -143,7 +143,7 @@ public class DriveSubsystem extends SubsystemBase {
     .withSize(1, 1).getEntry();
   public static final GenericEntry resetPoseAngle = DRIVEBASE_TAB.add("resetPoseAngle", 0).withPosition(2, 4)
     .withSize(1, 1).getEntry();
-  
+    
   public static final GenericEntry globalAngle = DRIVEBASE_TAB.add("global angle", 0).withPosition(4, 0).getEntry();
   public static final GenericEntry angleVelo = DRIVEBASE_TAB.add("angular velocity", 0).withPosition(4, 1).getEntry();
   // public static final GenericEntry time = DRIVEBASE_TAB.add("Time",

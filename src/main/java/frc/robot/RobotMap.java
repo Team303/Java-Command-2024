@@ -112,7 +112,7 @@ public class RobotMap {
 		public static final double PIVOT_FEED_FORWARD_KV = 0.18; // NEED TO CHANGE
 		public static final double PIVOT_FEED_FORWARD_KA = 0.38; // NEED TO CHANGE
 
-		public static final double PIVOT_PID_CONTROLLER_P = 3; // NEED TO CHANGE
+		public static final double PIVOT_PID_CONTROLLER_P = 2; // NEED TO CHANGE
 		public static final double PIVOT_PID_CONTROLLER_I = 0.0; // NEED TO CHANGE
 		public static final double PIVOT_PID_CONTROLLER_D = 0.0; // NEED TO CHANGE
 
@@ -123,7 +123,7 @@ public class RobotMap {
 		public static final double HOME_ANGLE = Math.toRadians(80);
 		public static final double GROUND_ANGLE = Math.toRadians(345);// GET ANGLE FROM JOHN
 
-		public static final double GEAR_RATIO = ((double)1/15); //GET FROM SOMEONE
+		public static final double GEAR_RATIO = ((double)1/25); //GET FROM SOMEONE
 
 		public static final double ROTATION_SCALE = 3;
 	}

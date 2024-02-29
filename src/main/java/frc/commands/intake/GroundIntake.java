@@ -20,7 +20,7 @@ public class GroundIntake extends Command {
 
     @Override
     public void initialize() {
-        intake.pivotPIDController.setP(5);
+        intake.pivotPIDController.setP(3);
     }
 
     @Override
