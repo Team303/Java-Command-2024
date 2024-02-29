@@ -17,8 +17,8 @@ public class HomeShooter extends Command {
     public void execute() {
 
 
-        shooter.leftFlywheelMotor.setVoltage(0);
-        shooter.rightAngleMotor.setVoltage(0);
+        shooter.leftFlywheelMotor.setVoltage(3);
+        shooter.rightFlywheelMotor.setVoltage(3);
 
         double voltage = shooter.calculateAngleSpeed(Math.toRadians(7));
 

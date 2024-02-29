@@ -129,13 +129,13 @@ public class Robot extends LoggedRobot {
 
 		// operatorController.pov(0).whileTrue(new ShootNote());
 		operatorController.y().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 
-		   new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SequentialCommandGroup(new SetShooterAmp(Math.toRadians(50), 21.27), 
-		   new ParallelCommandGroup(new ShootNote(), new SetShooterAmp(Math.toRadians(50), 21.27).repeatedly())  
+		   new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SequentialCommandGroup(new SetShooterAmp(Math.toRadians(50), 17), 
+		   new ParallelCommandGroup(new ShootNote(), new SetShooterAmp(Math.toRadians(50), 17).repeatedly())  
 		   ))));
 
 		operatorController.a().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 
-		   new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SequentialCommandGroup(new SetShooterAmp(Math.toRadians(30), 21.27), 
-		   new ParallelCommandGroup(new ShootNote(), new SetShooterAmp(Math.toRadians(30), 21.27).repeatedly())  
+		   new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SequentialCommandGroup(new SetShooterAmp(Math.toRadians(30), 17), 
+		   new ParallelCommandGroup(new ShootNote(), new SetShooterAmp(Math.toRadians(30), 17).repeatedly())  
 		   ))));
 
 		// operatorController.a().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 

@@ -108,7 +108,7 @@ public class Shooter extends SubsystemBase {
         public static final GenericEntry ANGLE_LIMIT_SWITCH_STATUS_ENTRY = SHOOTER_TAB.add("Angle Hard Limit", false).withPosition(0, 0).getEntry();
 
     //Extras
-    public double diffFactor = 1.0;
+    public double diffFactor = 0.8;
     public double pivotAngle = 0.0;
 
     public Shooter() {
@@ -143,11 +143,25 @@ public class Shooter extends SubsystemBase {
 
         MotorOutputConfigs aritrabbc = new MotorOutputConfigs();
         aritrabbc.withInverted(InvertedValue.Clockwise_Positive);
+
+        TalonFXConfiguration angleConfigs = new TalonFXConfiguration();
+
+        angleConfigs.Slot0.kP = 0.3;
+        angleConfigs.Slot0.kI = 0;
+        angleConfigs.Slot0.kD = 0.0000;
+        angleConfigs.Slot0.kV = 0;
+
+
+        angleConfigs.Voltage.PeakForwardVoltage = 12;
+        angleConfigs.Voltage.PeakReverseVoltage = -12;
+
         
 
         //Angle Initalization
         leftAngleMotor = new TalonFX(RobotMap.Shooter.LEFT_ANGLE_MOTOR_ID);
         rightAngleMotor = new TalonFX(RobotMap.Shooter.RIGHT_ANGLE_MOTOR_ID);
+
+        leftAngleMotor.getConfigurator().apply(angleConfigs);
 
         leftAngleMotor.setNeutralMode(NeutralModeValue.Brake);
         rightAngleMotor.setNeutralMode(NeutralModeValue.Brake);

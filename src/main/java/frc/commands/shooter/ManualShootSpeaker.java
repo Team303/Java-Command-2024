@@ -48,7 +48,9 @@ public class ManualShootSpeaker extends Command {
 
     @Override
     public boolean isFinished() {
-        return shooter.atSetpoint() && (shooter.leftFlywheelMotor.getVelocity().refresh().getValueAsDouble() > desiredVelocityLeft / (2 * Math.PI * 0.0508));
+        return shooter.atSetpoint() 
+            && (shooter.leftFlywheelMotor.getVelocity().refresh().getValueAsDouble() > desiredVelocityLeft / (2 * Math.PI * 0.0508))
+            && (shooter.rightFlywheelMotor.getVelocity().refresh().getValueAsDouble() > desiredVelocityRight / (2 * Math.PI * 0.0508));
     }
 
     public void end(boolean interrupted) {

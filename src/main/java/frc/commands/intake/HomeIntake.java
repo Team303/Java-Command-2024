@@ -31,7 +31,6 @@ public class HomeIntake extends Command {
         System.out.println("Voltage: " + intake.leftPivotMotor.getBusVoltage());
         MOTOR_OUTPUT.setDouble(voltage);
 
-
         if (intake.getAbsolutePivotAngle() > Math.PI/2 && intake.getAbsolutePivotAngle() < Math.toRadians(320) && voltage > 0) {
             // System.out.println("yippee");
             intake.rightPivotMotor.setVoltage(0);

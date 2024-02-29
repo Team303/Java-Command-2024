@@ -5,6 +5,9 @@ import static frc.subsystems.Shooter.DESIRED_LEFT_RPM_ENTRY;
 import static frc.subsystems.Shooter.DESIRED_RIGHT_RPM_ENTRY;
 import static frc.subsystems.Shooter.INTERPOLATED_DEGREES_ENTRY;
 
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class SetShooterAmp extends Command {
@@ -39,6 +42,8 @@ public class SetShooterAmp extends Command {
 
         if (shooter.getAbsoluteShooterAngle() > Math.PI && shooter.getAbsoluteShooterAngle() < Math.toRadians(320) && voltage > 0) {
             shooter.leftAngleMotor.setVoltage(0);
+        } else if (Math.abs(shooter.getAbsoluteShooterAngle() - desiredAngle) < Math.toRadians(3)) {
+            shooter.leftAngleMotor.setControl(new VelocityVoltage(0));
         } else {
             shooter.leftAngleMotor.setVoltage(voltage);
         }
@@ -54,7 +59,9 @@ public class SetShooterAmp extends Command {
 
     @Override
     public boolean isFinished() {
-        return shooter.atSetpoint() && (shooter.leftFlywheelMotor.getVelocity().refresh().getValueAsDouble() > desiredVelocityLeft / (2 * Math.PI * 0.0508));
+        return shooter.atSetpoint() 
+            && (shooter.leftFlywheelMotor.getVelocity().refresh().getValueAsDouble() > desiredVelocityLeft / (2 * Math.PI * 0.0508))
+            && (shooter.rightFlywheelMotor.getVelocity().refresh().getValueAsDouble() > desiredVelocityRight / (2 * Math.PI * 0.0508));
     }
 
     public void end(boolean interrupted) {
