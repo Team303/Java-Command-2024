@@ -30,7 +30,7 @@ public class SetShooterAmp extends Command {
         DESIRED_LEFT_RPM_ENTRY.setDouble(desiredVelocityLeft / (2 * Math.PI * 0.0508) * 60);        
         DESIRED_RIGHT_RPM_ENTRY.setDouble(desiredVelocityRight / (2 * Math.PI * 0.0508) * 60);
 
-        System.out.println("DesiredVeloicityLeft: "+((desiredVelocityLeft / (2 * Math.PI * 0.0508))));
+        System.out.println("DesiredVelocityLeft: "+((desiredVelocityLeft / (2 * Math.PI * 0.0508))));
 
         shooter.leftFlywheelMotor.setControl(shooter.flywheelVoltageLeft.withVelocity((desiredVelocityLeft / (2 * Math.PI * 0.0508))));
         shooter.rightFlywheelMotor.setControl(shooter.flywheelVoltageRight.withVelocity((desiredVelocityRight / (2 * Math.PI * 0.0508))));
