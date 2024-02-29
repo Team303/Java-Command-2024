@@ -101,7 +101,7 @@ public class Intake extends SubsystemBase {
 
 
 		pivotPIDController.setTolerance(Math.toRadians(2));
-		pivotPIDController.reset(117);
+		pivotPIDController.reset(Math.toRadians(117));
 
 	}
 
@@ -123,7 +123,7 @@ public class Intake extends SubsystemBase {
 		// 	return pivotOutput - 3 < 0 ? pivotOutput : pivotOutput - 3;
 		// }
 		// {
-			return pivotOutput + pivotFeedforward;
+			return pivotOutput;//pivotFeedforward;
 		// }
 
 	}
