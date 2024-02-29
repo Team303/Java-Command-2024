@@ -646,7 +646,7 @@ public ChassisSpeeds getRobotRelativeSpeeds() {
 
   @Override
   public void periodic() {
-    periodicReset();
+    // periodicReset();
 
     // FRONT_LEFT_ENC.setDouble(frontLeft.turningEncoder.getAbsolutePosition().refresh().getValue());
     // FRONT_RIGHT_ENC.setDouble(frontRight.turningEncoder.getAbsolutePosition().refresh().getValue());

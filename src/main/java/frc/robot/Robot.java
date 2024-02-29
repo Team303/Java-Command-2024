@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -49,6 +51,7 @@ import frc.commands.shooter.ManualShootSpeaker;
 import frc.commands.shooter.DynamicShootSpeaker;
 import frc.commands.shooter.OnlyFlyWheels;
 import frc.commands.shooter.SetShooterAmp;
+import frc.commands.drive.TurnToAngle;
 
 
 
@@ -68,9 +71,9 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		photonvision = null; //new PhotonvisionModule();
 		swerve = new DriveSubsystem();
-		intake = null; //new Intake();
-		belt = null; //new Belt();
-		shooter = null; //new Shooter();
+		intake = new Intake();
+		belt = new Belt();
+		shooter = new Shooter();
 		swerve.resetOdometry();
 
 		NamedCommands.registerCommand("PickUpNote", new InstantCommand(() -> {System.out.println("picked up note!");}));
@@ -104,7 +107,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void disabledInit() {
-		swerve.periodicReset();
+		// swerve.periodicReset();
 	}
 
 	@Override
@@ -114,29 +117,18 @@ public class Robot extends LoggedRobot {
 
 	private void configureButtonBindings() {
 		driverController.y().onTrue(new InstantCommand(swerve::resetOdometry));
-		driverController.b().onTrue(new InstantCommand(swerve::resetOdometryWidget));
+		driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 
-		//old turn to speaker
+		//for testing only pls
+		// operatorController.b().onTrue(new InstantCommand(swerve::resetOdometryWidget));
 
-		//driverController.a().onTrue(new TurnToSpeaker());
-
-		driverController.a().onTrue(new InstantCommand(swerve::setAmpLock));
-		driverController.b().onTrue(new InstantCommand(swerve::setSpeakerLock));
-		driverController.rightBumper().onTrue(new InstantCommand(swerve::removeLock));
-		// operatorController.x().toggleOnTrue(Commands.runOnce(() -> new IntakeNote()).andThen(Commands.race(new NudgeNote()),Commands.waitSeconds(0.5)));
-		// operatorController.x().toggleOnTrue(new IntakeNote());
-		operatorController.b().onTrue(new InstantCommand(swerve::resetOdometryWidget));
-
-		// operatorController.a().toggleOnTrue(new GroundIntake());
-		// operatorController.pov(0).toggleOnTrue(new ShootNote());
-	
-	// 	controller.a().toggleOnTrue(new InstantCommand(() -> shooter.setFactor(1.0)))
-	// 	.toggleOnFalse(new InstantCommand(() -> shooter.setFactor(0.8)));
-	// controller.b().onTrue(new HomeShooter());
-
-	    // operatorController.y().onTrue(new SetShooterAmp(Math.toRadians(45), 0));
-		// operatorController.y().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 
-		//    new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SetShooterAmp(Math.toRadians(50), 21.27))));
+		operatorController.pov(180).toggleOnTrue(new SequentialCommandGroup(new GroundIntake(),
+		    new ParallelDeadlineGroup(new IntakeNote(), new GroundIntake().repeatedly())));
+		operatorController.pov(0).whileTrue(new ShootNote());
+		operatorController.y().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 
+		   new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SetShooterAmp(Math.toRadians(50), 21.27))));
+		operatorController.y().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 
+		   new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SetShooterAmp(Math.toRadians(30), 21.27))));
 		// operatorController.y().toggleOnTrue(new OnlyFlyWheels(30));
 
 	// //after merge make a parallel command group with turn to speaker
@@ -176,9 +168,9 @@ public class Robot extends LoggedRobot {
 			autonomousCommand.cancel();
 		}
 
-		// intake.setDefaultCommand(new HomeIntake());
-		swerve.setDefaultCommand(new DefaultDrive(false));
-		// shooter.setDefaultCommand(new HomeShooter());
+		intake.setDefaultCommand(new HomeIntake());
+		swerve.setDefaultCommand(new DefaultDrive(true));
+		shooter.setDefaultCommand(new HomeShooter());
 
 	}
 

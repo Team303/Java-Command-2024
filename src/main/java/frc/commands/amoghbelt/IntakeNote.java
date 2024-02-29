@@ -41,7 +41,7 @@ public class IntakeNote extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        Commands.waitSeconds(0.4);
+        // Commands.waitSeconds(0.4);
         belt.stopMotors();
     }
 

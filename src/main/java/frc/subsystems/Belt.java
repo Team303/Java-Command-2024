@@ -1,6 +1,12 @@
 package frc.subsystems;
 
+import static frc.robot.Robot.shooter;
+
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -9,6 +15,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotMap;
 import frc.robot.RobotMap.Intake;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -17,6 +24,9 @@ public class Belt extends SubsystemBase {
     public final TalonFX beltMotor;
 
     public final TalonFX indexerMotor;
+
+public final VelocityVoltage flywheelVoltage = new VelocityVoltage(0, 0, true, 0, 0, false, false, false);
+
 
     public final CANSparkMax centerMotor;
 
@@ -34,16 +44,30 @@ public class Belt extends SubsystemBase {
         beltMotor.setInverted(true);
 		beltMotor.setNeutralMode(NeutralModeValue.Coast);
 
+        TalonFXConfiguration flywheelConfigs = new TalonFXConfiguration();
+
+        flywheelConfigs.Slot0.kP = 0.3;
+        flywheelConfigs.Slot0.kI = 40;
+        flywheelConfigs.Slot0.kD = 0.0000;
+        flywheelConfigs.Slot0.kV = 0;
+
         centerMotor = new CANSparkMax(Intake.CENTER_ID, MotorType.kBrushless);
         // rightCenterMotor = new CANSparkMax(Intake.RIGHT_CENTER_ID, MotorType.kBrushless);
 
+        flywheelConfigs.Voltage.PeakForwardVoltage = 12;
+        flywheelConfigs.Voltage.PeakReverseVoltage = -12;
+
+        beltMotor.getConfigurator().apply(flywheelConfigs);
 
 		CurrentLimitsConfigs clc40 = new CurrentLimitsConfigs().withStatorCurrentLimit(40).withSupplyCurrentLimit(40);
 		beltMotor.getConfigurator().apply(clc40);
     }
 
     public void runBelt() {
-        beltMotor.setVoltage(12);
+
+        beltMotor.setControl(flywheelVoltage.withVelocity(-5500));
+        Logger.recordOutput("belt speed", beltMotor.getVelocity().refresh().getValueAsDouble());
+        // beltMotor.setVoltage(12);
         centerMotor.setVoltage(12);
         indexerMotor.setVoltage(10);
     }

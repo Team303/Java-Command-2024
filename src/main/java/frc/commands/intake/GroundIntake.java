@@ -39,10 +39,10 @@ public class GroundIntake extends Command {
             intake.rightPivotMotor.setVoltage(0);
     }
 
-    // @Override
-    // public boolean isFinished() {
-    //     return (intake.getAbsolutePivotAngle() > Math.toRadians(340) && intake.getAbsolutePivotAngle() < Math.toRadians(350))  || intake.getPivotPIDController().atSetpoint();
-    // }
+    @Override
+    public boolean isFinished() {
+        return (intake.getAbsolutePivotAngle() > Math.toRadians(320) && intake.getAbsolutePivotAngle() < Math.toRadians(350))  || intake.getPivotPIDController().atSetpoint();
+    }
 
     // @Override
     // public void end(boolean interrupted) {
