@@ -45,7 +45,7 @@ import frc.commands.intake.HomeAlone;
 import frc.commands.intake.HomeIntake;
 import frc.commands.amoghbelt.ShootNote;
 import frc.commands.shooter.HomeShooter;
-import frc.commands.shooter.ManualShootSpeaker;
+import frc.commands.shooter.DynamicShootSpeaker;
 import frc.commands.shooter.OnlyFlyWheels;
 import frc.commands.shooter.SetShooterAmp;
 
@@ -127,7 +127,7 @@ public class Robot extends LoggedRobot {
 	// controller.b().onTrue(new HomeShooter());
 
 	    // operatorController.y().onTrue(new SetShooterAmp(Math.toRadians(45), 0));
-		operatorController.y().toggleOnTrue(new ManualShootSpeaker(3));
+		operatorController.y().toggleOnTrue(new DynamicShootSpeaker(3));
 		// operatorController.y().toggleOnTrue(new OnlyFlyWheels(30));
 
 	// //after merge make a parallel command group with turn to speaker
