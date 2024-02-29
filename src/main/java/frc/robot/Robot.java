@@ -122,7 +122,7 @@ public class Robot extends LoggedRobot {
 		operatorController.x().toggleOnTrue(new IntakeNote());
 		operatorController.b().onTrue(new InstantCommand(swerve::resetOdometryWidget));
 
-		// operatorController.a().toggleOnTrue(new GroundIntake());
+		operatorController.a().toggleOnTrue(new GroundIntake());
 		operatorController.pov(0).toggleOnTrue(new ShootNote());
 	
 	// 	controller.a().toggleOnTrue(new InstantCommand(() -> shooter.setFactor(1.0)))
@@ -170,7 +170,7 @@ public class Robot extends LoggedRobot {
 			autonomousCommand.cancel();
 		}
 
-		// intake.setDefaultCommand(new SequentialCommandGroup(new HomeIntake(), new HomeAlone()));
+		intake.setDefaultCommand(new HomeIntake());
 		// swerve.setDefaultCommand(new DefaultDrive(true));
 		shooter.setDefaultCommand(new HomeShooter());
 

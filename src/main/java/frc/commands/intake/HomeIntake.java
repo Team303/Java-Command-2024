@@ -32,29 +32,30 @@ public class HomeIntake extends Command {
         MOTOR_OUTPUT.setDouble(voltage);
 
 
-        if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(320)) {
+        if (intake.getAbsolutePivotAngle() > Math.PI/2 && intake.getAbsolutePivotAngle() < Math.toRadians(320) && voltage > 0) {
             // System.out.println("yippee");
-            intake.rightPivotMotor.setVoltage(voltage);
+            intake.rightPivotMotor.setVoltage(0);
         } else {
             // System.out.println("boooo");
-            intake.rightPivotMotor.setVoltage(0);
+            intake.rightPivotMotor.setVoltage(voltage); // + (navX.getRate() / 360 * 1.5)); // increase voltage by 1.5 for each rpm the robot is turning
+            else 
         }
 
     }
 
 
-    @Override
-    public boolean isFinished() {
-        return (intake.getAbsolutePivotAngle() > Math.PI/2 && intake.getAbsolutePivotAngle() < Math.PI) || Robot.intake.pivotPIDController.atSetpoint();
-    }
+    // @Override
+    // public boolean isFinished() {
+    //     return (intake.getAbsolutePivotAngle() > Math.PI/2 && intake.getAbsolutePivotAngle() < Math.PI) || Robot.intake.pivotPIDController.atSetpoint();
+    // }
 
-    @Override
-    public void end(boolean interrupted) {
-        // Lock the intake
-        intake.leftPivotMotor.setVoltage(0);
-        intake.rightPivotMotor.setVoltage(0);
-        intake.pivotAlan.setPosition(0);
+    // @Override
+    // public void end(boolean interrupted) {
+    //     // Lock the intake
+    //     intake.leftPivotMotor.setVoltage(0);
+    //     intake.rightPivotMotor.setVoltage(0);
+    //     intake.pivotAlan.setPosition(0);
         
-    }
+    // }
 
 }

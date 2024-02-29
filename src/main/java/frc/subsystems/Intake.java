@@ -75,7 +75,7 @@ public class Intake extends SubsystemBase {
 		rightPivotMotor.setInverted(false);
 
 
-		TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(Math.PI/2, 
+		TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(Math.PI, 
 			Math.PI * 8); 
 			// Change: Alan's job
 

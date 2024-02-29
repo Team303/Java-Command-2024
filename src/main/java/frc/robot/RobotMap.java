@@ -120,7 +120,7 @@ public class RobotMap {
 		public static final double SIMULATION_SCALE = 0.0; // NEED TO CHANGE
 		public static final double INTAKE_SIM_LENGTH = 0.0; // NEED TO CHANGE
 
-		public static final double HOME_ANGLE = Math.toRadians(80);
+		public static final double HOME_ANGLE = Math.toRadians(100);
 		public static final double GROUND_ANGLE = Math.toRadians(345);// GET ANGLE FROM JOHN
 
 		public static final double GEAR_RATIO = ((double)1/25); //GET FROM SOMEONE
