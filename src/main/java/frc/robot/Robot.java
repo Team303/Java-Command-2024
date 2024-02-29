@@ -47,6 +47,8 @@ import frc.commands.intake.HomeIntake;
 import frc.commands.intake.MoveVolts;
 import frc.commands.amoghbelt.ShootNote;
 import frc.commands.shooter.ManualShootSpeaker;
+import frc.commands.shooter.HomeShooter;
+import frc.commands.shooter.SetShooterAmp;
 
 
 
@@ -66,7 +68,7 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		photonvision = null; //new PhotonvisionModule();
 		swerve = new DriveSubsystem();
-		intake = new Intake();
+		intake = null;
 		belt = new Belt();
 		shooter = new Shooter();
 		swerve.resetOdometry();
@@ -116,20 +118,9 @@ public class Robot extends LoggedRobot {
 		driverController.a().onTrue(new InstantCommand(swerve::setAmpLock));
 		driverController.b().onTrue(new InstantCommand(swerve::setSpeakerLock));
 		driverController.rightBumper().onTrue(new InstantCommand(swerve::removeLock));
-		// operatorController.x().toggleOnTrue(Commands.runOnce(() -> new IntakeNote()).andThen(Commands.race(new NudgeNote()),Commands.waitSeconds(0.5)));
 		operatorController.x().toggleOnTrue(new SequentialCommandGroup(new IntakeNote(), new NudgeNote()));
-		// operatorController.y().toggleOnTrue(new GroundIntake());
-		// operatorController.y().toggleOnTrue(new MoveVolts(12));
-		operatorController.y().toggleOnTrue(new GroundIntake());
 		operatorController.pov(0).whileTrue(new ShootNote());
-	
-	// 	controller.a().toggleOnTrue(new InstantCommand(() -> shooter.setFactor(1.0)))
-	// 	.toggleOnFalse(new InstantCommand(() -> shooter.setFactor(0.8)));
-	// controller.b().onTrue(new HomeShooter());
-	// controller.y().onTrue(new SetShooterAmp(Math.toRadians(90), 21.27));
-
-	// //after merge make a parallel command group with turn to speaker
-	// controller.x().onTrue(new ManualShootSpeaker(10));
+		operatorController.y().toggleOnTrue(new SequentialCommandGroup(new SetShooterAmp(Math.toRadians(45), 0), new SetShooterAmp(Math.toRadians(45), 5)));
 	}
 
   	/* Currently running auto routine */
@@ -166,9 +157,9 @@ public class Robot extends LoggedRobot {
 		}
 
 		// intake.setDefaultCommand(new SequentialCommandGroup(new HomeIntake(), new HomeAlone()));
-		intake.setDefaultCommand(new SequentialCommandGroup(new HomeIntake(), new HomeAlone()));
+		// intake.setDefaultCommand(new SequentialCommandGroup(new HomeIntake(), new HomeAlone()));
 		swerve.setDefaultCommand(new DefaultDrive(true));
-		shooter.setDefaultCommand(new ManualShootSpeaker(10));
+		shooter.setDefaultCommand(new HomeShooter());
 
 	}
 

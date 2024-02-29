@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.PIDController;
+import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -35,10 +36,12 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class Shooter extends SubsystemBase {
@@ -134,6 +137,9 @@ public class Shooter extends SubsystemBase {
         leftFlywheelMotor.getConfigurator().apply(flywheelConfigs);
         rightFlywheelMotor.getConfigurator().apply(flywheelConfigs);
 
+        MotorOutputConfigs aritrabbc = new MotorOutputConfigs();
+        aritrabbc.withInverted(InvertedValue.Clockwise_Positive);
+        
 
         //Angle Initalization
         leftAngleMotor = new TalonFX(RobotMap.Shooter.LEFT_ANGLE_MOTOR_ID);
@@ -152,7 +158,7 @@ public class Shooter extends SubsystemBase {
 
         // go up to 90 degrees in one second 1/4 second to accelerate to max speed
         TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(Math.PI/2, 
-            Math.PI * 2);
+            Math.PI * 4);
 
         anglePIDController = new ProfiledPIDController(RobotMap.Shooter.ANGLE_PID_CONTROLLER_P, 
                                                        RobotMap.Shooter.ANGLE_PID_CONTROLLER_I,
@@ -160,7 +166,7 @@ public class Shooter extends SubsystemBase {
                                                        pidConstraints);
 
         anglePIDController.enableContinuousInput(0, 2 * Math.PI);
-        anglePIDController.setTolerance(2.0);
+        anglePIDController.setTolerance(Math.toRadians(2.0));
     
         angleEncoder = new DutyCycleEncoder(RobotMap.Shooter.ANGLE_ENCODER_ID);
 
@@ -175,11 +181,15 @@ public class Shooter extends SubsystemBase {
         CurrentLimitsConfigs clc40 = new CurrentLimitsConfigs().withStatorCurrentLimit(40).withSupplyCurrentLimit(40);
         //CurrentLimitsConfigs clc30 = new CurrentLimitsConfigs().withStatorCurrentLimit(30).withSupplyCurrentLimit(30);
         
+
         leftFlywheelMotor.getConfigurator().apply(clc40);
         rightFlywheelMotor.getConfigurator().apply(clc40);
 
         leftAngleMotor.getConfigurator().apply(clc40);
+        leftAngleMotor.getConfigurator().apply(aritrabbc);
         rightAngleMotor.getConfigurator().apply(clc40);
+
+        anglePIDController.reset(getAbsoluteShooterAngle());
 
     }
 
@@ -207,18 +217,32 @@ public class Shooter extends SubsystemBase {
         return angleOutput + angleFeedforward;
     }
 
+    public boolean atSetpoint(){
+        return anglePIDController.atSetpoint();
+    }
+
+    private double normalizeAngle(double angleRad) {
+		angleRad %= Math.PI * 2;
+
+		if (angleRad < 0)
+			angleRad += Math.PI * 2;
+		
+		return angleRad;
+	}
+
     public double getAbsoluteShooterAngle() {
 
         //get angular position in rad
 
-        return angleEncoder.getAbsolutePosition() * (Math.PI/180);
+        return normalizeAngle(angleEncoder.getAbsolutePosition() * 2 * Math.PI - Math.toRadians(140));
+
     }
 
     public double getAngleMotorVelocity() {
 
         //get angular velocity in rad/sec
 
-        return leftAngleMotor.getVelocity().refresh().getValueAsDouble() / RobotMap.Shooter.ANGLE_CONVERSION_FACTOR * 2 * Math.PI;
+        return leftAngleMotor.getVelocity().refresh().getValueAsDouble() * RobotMap.Shooter.ANGLE_CONVERSION_FACTOR * 2 * Math.PI;
     }
 
 	public boolean atHardLimit() {
@@ -274,7 +298,7 @@ public class Shooter extends SubsystemBase {
         RPM_DIFF_FACTOR_ENTRY.setDouble(diffFactor);
  
         //Angle Entries
-        ACTUAL_SHOOTER_ANGLE_ENTRY.setDouble(Math.toDegrees(getAbsoluteShooterAngle()));
+        ACTUAL_SHOOTER_ANGLE_ENTRY.setDouble(getAbsoluteShooterAngle() * (180/Math.PI));
 
         //Limit Entries
         ANGLE_LIMIT_SWITCH_STATUS_ENTRY.setBoolean(atHardLimit());

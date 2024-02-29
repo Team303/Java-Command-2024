@@ -69,16 +69,16 @@ public class RobotMap {
 		public static final int RIGHT_FLYWHEEL_MOTOR_ID = 17; // NEED TO CHANGE
 
 		public static final double ANGLE_FEED_FORWARD_KS = 0.0; // NEED TO CHANGE
-		public static final double ANGLE_FEED_FORWARD_KG = 0.0; // NEED TO CHANGE
-		public static final double ANGLE_FEED_FORWARD_KV = 0.0; // NEED TO CHANGE
-		public static final double ANGLE_FEED_FORWARD_KA = 0.0; // NEED TO CHANGE
+		public static final double ANGLE_FEED_FORWARD_KG = 0.19; // NEED TO CHANGE
+		public static final double ANGLE_FEED_FORWARD_KV = 0.69; // NEED TO CHANGE
+		public static final double ANGLE_FEED_FORWARD_KA = 0.00; // NEED TO CHANGE
 		public static final double ANGLE_FEED_FORWARD_VEL = 2.0; // NEED TO TWEAK
 
 		public static final double FLYWHEEL_FEED_FORWARD_KS = 0.0; // NEED TO CHANGE
 		public static final double FLYWHEEL_FEED_FORWARD_KV = 0.0; // NEED TO CHANGE
 		public static final double FLYWHEEL_FEED_FORWARD_KA = 0.0; // NEED TO CHANGE
 
-		public static final double ANGLE_PID_CONTROLLER_P = 0.0; // NEED TO CHANGE
+		public static final double ANGLE_PID_CONTROLLER_P = 5; // NEED TO CHANGE
 		public static final double ANGLE_PID_CONTROLLER_I = 0.0; // NEED TO CHANGE
 		public static final double ANGLE_PID_CONTROLLER_D = 0.0; // NEED TO CHANGE
 
@@ -86,7 +86,7 @@ public class RobotMap {
 
 		public static final int ANGLE_ENCODER_ID = 8; //wtf is this
 
-		public static final double ANGLE_CONVERSION_FACTOR = (58.0 / 12.0) * (58.0 / 16.0) * 2 * 2;
+		public static final double ANGLE_CONVERSION_FACTOR = 1/35.04;
 
 	}
 
