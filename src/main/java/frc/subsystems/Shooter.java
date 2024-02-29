@@ -193,7 +193,7 @@ public class Shooter extends SubsystemBase {
         leftAngleMotor.getConfigurator().apply(aritrabbc);
         rightAngleMotor.getConfigurator().apply(clc40);
 
-        anglePIDController.reset(getAbsoluteShooterAngle());
+        anglePIDController.reset(0);
 
     }
 
