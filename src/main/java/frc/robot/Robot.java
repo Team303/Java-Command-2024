@@ -122,13 +122,24 @@ public class Robot extends LoggedRobot {
 		//for testing only pls
 		// operatorController.b().onTrue(new InstantCommand(swerve::resetOdometryWidget));
 
-		operatorController.pov(180).toggleOnTrue(new SequentialCommandGroup(new GroundIntake(),
-		    new ParallelDeadlineGroup(new IntakeNote(), new GroundIntake().repeatedly())));
-		operatorController.pov(0).whileTrue(new ShootNote());
+		// operatorController.pov(180).toggleOnTrue(new SequentialCommandGroup(new GroundIntake(),
+		//     new ParallelDeadlineGroup(new IntakeNote(), new GroundIntake().repeatedly())));
+
+        operatorController.pov(180).toggleOnTrue(new IntakeNote());
+
+		// operatorController.pov(0).whileTrue(new ShootNote());
 		operatorController.y().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 
-		   new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SetShooterAmp(Math.toRadians(50), 21.27))));
-		operatorController.y().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 
-		   new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SetShooterAmp(Math.toRadians(30), 21.27))));
+		   new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SequentialCommandGroup(new SetShooterAmp(Math.toRadians(50), 21.27), 
+		   new ParallelCommandGroup(new ShootNote(), new SetShooterAmp(Math.toRadians(50), 21.27).repeatedly())  
+		   ))));
+
+		operatorController.a().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 
+		   new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SequentialCommandGroup(new SetShooterAmp(Math.toRadians(30), 21.27), 
+		   new ParallelCommandGroup(new ShootNote(), new SetShooterAmp(Math.toRadians(30), 21.27).repeatedly())  
+		   ))));
+
+		// operatorController.a().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 
+		//    new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SetShooterAmp(Math.toRadians(30), 21.27))));
 		// operatorController.y().toggleOnTrue(new OnlyFlyWheels(30));
 
 	// //after merge make a parallel command group with turn to speaker
