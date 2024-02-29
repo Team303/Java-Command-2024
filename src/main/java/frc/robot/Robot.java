@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.autonomous.Autonomous;
 import frc.autonomous.AutonomousProgram;
 import frc.commands.amoghbelt.IntakeNote;
-import frc.commands.amoghbelt.NudgeNote;
 import frc.commands.drive.DefaultDrive;
 import frc.commands.drive.DriveWait;
 import frc.commands.drive.TurnToSpeaker;
@@ -44,10 +43,10 @@ import frc.subsystems.Belt;
 import frc.commands.intake.GroundIntake;
 import frc.commands.intake.HomeAlone;
 import frc.commands.intake.HomeIntake;
-import frc.commands.intake.MoveVolts;
 import frc.commands.amoghbelt.ShootNote;
-import frc.commands.shooter.ManualShootSpeaker;
 import frc.commands.shooter.HomeShooter;
+import frc.commands.shooter.ManualShootSpeaker;
+import frc.commands.shooter.OnlyFlyWheels;
 import frc.commands.shooter.SetShooterAmp;
 
 
@@ -68,7 +67,7 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		photonvision = null; //new PhotonvisionModule();
 		swerve = new DriveSubsystem();
-		intake = null;
+		intake = new Intake();
 		belt = new Belt();
 		shooter = new Shooter();
 		swerve.resetOdometry();
@@ -118,9 +117,24 @@ public class Robot extends LoggedRobot {
 		driverController.a().onTrue(new InstantCommand(swerve::setAmpLock));
 		driverController.b().onTrue(new InstantCommand(swerve::setSpeakerLock));
 		driverController.rightBumper().onTrue(new InstantCommand(swerve::removeLock));
-		operatorController.x().toggleOnTrue(new SequentialCommandGroup(new IntakeNote(), new NudgeNote()));
-		operatorController.pov(0).whileTrue(new ShootNote());
-		operatorController.y().toggleOnTrue(new SequentialCommandGroup(new SetShooterAmp(Math.toRadians(45), 0), new SetShooterAmp(Math.toRadians(45), 5)));
+		// operatorController.x().toggleOnTrue(Commands.runOnce(() -> new IntakeNote()).andThen(Commands.race(new NudgeNote()),Commands.waitSeconds(0.5)));
+		operatorController.x().toggleOnTrue(new IntakeNote());
+		// operatorController.y().toggleOnTrue(new GroundIntake());
+		operatorController.pov(0).toggleOnTrue(new ShootNote());
+	
+	// 	controller.a().toggleOnTrue(new InstantCommand(() -> shooter.setFactor(1.0)))
+	// 	.toggleOnFalse(new InstantCommand(() -> shooter.setFactor(0.8)));
+	// controller.b().onTrue(new HomeShooter());
+
+	    // operatorController.y().onTrue(
+		// 	new SequentialCommandGroup(
+		// 		new SetShooterAmp(Math.toRadians(45), 0),
+		// 		new SetShooterAmp(Math.toRadians(45), 21.27).repeatedly()
+		// 	));
+		operatorController.y().toggleOnTrue(new OnlyFlyWheels(30));
+
+	// //after merge make a parallel command group with turn to speaker
+	// controller.x().onTrue(new ManualShootSpeaker(10));
 	}
 
   	/* Currently running auto routine */
@@ -156,10 +170,9 @@ public class Robot extends LoggedRobot {
 			autonomousCommand.cancel();
 		}
 
-		// intake.setDefaultCommand(new SequentialCommandGroup(new HomeIntake(), new HomeAlone()));
-		// intake.setDefaultCommand(new SequentialCommandGroup(new HomeIntake(), new HomeAlone()));
-		swerve.setDefaultCommand(new DefaultDrive(true));
-		shooter.setDefaultCommand(new HomeShooter());
+		intake.setDefaultCommand(new SequentialCommandGroup(new HomeIntake(), new HomeAlone()));
+		// swerve.setDefaultCommand(new DefaultDrive(true));
+		// shooter.setDefaultCommand(new HomeShooter());
 
 	}
 

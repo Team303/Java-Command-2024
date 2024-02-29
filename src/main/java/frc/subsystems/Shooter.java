@@ -137,6 +137,10 @@ public class Shooter extends SubsystemBase {
         leftFlywheelMotor.getConfigurator().apply(flywheelConfigs);
         rightFlywheelMotor.getConfigurator().apply(flywheelConfigs);
 
+        MotorOutputConfigs alanbbc = new MotorOutputConfigs();
+        alanbbc.withInverted(InvertedValue.Clockwise_Positive);
+        rightFlywheelMotor.getConfigurator().apply(alanbbc);
+
         MotorOutputConfigs aritrabbc = new MotorOutputConfigs();
         aritrabbc.withInverted(InvertedValue.Clockwise_Positive);
         

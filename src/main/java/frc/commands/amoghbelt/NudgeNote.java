@@ -30,7 +30,7 @@ public class NudgeNote extends Command {
 
     @Override
     public boolean isFinished() {
-        return belt.indexerMotor.getPosition().refresh().getValueAsDouble() - start > 6;
+        return belt.indexerMotor.getPosition().refresh().getValueAsDouble() - start > 7;
     }
 
     @Override
