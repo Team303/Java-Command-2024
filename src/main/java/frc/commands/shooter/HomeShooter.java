@@ -20,22 +20,22 @@ public class HomeShooter extends Command {
         shooter.leftFlywheelMotor.setVoltage(0);
         shooter.rightAngleMotor.setVoltage(0);
 
-        double voltage = shooter.calculateAngleSpeed(0);
+        double voltage = shooter.calculateAngleSpeed(Math.toRadians(7));
 
-        System.out.println("Voltage Home: " + shooter.calculateAngleSpeed(0));
+        System.out.println("Voltage Home: " + voltage);
 
-        shooter.leftAngleMotor.setVoltage(shooter.calculateAngleSpeed(0));
+        shooter.leftAngleMotor.setVoltage(voltage);
     } 
 
-    @Override
-    public boolean isFinished() {
-        return shooter.anglePIDController.atSetpoint() || (shooter.getAbsoluteShooterAngle() < Math.toRadians(4) || shooter.getAbsoluteShooterAngle() > Math.toRadians(270));
-    }
+    // @Override
+    // public boolean isFinished() {
+    //     return shooter.anglePIDController.atSetpoint() || shooter.getAbsoluteShooterAngle() > Math.toRadians(270);
+    // }
 
-    @Override
-    public void end(boolean interrupted) {
-        shooter.leftAngleMotor.setVoltage(0);
-        shooter.rightAngleMotor.setVoltage(0);
-    }
+    // @Override
+    // public void end(boolean interrupted) {
+    //     shooter.leftAngleMotor.setVoltage(0);
+    //     shooter.rightAngleMotor.setVoltage(0);
+    // }
 
 }

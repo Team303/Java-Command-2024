@@ -74,8 +74,8 @@ public class Shooter extends SubsystemBase {
 
 
     //Interpolation Table 1: 21.27 meters per second 💀
-    public static double[] interpolationAngles21 = {1.060, 0.961, 0.876, 0.802, 0.738, 0.683, 0.635, 0.594, 0.559, 0.527, 0.500,  //1.00 --> 3.750
-                                                    0.476, 0.454, 0.435, 0.419, 0.404, 0.390, 0.378, 0.367, 0.357, 0.349, 0.341,  //3.00 --> 5.750     
+    public static double[] interpolationAngles21 = {0.95, 0.95, 0.876, 0.802, 0.738, 0.683, 0.635, 0.594, 0.559, 0.527, 0.500,  //1.00 --> 3.750
+                                                    0.476, 0.454, 0.435, 0.419, 0.404, 0.390, 0.378, 0.367, 0.357, 0.349, 0.341,  //4.00 --> 5.750     
                                                     0.333, 0.327, 0.321, 0.316, 0.311, 0.307, 0.303, 0.299, 0.296, 0.293, 0.291,  //6.00 --> 8.750
                                                     0.289, 0.287, 0.285, 0.284, 0.282, 0.281, 0.280, 0.280, 0.279, 0.279, 0.278,  //9.00 --> 11.75
                                                     0.278};                                                                       //12.0 --> 12.00
@@ -213,11 +213,11 @@ public class Shooter extends SubsystemBase {
 
 
     //Angle Functions
-    public double calculateAngleSpeed(double angle) {
+    public double calculateAngleSpeed(double angleRad) {
 
 
-        final double angleOutput = anglePIDController.calculate(getAbsoluteShooterAngle(), angle);
-        final double angleFeedforward = angleFeedForward.calculate(angle, anglePIDController.getSetpoint().velocity);
+        final double angleOutput = anglePIDController.calculate(getAbsoluteShooterAngle(), angleRad);
+        final double angleFeedforward = angleFeedForward.calculate(angleRad, anglePIDController.getSetpoint().velocity);
         return angleOutput + angleFeedforward;
     }
 

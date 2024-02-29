@@ -126,12 +126,9 @@ public class Robot extends LoggedRobot {
 	// 	.toggleOnFalse(new InstantCommand(() -> shooter.setFactor(0.8)));
 	// controller.b().onTrue(new HomeShooter());
 
-	    // operatorController.y().onTrue(
-		// 	new SequentialCommandGroup(
-		// 		new SetShooterAmp(Math.toRadians(45), 0),
-		// 		new SetShooterAmp(Math.toRadians(45), 21.27).repeatedly()
-		// 	));
-		operatorController.y().toggleOnTrue(new OnlyFlyWheels(30));
+	    // operatorController.y().onTrue(new SetShooterAmp(Math.toRadians(45), 0));
+		operatorController.y().toggleOnTrue(new ManualShootSpeaker(3));
+		// operatorController.y().toggleOnTrue(new OnlyFlyWheels(30));
 
 	// //after merge make a parallel command group with turn to speaker
 	// controller.x().onTrue(new ManualShootSpeaker(10));
@@ -172,7 +169,7 @@ public class Robot extends LoggedRobot {
 
 		intake.setDefaultCommand(new SequentialCommandGroup(new HomeIntake(), new HomeAlone()));
 		// swerve.setDefaultCommand(new DefaultDrive(true));
-		// shooter.setDefaultCommand(new HomeShooter());
+		shooter.setDefaultCommand(new HomeShooter());
 
 	}
 

@@ -55,7 +55,7 @@ public class Belt extends SubsystemBase {
     }
 
     public void shoot() {
-        indexerMotor.setVoltage(10);
+        indexerMotor.setVoltage(12);
     }
 
     public void stopMotors() {

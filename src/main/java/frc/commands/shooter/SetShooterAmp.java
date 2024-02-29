@@ -32,25 +32,33 @@ public class SetShooterAmp extends Command {
 
         System.out.println("DesiredVelocityLeft: "+((desiredVelocityLeft / (2 * Math.PI * 0.0508))));
 
-        shooter.leftFlywheelMotor.setControl(shooter.flywheelVoltageLeft.withVelocity((desiredVelocityLeft / (2 * Math.PI * 0.0508))));
-        shooter.rightFlywheelMotor.setControl(shooter.flywheelVoltageRight.withVelocity((desiredVelocityRight / (2 * Math.PI * 0.0508))));
-
         double voltage = shooter.calculateAngleSpeed(desiredAngle);
 
         System.out.println("Voltage:  " + voltage);
 
-        shooter.leftAngleMotor.setVoltage(voltage);
+        if (shooter.getAbsoluteShooterAngle() > Math.PI && shooter.getAbsoluteShooterAngle() < Math.toRadians(320) && voltage > 0) {
+            shooter.leftAngleMotor.setVoltage(0);
+        } else {
+            shooter.leftAngleMotor.setVoltage(voltage);
+        }
+
+
+
+        shooter.leftFlywheelMotor.setControl(shooter.flywheelVoltageLeft.withVelocity((desiredVelocityLeft / (2 * Math.PI * 0.0508))));
+        shooter.rightFlywheelMotor.setControl(shooter.flywheelVoltageRight.withVelocity((desiredVelocityRight / (2 * Math.PI * 0.0508))));
+
+
 
     }
 
-    @Override
-    public boolean isFinished() {
-        return shooter.atSetpoint();
-    }
+    // @Override
+    // public boolean isFinished() {
+    //     return shooter.atSetpoint();
+    // }
 
-    @Override
-    public void end(boolean interreupted) {
-        shooter.leftAngleMotor.setVoltage(0);
-    }
+    // @Override
+    // public void end(boolean interreupted) {
+    //     shooter.leftAngleMotor.setVoltage(0);
+    // }
 
 }
