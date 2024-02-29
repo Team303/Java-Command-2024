@@ -41,8 +41,8 @@ import frc.modules.PhotonvisionModule;
 import frc.subsystems.Intake;
 import frc.subsystems.Belt;
 import frc.commands.intake.GroundIntake;
-import frc.commands.intake.HomeAlone;
 import frc.commands.intake.HomeIntake;
+import frc.commands.intake.OutwardIntake;
 import frc.commands.amoghbelt.ShootNote;
 import frc.commands.shooter.HomeShooter;
 import frc.commands.shooter.ManualShootSpeaker;
@@ -68,9 +68,9 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		photonvision = null; //new PhotonvisionModule();
 		swerve = new DriveSubsystem();
-		intake = new Intake();
-		belt = new Belt();
-		shooter = new Shooter();
+		intake = null; //new Intake();
+		belt = null; //new Belt();
+		shooter = null; //new Shooter();
 		swerve.resetOdometry();
 
 		NamedCommands.registerCommand("PickUpNote", new InstantCommand(() -> {System.out.println("picked up note!");}));
@@ -103,6 +103,11 @@ public class Robot extends LoggedRobot {
 	}
 
 	@Override
+	public void disabledInit() {
+		swerve.periodicReset();
+	}
+
+	@Override
 	public void simulationInit() {
 		configureButtonBindings();
 	}
@@ -119,18 +124,19 @@ public class Robot extends LoggedRobot {
 		driverController.b().onTrue(new InstantCommand(swerve::setSpeakerLock));
 		driverController.rightBumper().onTrue(new InstantCommand(swerve::removeLock));
 		// operatorController.x().toggleOnTrue(Commands.runOnce(() -> new IntakeNote()).andThen(Commands.race(new NudgeNote()),Commands.waitSeconds(0.5)));
-		operatorController.x().toggleOnTrue(new IntakeNote());
+		// operatorController.x().toggleOnTrue(new IntakeNote());
 		operatorController.b().onTrue(new InstantCommand(swerve::resetOdometryWidget));
 
-		operatorController.a().toggleOnTrue(new GroundIntake());
-		operatorController.pov(0).toggleOnTrue(new ShootNote());
+		// operatorController.a().toggleOnTrue(new GroundIntake());
+		// operatorController.pov(0).toggleOnTrue(new ShootNote());
 	
 	// 	controller.a().toggleOnTrue(new InstantCommand(() -> shooter.setFactor(1.0)))
 	// 	.toggleOnFalse(new InstantCommand(() -> shooter.setFactor(0.8)));
 	// controller.b().onTrue(new HomeShooter());
 
 	    // operatorController.y().onTrue(new SetShooterAmp(Math.toRadians(45), 0));
-		operatorController.y().toggleOnTrue(new DynamicShootSpeaker());
+		// operatorController.y().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 
+		//    new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SetShooterAmp(Math.toRadians(50), 21.27))));
 		// operatorController.y().toggleOnTrue(new OnlyFlyWheels(30));
 
 	// //after merge make a parallel command group with turn to speaker
@@ -147,7 +153,7 @@ public class Robot extends LoggedRobot {
 		Command autonomousRoutine = AutonomousProgram.constructSelectedRoutine();
 
 		// Home the arm while waiting for the drivebase delay
-		Command delay = new ParallelCommandGroup(/*new DriveWait(AutonomousProgram.getAutonomousDelay())*/);
+		Command delay = new ParallelCommandGroup(new DriveWait(AutonomousProgram.getAutonomousDelay()));
 
 		// Schedule the selected autonomous command group
 		if (autonomousRoutine != null) {
@@ -170,9 +176,9 @@ public class Robot extends LoggedRobot {
 			autonomousCommand.cancel();
 		}
 
-		intake.setDefaultCommand(new HomeIntake());
-		// swerve.setDefaultCommand(new DefaultDrive(true));
-		shooter.setDefaultCommand(new HomeShooter());
+		// intake.setDefaultCommand(new HomeIntake());
+		swerve.setDefaultCommand(new DefaultDrive(false));
+		// shooter.setDefaultCommand(new HomeShooter());
 
 	}
 

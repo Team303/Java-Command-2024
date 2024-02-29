@@ -243,12 +243,18 @@ public class SwerveModule {
   double resetIteration = 0;
 
   public void periodicReset() {
-    if (Math.abs(turningNeoEncoder.getVelocity())
-            < ENCODER_RESET_MAX_ANGULAR_VELOCITY && ++resetIteration >= ENCODER_RESET_ITERATIONS) {
-        resetIteration = 0;
-        System.out.println("resetting positions to CANCoders");
-        double absoluteAngle = normalizeAngle(getPosition().angle.getRadians());    
-        turningNeoEncoder.setPosition(absoluteAngle);
+    // System.out.println("resetIteration: " + resetIteration);
+    // System.out.println("turning velocity: " + turningNeoEncoder.getVelocity());
+    // System.out.println("max vel: " + ENCODER_RESET_MAX_ANGULAR_VELOCITY);
+    if (Math.abs(turningNeoEncoder.getVelocity()) 
+            < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
+            
+        if(++resetIteration >= ENCODER_RESET_ITERATIONS) {
+          resetIteration = 0;
+          System.out.println("resetting positions to CANCoders");
+          double absoluteAngle = normalizeAngle(getPosition().angle.getRadians());    
+          turningNeoEncoder.setPosition(absoluteAngle);
+        }
     } else {
       resetIteration = 0;
     }
@@ -282,9 +288,9 @@ public class SwerveModule {
 
     // Logger.recordOutput("desired drive velocity", state.speedMetersPerSecond / (2* Math.PI*kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR));
 
-    // driveMotor.setControl(voltageVelocityDriveControl.withVelocity(state.speedMetersPerSecond / (2* Math.PI*kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR)).withAcceleration(10));
+    driveMotor.setControl(voltageVelocityDriveControl.withVelocity(state.speedMetersPerSecond / (2* Math.PI*kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR)).withAcceleration(10));
 
-    // turningMotor.getPIDController().setReference(normalizeAngle2(state.angle.getRadians()), CANSparkMax.ControlType.kPosition);
+    turningMotor.getPIDController().setReference(normalizeAngle2(state.angle.getRadians()), CANSparkMax.ControlType.kPosition);
     
   }
 }

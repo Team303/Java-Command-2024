@@ -214,7 +214,8 @@ public class Shooter extends SubsystemBase {
 
     //Angle Functions
     public double calculateAngleSpeed(double angleRad) {
-
+        if (angleRad > Math.PI * 2)
+            throw new IllegalArgumentException("Radians  bitch");
 
         final double angleOutput = anglePIDController.calculate(getAbsoluteShooterAngle(), angleRad);
         final double angleFeedforward = angleFeedForward.calculate(angleRad, anglePIDController.getSetpoint().velocity);

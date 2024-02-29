@@ -636,7 +636,7 @@ public ChassisSpeeds getRobotRelativeSpeeds() {
 
   }
 
-  private void periodicReset() {
+  public void periodicReset() {
     frontLeft.periodicReset();
     frontRight.periodicReset();
     backLeft.periodicReset();
