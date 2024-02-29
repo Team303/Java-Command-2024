@@ -5,6 +5,9 @@ import frc.robot.Robot;
 import frc.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import static frc.robot.Robot.shooter;
+
+import com.ctre.phoenix6.controls.VelocityVoltage;
+
 import edu.wpi.first.wpilibj.Timer;
 
 
@@ -17,14 +20,19 @@ public class HomeShooter extends Command {
     public void execute() {
 
 
-        shooter.leftFlywheelMotor.setVoltage(3);
-        shooter.rightFlywheelMotor.setVoltage(3);
+        shooter.leftFlywheelMotor.setVoltage(0);
+        shooter.rightFlywheelMotor.setVoltage(0);
 
         double voltage = shooter.calculateAngleSpeed(Math.toRadians(7));
 
         System.out.println("Voltage Home: " + voltage);
 
-        shooter.leftAngleMotor.setVoltage(voltage);
+        // if (Math.abs(shooter.getAbsoluteShooterAngle() - Math.toRadians(7)) < Math.toRadians(4)) {
+        //     shooter.leftAngleMotor.setControl(new VelocityVoltage(0));
+        //     System.out.println("close enough!!!");
+        // } else {
+           shooter.leftAngleMotor.setVoltage(voltage);
+        // }
     } 
 
     // @Override

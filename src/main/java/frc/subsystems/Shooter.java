@@ -146,7 +146,7 @@ public class Shooter extends SubsystemBase {
 
         TalonFXConfiguration angleConfigs = new TalonFXConfiguration();
 
-        angleConfigs.Slot0.kP = 0.3;
+        angleConfigs.Slot0.kP = 0.05;
         angleConfigs.Slot0.kI = 0;
         angleConfigs.Slot0.kD = 0.0000;
         angleConfigs.Slot0.kV = 0;
@@ -310,6 +310,8 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
         //Flywheel Entries
+
+        Logger.recordOutput("left angle position", getAbsoluteShooterAngle() * (180/Math.PI));
 
         //scale by 60 for rpm
         ACTUAL_LEFT_RPM_ENTRY.setDouble(-getVelocitySpeedLeft() * 60);

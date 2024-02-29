@@ -143,8 +143,8 @@ public class SwerveModule {
     TalonFXConfiguration configs = new TalonFXConfiguration();
     
     configs.Slot0.kP = 0.1; // An error of 1 rotation per second results in 2V output
-    configs.Slot0.kI = 0.5; // An error of 1 rotation per second increases output by 0.5V every second
-    configs.Slot0.kD = 0.0001; // A change of 1 rotation per second squared results in 0.01 volts output
+    configs.Slot0.kI = 0; // An error of 1 rotation per second increases output by 0.5V every second
+    configs.Slot0.kD = 0.; // A change of 1 rotation per second squared results in 0.01 volts output
     configs.Slot0.kV = 0.12; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / Rotation per second
     // Peak output of 8 volts
     configs.Voltage.PeakForwardVoltage = 12;
@@ -154,7 +154,7 @@ public class SwerveModule {
 
     m_turnPidController = turningMotor.getPIDController();
 
-    m_turnPidController.setP(2);
+    m_turnPidController.setP(3);
     m_turnPidController.setI(0);
     m_turnPidController.setD(0);
     m_turnPidController.setFF(0.01);

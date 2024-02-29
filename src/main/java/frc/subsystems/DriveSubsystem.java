@@ -88,10 +88,10 @@ public class DriveSubsystem extends SubsystemBase {
   private final Translation2d backLeftLocation = new Translation2d(-0.3302, 0.3302);
   private final Translation2d backRightLocation = new Translation2d(-0.3302, -0.3302);
 
-  private final SwerveModule frontLeft;
-  private final SwerveModule frontRight;
-  private final SwerveModule backLeft;
-  private final SwerveModule backRight;
+  public final SwerveModule frontLeft;
+  public final SwerveModule frontRight;
+  public final SwerveModule backLeft;
+  public final SwerveModule backRight;
   // private final SwerveDriveOdometry odometry;
   private final PIDController driftCorrectionPid = new PIDController(0.12, 0, 0);
   private final PIDController speakerAlignPid = new PIDController(0.5, 0, 0);

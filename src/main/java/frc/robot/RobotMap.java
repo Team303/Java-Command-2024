@@ -68,8 +68,8 @@ public class RobotMap {
 		public static final int LEFT_FLYWHEEL_MOTOR_ID = 16; // NEED TO CHANGE
 		public static final int RIGHT_FLYWHEEL_MOTOR_ID = 17; // NEED TO CHANGE
 
-		public static final double ANGLE_FEED_FORWARD_KS = 0.0; // NEED TO CHANGE
-		public static final double ANGLE_FEED_FORWARD_KG = 0.19; // NEED TO CHANGE
+		public static final double ANGLE_FEED_FORWARD_KS = 0.0001; // NEED TO CHANGE
+		public static final double ANGLE_FEED_FORWARD_KG = 0.25; // NEED TO CHANGE
 		public static final double ANGLE_FEED_FORWARD_KV = 0.69; // NEED TO CHANGE
 		public static final double ANGLE_FEED_FORWARD_KA = 0.00; // NEED TO CHANGE
 		public static final double ANGLE_FEED_FORWARD_VEL = 2.0; // NEED TO TWEAK
@@ -120,7 +120,7 @@ public class RobotMap {
 		public static final double SIMULATION_SCALE = 0.0; // NEED TO CHANGE
 		public static final double INTAKE_SIM_LENGTH = 0.0; // NEED TO CHANGE
 
-		public static final double HOME_ANGLE = Math.toRadians(100);
+		public static final double HOME_ANGLE = Math.toRadians(95);
 		public static final double GROUND_ANGLE = Math.toRadians(345);// GET ANGLE FROM JOHN
 
 		public static final double GEAR_RATIO = ((double)1/25); //GET FROM SOMEONE

@@ -36,7 +36,8 @@ public class HomeIntake extends Command {
             intake.rightPivotMotor.setVoltage(0);
         } else {
             // System.out.println("boooo");
-            intake.rightPivotMotor.setVoltage(voltage + (Robot.navX.getRate() / 360 * 2)); // increase voltage by 1.5 for each rpm the robot is turning
+            double percentPower = (1-(Robot.driverController.getLeftTriggerAxis()*0.7));
+            intake.rightPivotMotor.setVoltage(voltage + (Robot.driverController.getLeftY() * percentPower * -0.7) + Math.abs(Robot.driverController.getRightX() * percentPower * 1.2)); // increase voltage by 1.5 for each rpm the robot is turning
         }
 
     }
