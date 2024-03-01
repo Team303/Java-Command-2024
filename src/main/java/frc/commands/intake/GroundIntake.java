@@ -2,12 +2,11 @@
 package frc.commands.intake;
 
 import static frc.robot.Robot.intake;
-import static frc.robot.Robot.belt;
 import static frc.subsystems.Intake.DESIRED_PIVOT_ANGLE_ENTRY;
+import static frc.subsystems.Intake.MOTOR_OUTPUT;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotMap;
-import static frc.subsystems.Intake.MOTOR_OUTPUT;
 
 public class GroundIntake extends Command {
 
@@ -30,25 +29,25 @@ public class GroundIntake extends Command {
         System.out.println("Voltage: " + voltage);
         MOTOR_OUTPUT.setDouble(voltage);
 
-        //soft limit 
-        
+        // soft limit
 
-        if (intake.getAbsolutePivotAngle() < 3 * Math.PI/2 || intake.getAbsolutePivotAngle() > Math.toRadians(320))
+        if (intake.getAbsolutePivotAngle() < 3 * Math.PI / 2 || intake.getAbsolutePivotAngle() > Math.toRadians(320))
             intake.rightPivotMotor.setVoltage(voltage);
-        else 
+        else
             intake.rightPivotMotor.setVoltage(0);
     }
 
     @Override
     public boolean isFinished() {
-        return (intake.getAbsolutePivotAngle() > Math.toRadians(320) && intake.getAbsolutePivotAngle() < Math.toRadians(350))  || intake.getPivotPIDController().atSetpoint();
+        return (intake.getAbsolutePivotAngle() > Math.toRadians(320)
+                && intake.getAbsolutePivotAngle() < Math.toRadians(350)) || intake.getPivotPIDController().atSetpoint();
     }
 
     // @Override
     // public void end(boolean interrupted) {
-    //     // Lock the intake
-    //     intake.leftPivotMotor.setVoltage(0);
-    //     intake.rightPivotMotor.setVoltage(0);
+    // // Lock the intake
+    // intake.leftPivotMotor.setVoltage(0);
+    // intake.rightPivotMotor.setVoltage(0);
 
     // }
 }

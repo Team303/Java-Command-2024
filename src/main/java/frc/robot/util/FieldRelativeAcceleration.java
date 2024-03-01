@@ -5,13 +5,13 @@ public class FieldRelativeAcceleration {
     public double ay;
     public double alpha;
 
-    public FieldRelativeAcceleration(double ax, double ay, double alpha){
-        this.ax=ax;
-        this.ay=ay;
-        this.alpha=alpha;
+    public FieldRelativeAcceleration(double ax, double ay, double alpha) {
+        this.ax = ax;
+        this.ay = ay;
+        this.alpha = alpha;
     }
 
-    public FieldRelativeAcceleration(FieldRelativeSpeeds newSpeeds, FieldRelativeSpeeds oldSpeeds, double time){
+    public FieldRelativeAcceleration(FieldRelativeSpeeds newSpeeds, FieldRelativeSpeeds oldSpeeds, double time) {
         this.ax = (newSpeeds.vx - oldSpeeds.vx) / time;
         this.ay = (newSpeeds.vy - oldSpeeds.vy) / time;
         this.alpha = (newSpeeds.omega - oldSpeeds.omega) / time;
@@ -27,8 +27,8 @@ public class FieldRelativeAcceleration {
         }
     }
 
-    public FieldRelativeAcceleration(){
-        this(0.0,0.0,0.0);
+    public FieldRelativeAcceleration() {
+        this(0.0, 0.0, 0.0);
     }
-    
+
 }
