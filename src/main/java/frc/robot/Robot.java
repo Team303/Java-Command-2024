@@ -115,15 +115,14 @@ public class Robot extends LoggedRobot {
 		driverController.y().onTrue(Commands.runOnce(() -> swerve.resetOdometry(swerve.getPose())));
 		driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 
-		//for testing only pls
+		// spin the other way when a note gets stuck 
 		operatorController.pov(0).whileTrue(new EjaculateNote());
 
+		// 
 		operatorController.pov(180).toggleOnTrue(new SequentialCommandGroup(new GroundIntake(),
 		    new ParallelDeadlineGroup(new SequentialCommandGroup(new IntakeNote(), new NudgeNote()), new GroundIntake().repeatedly())));
 
-        // operatorController.pov(180).toggleOnTrue(new IntakeNote());
 
-		// operatorController.pov(0).whileTrue(new ShootNote());
 		operatorController.y().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 
 		   new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SequentialCommandGroup(new DynamicShootSpeaker(), 
 		   new ParallelCommandGroup(new ShootNote(), new DynamicShootSpeaker().repeatedly())  
@@ -131,27 +130,16 @@ public class Robot extends LoggedRobot {
 
 		operatorController.a().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(),
 				new ParallelCommandGroup(new OutwardIntake().repeatedly(),
-						new SequentialCommandGroup(new SetShooterAmp(Math.toRadians(30), 17),
+						new SequentialCommandGroup(new SetShooterAmp(Math.toRadians(50), 18),
 								new ParallelCommandGroup(new ShootNote(),
-										new SetShooterAmp(Math.toRadians(30), 17).repeatedly())))));
+										new SetShooterAmp(Math.toRadians(50), 18).repeatedly())))));
 
-		operatorController.rightBumper().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(),
-				new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SequentialCommandGroup(
-						new SetShooterAmp(Math.toRadians(30), 17),
-						new ParallelCommandGroup(new ShootNote(), new ManualShootSpeaker(4.064).repeatedly())))));
-
-		operatorController.leftBumper().toggleOnTrue(new SetShooterAmp(Math.toRadians(50), -10));
+		// operatorController.rightBumper().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(),
+		// 		new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SequentialCommandGroup(
+		// 				new ManualShootSpeaker(4.064),
+		// 				new ParallelCommandGroup(new ShootNote(), new ManualShootSpeaker(4.064).repeatedly())))));
 
 		// operatorController.rightBumper().onTrue(new ManualShootSpeaker(4.064));
-
-		// operatorController.a().toggleOnTrue(new SequentialCommandGroup(new
-		// OutwardIntake(),
-		// new ParallelCommandGroup(new OutwardIntake().repeatedly(), new
-		// SetShooterAmp(Math.toRadians(30), 21.27))));
-		// operatorController.y().toggleOnTrue(new OnlyFlyWheels(30));
-
-		// //after merge make a parallel command group with turn to speaker
-		// controller.x().onTrue(new ManualShootSpeaker(10));
 	}
 
 	/* Currently running auto routine */
