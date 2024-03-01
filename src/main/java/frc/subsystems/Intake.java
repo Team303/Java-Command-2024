@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkLimitSwitch;
 
 public class Intake extends SubsystemBase {
 
@@ -33,6 +34,8 @@ public class Intake extends SubsystemBase {
 
 	public final DutyCycleEncoder pivotEncoder;
 	public final RelativeEncoder pivotAlan;
+
+	public final SparkLimitSwitch homeLimit;
 
 	// public final DigitalInput homeLimit;
 	// public final DigitalInput groundLimit;
@@ -50,7 +53,7 @@ public class Intake extends SubsystemBase {
 
 	public static final GenericEntry MOTOR_OUTPUT = INTAKE_TAB.add("Motor Output", 0).getEntry();
 
-	
+	public static final GenericEntry REVERSE_SWITCH = INTAKE_TAB.add("REVERSE SWITCH", false).getEntry();
 
 	public double pivotAngle = 0.0;
 
@@ -101,7 +104,9 @@ public class Intake extends SubsystemBase {
 
 
 		pivotPIDController.setTolerance(Math.toRadians(2));
-		pivotPIDController.reset(Math.toRadians(117));
+		pivotPIDController.reset(Math.toRadians(110));
+
+		homeLimit = leftPivotMotor.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
 
 	}
 
@@ -141,9 +146,9 @@ public class Intake extends SubsystemBase {
 		return normalizeAngle(pivotEncoder.getAbsolutePosition() * 2 * Math.PI - Math.toRadians(47));
 	}
 
-	// public boolean atHomeHardLimit() {
-	// 	return homeLimit.get();
-	// }
+	public boolean atHomeHardLimit() {
+		return homeLimit.isPressed();
+	}
 
 	// public boolean atGroundHardLimit() {
 	// 	return groundLimit.get();
@@ -159,9 +164,10 @@ public class Intake extends SubsystemBase {
 
 	@Override
 	public void periodic() {
+
 		ACTUAL_PIVOT_ANGLE_ENTRY.setDouble(getAbsolutePivotAngle() * (180/Math.PI));
 		// GROUND_LIMIT_SWITCH_ALAN_SUCKS.setBoolean(atGroundHardLimit());
-		// HOME_LIMIT_SWITCH_ALAN_SUCKS.setBoolean(atHomeHardLimit());
+		HOME_LIMIT_SWITCH_ALAN_SUCKS.setBoolean(atHomeHardLimit());
 
 	}
 

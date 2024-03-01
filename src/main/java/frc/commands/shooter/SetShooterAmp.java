@@ -39,7 +39,6 @@ public class SetShooterAmp extends Command {
         double voltage = shooter.calculateAngleSpeed(desiredAngle);
 
         System.out.println("Voltage:  " + voltage);
-
         if (shooter.getAbsoluteShooterAngle() > Math.PI && shooter.getAbsoluteShooterAngle() < Math.toRadians(320) && voltage > 0) {
             shooter.leftAngleMotor.setVoltage(0);
         } else if (Math.abs(shooter.getAbsoluteShooterAngle() - desiredAngle) < Math.toRadians(3)) {

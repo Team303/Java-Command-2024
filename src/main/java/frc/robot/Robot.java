@@ -1,3 +1,4 @@
+
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
@@ -31,10 +32,12 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.autonomous.Autonomous;
 import frc.autonomous.AutonomousProgram;
+import frc.commands.amoghbelt.EjaculateNote;
 import frc.commands.amoghbelt.IntakeNote;
+import frc.commands.amoghbelt.NudgeNote;
 import frc.commands.drive.DefaultDrive;
 import frc.commands.drive.DriveWait;
-import frc.commands.drive.TurnToSpeaker;
+// import frc.commands.drive.TurnToSpeaker;
 import frc.subsystems.DriveSubsystem;
 import frc.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -43,7 +46,7 @@ import frc.modules.PhotonvisionModule;
 import frc.subsystems.Intake;
 import frc.subsystems.Belt;
 import frc.commands.intake.GroundIntake;
-import frc.commands.intake.HomeIntake;
+//import frc.commands.intake.HomeIntake;
 import frc.commands.intake.OutwardIntake;
 import frc.commands.amoghbelt.ShootNote;
 import frc.commands.shooter.HomeShooter;
@@ -52,6 +55,7 @@ import frc.commands.shooter.DynamicShootSpeaker;
 import frc.commands.shooter.OnlyFlyWheels;
 import frc.commands.shooter.SetShooterAmp;
 import frc.commands.drive.TurnToAngle;
+import frc.commands.intake.HomeIntake;
 
 
 
@@ -74,10 +78,10 @@ public class Robot extends LoggedRobot {
 		intake = new Intake();
 		belt = new Belt();
 		shooter = new Shooter();
-		swerve.resetOdometry();
+		// swerve.resetOdometry();
 
 		NamedCommands.registerCommand("PickUpNote", new InstantCommand(() -> {System.out.println("picked up note!");}));
-		NamedCommands.registerCommand("TurnToSpeaker", new TurnToSpeaker());
+		// NamedCommands.registerCommand("TurnToSpeaker", new TurnToSpeaker());
 		NamedCommands.registerCommand("Shooting", new InstantCommand(() -> {System.out.println("Shooting note!");}));
 
 		configureButtonBindings();
@@ -120,12 +124,12 @@ public class Robot extends LoggedRobot {
 		driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 
 		//for testing only pls
-		// operatorController.b().onTrue(new InstantCommand(swerve::resetOdometryWidget));
+		operatorController.pov(0).whileTrue(new EjaculateNote());
 
-		// operatorController.pov(180).toggleOnTrue(new SequentialCommandGroup(new GroundIntake(),
-		//     new ParallelDeadlineGroup(new IntakeNote(), new GroundIntake().repeatedly())));
+		operatorController.pov(180).toggleOnTrue(new SequentialCommandGroup(new GroundIntake(),
+		    new ParallelDeadlineGroup(new SequentialCommandGroup(new IntakeNote(), new NudgeNote()), new GroundIntake().repeatedly())));
 
-        operatorController.pov(180).toggleOnTrue(new IntakeNote());
+        // operatorController.pov(180).toggleOnTrue(new IntakeNote());
 
 		// operatorController.pov(0).whileTrue(new ShootNote());
 		operatorController.y().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 
@@ -142,8 +146,7 @@ public class Robot extends LoggedRobot {
 		//    new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SetShooterAmp(Math.toRadians(30), 21.27))));
 		// operatorController.y().toggleOnTrue(new OnlyFlyWheels(30));
 
-	// //after merge make a parallel command group with turn to speaker
-	// controller.x().onTrue(new ManualShootSpeaker(10));
+	//after merge make a parallel command group with turn to speaker
 	}
 
   	/* Currently running auto routine */
