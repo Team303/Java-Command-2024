@@ -16,7 +16,6 @@ public class MoveVolts extends Command {
     public void execute() {
         intake.rightPivotMotor.setVoltage(volts);
 
-        
-       // intake.rightPivotMotor.setVoltage(volts);
+        // intake.rightPivotMotor.setVoltage(volts);
     }
 }

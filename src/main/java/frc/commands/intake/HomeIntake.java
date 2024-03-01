@@ -1,13 +1,12 @@
 package frc.commands.intake;
 
 import static frc.robot.Robot.intake;
-import static frc.robot.Robot.belt;
 import static frc.subsystems.Intake.DESIRED_PIVOT_ANGLE_ENTRY;
-import frc.robot.Robot;
+import static frc.subsystems.Intake.MOTOR_OUTPUT;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Robot;
 import frc.robot.RobotMap;
-import static frc.subsystems.Intake.MOTOR_OUTPUT;
 
 public class HomeIntake extends Command {
 
@@ -31,7 +30,10 @@ public class HomeIntake extends Command {
         System.out.println("Voltage: " + intake.rightPivotMotor.getBusVoltage());
         MOTOR_OUTPUT.setDouble(voltage);
 
-        if (intake.getAbsolutePivotAngle() > Math.PI/2 && intake.getAbsolutePivotAngle() < Math.toRadians(320) && voltage > 0) {
+        if (intake.atHomeHardLimit()) {
+            intake.rightPivotMotor.setVoltage(-voltage);
+        } else if (intake.getAbsolutePivotAngle() > Math.PI / 2 && intake.getAbsolutePivotAngle() < Math.toRadians(320)
+                && voltage > 0) {
             // System.out.println("yippee");
             intake.rightPivotMotor.setVoltage(0);
         } 
@@ -44,10 +46,11 @@ public class HomeIntake extends Command {
 
     }
 
-
     // @Override
     // public boolean isFinished() {
-    //     return (intake.getAbsolutePivotAngle() > Math.PI/2 && intake.getAbsolutePivotAngle() < Math.PI) || Robot.intake.pivotPIDController.atSetpoint();
+    // return (intake.getAbsolutePivotAngle() > Math.PI/2 &&
+    // intake.getAbsolutePivotAngle() < Math.PI) ||
+    // Robot.intake.pivotPIDController.atSetpoint();
     // }
 
     // @Override

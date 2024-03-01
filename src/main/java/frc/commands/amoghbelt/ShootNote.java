@@ -1,9 +1,9 @@
 package frc.commands.amoghbelt;
+
 import static frc.robot.Robot.belt;
 import static frc.subsystems.Belt.BELT_SPEED_ENTRY;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.RobotMap;
 
 public class ShootNote extends Command {
 
@@ -25,6 +25,6 @@ public class ShootNote extends Command {
 
     // @Override
     // public void end(boolean interrupted) {
-    //     belt.stopMotors();
+    // belt.stopMotors();
     // }
 }

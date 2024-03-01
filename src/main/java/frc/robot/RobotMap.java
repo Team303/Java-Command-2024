@@ -11,22 +11,22 @@ public class RobotMap {
 	public static final class Swerve {
 
 		/* CAN IDs of Drive Motors */
-		 public static final int LEFT_FRONT_DRIVE_ID = 2;
-		 public static final int RIGHT_FRONT_DRIVE_ID = 5;
-		 public static final int LEFT_BACK_DRIVE_ID = 8;
-		 public static final int RIGHT_BACK_DRIVE_ID = 11;
+		public static final int LEFT_FRONT_DRIVE_ID = 2;
+		public static final int RIGHT_FRONT_DRIVE_ID = 5;
+		public static final int LEFT_BACK_DRIVE_ID = 8;
+		public static final int RIGHT_BACK_DRIVE_ID = 11;
 
-		 /* Steer Encoder CAN IDs */
-		 public static final int LEFT_FRONT_STEER_CANCODER_ID = 3;
+		/* Steer Encoder CAN IDs */
+		public static final int LEFT_FRONT_STEER_CANCODER_ID = 3;
 		public static final int RIGHT_FRONT_STEER_CANCODER_ID = 6;
-		 public static final int LEFT_BACK_STEER_CANCODER_ID = 9;
-		 public static final int RIGHT_BACK_STEER_CANCODER_ID = 12;
- 
-		 /* CAN IDs of steer Motors turning */
-		 public static final int LEFT_FRONT_STEER_ID = 4;
+		public static final int LEFT_BACK_STEER_CANCODER_ID = 9;
+		public static final int RIGHT_BACK_STEER_CANCODER_ID = 12;
+
+		/* CAN IDs of steer Motors turning */
+		public static final int LEFT_FRONT_STEER_ID = 4;
 		public static final int RIGHT_FRONT_STEER_ID = 7;
-		 public static final int LEFT_BACK_STEER_ID = 10;
-		 public static final int RIGHT_BACK_STEER_ID = 13;
+		public static final int LEFT_BACK_STEER_ID = 10;
+		public static final int RIGHT_BACK_STEER_ID = 13;
 
 		 /* Steer Motor Offset */
 		 public static final double LEFT_BACK_STEER_OFFSET = -1.5730/360;
@@ -84,9 +84,9 @@ public class RobotMap {
 
 		public static final int BEAM_BREAK_ID = 0;
 
-		public static final int ANGLE_ENCODER_ID = 8; //wtf is this
+		public static final int ANGLE_ENCODER_ID = 8; // wtf is this
 
-		public static final double ANGLE_CONVERSION_FACTOR = 1/35.04;
+		public static final double ANGLE_CONVERSION_FACTOR = 1 / 35.04;
 
 	}
 
@@ -101,10 +101,10 @@ public class RobotMap {
 
 		public static final int BEAM_PORT = 7;
 		public static final int LEFT_PIVOT_MOTOR_ID = 18; // NEED TO CHANGE
-		public static final int RIGHT_PIVOT_MOTOR_ID = 19; // NEED TO CHANGE  
- // NEED TO CHANGE
+		public static final int RIGHT_PIVOT_MOTOR_ID = 19; // NEED TO CHANGE
+		// NEED TO CHANGE
 		// public static final int PIVOT_ENCODER_ID = ; // NEED TO CHANGE
-		// public static final int HOME_LIMIT_SWITCH_ID = ; // NEED TO CHANGE
+		public static final int HOME_LIMIT_SWITCH_ID = 9999; // NEED TO CHANGE
 		// public static final int GROUND_LIMIT_SWITCH_ID = ; // NEED TO CHANGE
 
 		public static final double PIVOT_FEED_FORWARD_KS = 0.0; // NEED TO CHANGE
@@ -123,7 +123,7 @@ public class RobotMap {
 		public static final double HOME_ANGLE = Math.toRadians(95);
 		public static final double GROUND_ANGLE = Math.toRadians(345);// GET ANGLE FROM JOHN
 
-		public static final double GEAR_RATIO = ((double)1/25); //GET FROM SOMEONE
+		public static final double GEAR_RATIO = ((double) 1 / 25); // GET FROM SOMEONE
 
 		public static final double ROTATION_SCALE = 3;
 	}

@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotMap.FieldConstants;
 
-
 public class DynamicShootSpeaker extends Command {
 
     double desiredAngle;
@@ -23,7 +22,6 @@ public class DynamicShootSpeaker extends Command {
     final double FLYWHEEL_SPEED = 21.27;
     Translation2d target;
     double range;
-
 
     public DynamicShootSpeaker() {
         addRequirements(shooter);
@@ -36,7 +34,7 @@ public class DynamicShootSpeaker extends Command {
 
     @Override
     public void initialize() {
-                // find distance to the nearest speaker
+        // find distance to the nearest speaker
         var alliance = DriverStation.getAlliance();
 
         boolean isBlue = true;
@@ -44,24 +42,31 @@ public class DynamicShootSpeaker extends Command {
             isBlue = alliance.get() == DriverStation.Alliance.Blue;
         }
 
-        target = isBlue ? FieldConstants.centerSpeakOpenInBlue.getTranslation() : FieldConstants.centerSpeakOpenInRed.getTranslation();
+        target = isBlue ? FieldConstants.centerSpeakOpenInBlue.getTranslation()
+                : FieldConstants.centerSpeakOpenInRed.getTranslation();
 
         Pose2d curPose = Robot.swerve.getPose();
 
         range = Math.hypot(target.getX() - curPose.getX(), target.getY() - curPose.getY());
 
-        desiredAngle = shooter.interpolateAngle(range, desiredVelocityRight > 21.0);
+        desiredAngle = shooter.interpolateAngle(range);
     }
 
     @Override
     public void execute() {
+
+        System.out.println("Range: " + range);
+        System.out.println("Desired Angle: " + desiredAngle * (180 / Math.PI));
+
         desiredVelocityLeft = desiredVelocityRight * shooter.getFactor();
 
-        DESIRED_LEFT_RPM_ENTRY.setDouble(desiredVelocityLeft / (2 * Math.PI * 0.0508) * 60);        
+        DESIRED_LEFT_RPM_ENTRY.setDouble(desiredVelocityLeft / (2 * Math.PI * 0.0508) * 60);
         DESIRED_RIGHT_RPM_ENTRY.setDouble(desiredVelocityRight / (2 * Math.PI * 0.0508) * 60);
 
         System.out.println("DesiredVelocityLeft: "+((desiredVelocityLeft / (2 * Math.PI * 0.0508))));
 
+        shooter.leftFlywheelMotor.setControl(shooter.flywheelVoltageLeft.withVelocity((desiredVelocityLeft / (2 * Math.PI * 0.0508))));
+        shooter.rightFlywheelMotor.setControl(shooter.flywheelVoltageRight.withVelocity((desiredVelocityRight / (2 * Math.PI * 0.0508))));
         double voltage = shooter.calculateAngleSpeed(desiredAngle);
 
         System.out.println("Range: " + range);
@@ -74,22 +79,27 @@ public class DynamicShootSpeaker extends Command {
             shooter.leftAngleMotor.setVoltage(voltage);
         }
 
-        shooter.leftFlywheelMotor.setControl(shooter.flywheelVoltageLeft.withVelocity((desiredVelocityLeft / (2 * Math.PI * 0.0508))));
-        shooter.rightFlywheelMotor.setControl(shooter.flywheelVoltageRight.withVelocity((desiredVelocityRight / (2 * Math.PI * 0.0508))));
+        System.out.println("DesiredVelocityLeft: "+((desiredVelocityLeft / (2 * Math.PI * 0.0508))));
+        shooter.leftFlywheelMotor
+                .setControl(shooter.flywheelVoltageLeft.withVelocity((desiredVelocityLeft / (2 * Math.PI * 0.0508))));
+        shooter.rightFlywheelMotor
+                .setControl(shooter.flywheelVoltageRight.withVelocity((desiredVelocityRight / (2 * Math.PI * 0.0508))));
 
     }
 
     @Override
     public boolean isFinished() {
-        return shooter.atSetpoint() 
-            && (shooter.leftFlywheelMotor.getVelocity().refresh().getValueAsDouble() > desiredVelocityLeft / (2 * Math.PI * 0.0508))
-            && (shooter.rightFlywheelMotor.getVelocity().refresh().getValueAsDouble() > desiredVelocityRight / (2 * Math.PI * 0.0508));
+        return shooter.atSetpoint()
+                && (shooter.leftFlywheelMotor.getVelocity().refresh().getValueAsDouble() > desiredVelocityLeft
+                        / (2 * Math.PI * 0.0508))
+                && (shooter.rightFlywheelMotor.getVelocity().refresh().getValueAsDouble() > desiredVelocityRight
+                        / (2 * Math.PI * 0.0508));
     }
 
     public void end(boolean interrupted) {
         shooter.leftFlywheelMotor.setVoltage(0);
         shooter.rightFlywheelMotor.setVoltage(0);
-        //shooter.leftFlywheelMotor.setVoltage(0);
+        // shooter.leftFlywheelMotor.setVoltage(0);
     }
 
 }

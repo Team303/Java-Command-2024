@@ -1,14 +1,9 @@
 package frc.subsystems;
 
-
-import static frc.subsystems.Belt.BBC_ENTRY;
-
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -20,7 +15,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkLimitSwitch;
 
 public class Intake extends SubsystemBase {
@@ -37,19 +31,13 @@ public class Intake extends SubsystemBase {
 
 	public final SparkLimitSwitch homeLimit;
 
-	// public final DigitalInput homeLimit;
-	// public final DigitalInput groundLimit;
-
 	public static final ShuffleboardTab INTAKE_TAB = Shuffleboard.getTab("Intake"); // Shuffleboard tab
 	public static final GenericEntry DESIRED_PIVOT_ANGLE_ENTRY = INTAKE_TAB.add("Desired Degrees", 0.0)
 			.withPosition(0, 0).getEntry();
 	public static final GenericEntry ACTUAL_PIVOT_ANGLE_ENTRY = INTAKE_TAB.add("Actual Degrees", 0.0).withPosition(1, 0)
 			.getEntry();
 
-	public static final GenericEntry HOME_LIMIT_SWITCH_ALAN_SUCKS = INTAKE_TAB.add("Home Limit Switch Stauts", false).getEntry();
-
-	public static final GenericEntry GROUND_LIMIT_SWITCH_ALAN_SUCKS = INTAKE_TAB.add("Ground Limit Switch Stauts", false).getEntry();
-
+	public static final GenericEntry BBC_GENERIC_ENTRY = INTAKE_TAB.add("Home Limit Switch Stauts", false).getEntry();
 
 	public static final GenericEntry MOTOR_OUTPUT = INTAKE_TAB.add("Motor Output", 0).getEntry();
 
@@ -62,8 +50,6 @@ public class Intake extends SubsystemBase {
 		pivotEncoder = new DutyCycleEncoder(RobotMap.Intake.PIVOT_ENCODER_ID);
 
 		// pivotEncoder.setDutyCycleRange(0, 2*Math.PI);
-
-
 
 		pivotFeedForward = new ArmFeedforward(RobotMap.Intake.PIVOT_FEED_FORWARD_KS,
 				RobotMap.Intake.PIVOT_FEED_FORWARD_KG,
@@ -79,12 +65,12 @@ public class Intake extends SubsystemBase {
 		// leftPivotMotor.setInverted(true);
 
 
-		TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(Math.PI, 
-			Math.PI * 8); 
-			// Change: Alan's job
+		TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(Math.PI,
+				Math.PI * 8);
+		// Change: Alan's job
 
 		pivotPIDController = new ProfiledPIDController(RobotMap.Intake.PIVOT_PID_CONTROLLER_P,
-				RobotMap.Intake.PIVOT_PID_CONTROLLER_I, 
+				RobotMap.Intake.PIVOT_PID_CONTROLLER_I,
 				RobotMap.Intake.PIVOT_PID_CONTROLLER_D,
 				pidConstraints);
 
@@ -96,15 +82,13 @@ public class Intake extends SubsystemBase {
 
 
 		pivotAlan = leftPivotMotor.getEncoder();
-		pivotAlan.setPositionConversionFactor(2*Math.PI*RobotMap.Intake.GEAR_RATIO);
-		pivotAlan.setVelocityConversionFactor(2*Math.PI*RobotMap.Intake.GEAR_RATIO);
+		pivotAlan.setPositionConversionFactor(2 * Math.PI * RobotMap.Intake.GEAR_RATIO);
+		pivotAlan.setVelocityConversionFactor(2 * Math.PI * RobotMap.Intake.GEAR_RATIO);
 
 		leftPivotMotor.setSmartCurrentLimit(40);
 		rightPivotMotor.setSmartCurrentLimit(40);
 
-		// homeLimit = new DigitalInput(RobotMap.Intake.HOME_LIMIT  i_SWITCH_ID);
-		// groundLimit = new DigitalInput(RobotMap.Intake.GROUND_LIMIT_SWITCH_ID);
-
+		// homeLimit = new DigitalInput(RobotMap.Intake.HOME_LIMIT_SWITCH_ID);
 
 		pivotPIDController.setTolerance(Math.toRadians(2));
 		pivotPIDController.reset(Math.toRadians(115));
@@ -117,21 +101,23 @@ public class Intake extends SubsystemBase {
 	public double calculateAngleSpeed(double angle) {
 
 		// TrapezoidProfile.Constraints constrain = new TrapezoidProfile.Constraints(
-		// 	3.14/2, 
-		// 	pivotFeedForward.maxAchievableAcceleration(12, getAbsolutePivotAngle(), leftPivotMotor.getEncoder().getVelocity())); // Change: Alan's job
+		// 3.14/2,
+		// pivotFeedForward.maxAchievableAcceleration(12, getAbsolutePivotAngle(),
+		// leftPivotMotor.getEncoder().getVelocity())); // Change: Alan's job
 
 		// pivotPIDController.setConstraints(constrain);
 
 		final double pivotOutput = pivotPIDController.calculate(getAbsolutePivotAngle(), angle);
 
+		final double pivotFeedforward = pivotFeedForward.calculate(angle > Math.toRadians(270) ? 0 : angle,
+				pivotPIDController.getSetpoint().velocity);
 
-		final double pivotFeedforward = pivotFeedForward.calculate(angle > Math.toRadians(270) ? 0 : angle, pivotPIDController.getSetpoint().velocity);
-
-		// if (angle > Math.toRadians(45) && angle < Math.toRadians(320) && getAbsolutePivotAngle() > Math.toRadians(45)) {
-		// 	return pivotOutput - 3 < 0 ? pivotOutput : pivotOutput - 3;
+		// if (angle > Math.toRadians(45) && angle < Math.toRadians(320) &&
+		// getAbsolutePivotAngle() > Math.toRadians(45)) {
+		// return pivotOutput - 3 < 0 ? pivotOutput : pivotOutput - 3;
 		// }
 		// {
-			return pivotOutput;//pivotFeedforward;
+		return pivotOutput;// pivotFeedforward;
 		// }
 
 	}
@@ -141,7 +127,7 @@ public class Intake extends SubsystemBase {
 
 		if (angleRad < 0)
 			angleRad += Math.PI * 2;
-		
+
 		return angleRad;
 	}
 

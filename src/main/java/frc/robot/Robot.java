@@ -5,29 +5,19 @@
 
 package frc.robot;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGReader;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.autonomous.Autonomous;
@@ -48,11 +38,8 @@ import frc.subsystems.Belt;
 import frc.commands.intake.GroundIntake;
 //import frc.commands.intake.HomeIntake;
 import frc.commands.intake.OutwardIntake;
-import frc.commands.amoghbelt.ShootNote;
 import frc.commands.shooter.HomeShooter;
 import frc.commands.shooter.ManualShootSpeaker;
-import frc.commands.shooter.DynamicShootSpeaker;
-import frc.commands.shooter.OnlyFlyWheels;
 import frc.commands.shooter.SetShooterAmp;
 import frc.commands.drive.TurnToAngle;
 import frc.commands.intake.HomeIntake;
@@ -86,7 +73,7 @@ public class Robot extends LoggedRobot {
 
 		configureButtonBindings();
 
-	Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
+		Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
 
 		if (isReal()) {
 			// Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
@@ -94,16 +81,16 @@ public class Robot extends LoggedRobot {
 			new PowerDistribution(13, ModuleType.kRev); // Enables power distribution logging
 		} else {
 			// setUseTiming(false); // Run as fast as possible
-			// String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the
-			// 												// user)
+			// String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from
+			// AdvantageScope (or prompt the
+			// // user)
 			// Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-			// Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a
-			Logger.addDataReceiver(new NT4Publisher());																	// new log
+			// Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath,
+			// "_sim"))); // Save outputs to a
+			Logger.addDataReceiver(new NT4Publisher()); // new log
 		}
 
 		Logger.start();
-
-
 
 		Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();
@@ -138,23 +125,36 @@ public class Robot extends LoggedRobot {
 		   new ParallelCommandGroup(new ShootNote(), new DynamicShootSpeaker().repeatedly())  
 		   ))));
 
-		operatorController.a().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 
-		   new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SequentialCommandGroup(new DynamicShootSpeaker(), 
-		   new ParallelCommandGroup(new ShootNote(), new DynamicShootSpeaker().repeatedly())  
-		   ))));
+		operatorController.a().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(),
+				new ParallelCommandGroup(new OutwardIntake().repeatedly(),
+						new SequentialCommandGroup(new SetShooterAmp(Math.toRadians(30), 17),
+								new ParallelCommandGroup(new ShootNote(),
+										new SetShooterAmp(Math.toRadians(30), 17).repeatedly())))));
 
-		// operatorController.a().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 
-		//    new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SetShooterAmp(Math.toRadians(30), 21.27))));
+		operatorController.rightBumper().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(),
+				new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SequentialCommandGroup(
+						new SetShooterAmp(Math.toRadians(30), 17),
+						new ParallelCommandGroup(new ShootNote(), new ManualShootSpeaker(4.064).repeatedly())))));
+
+		operatorController.leftBumper().toggleOnTrue(new SetShooterAmp(Math.toRadians(50), -10));
+
+		// operatorController.rightBumper().onTrue(new ManualShootSpeaker(4.064));
+
+		// operatorController.a().toggleOnTrue(new SequentialCommandGroup(new
+		// OutwardIntake(),
+		// new ParallelCommandGroup(new OutwardIntake().repeatedly(), new
+		// SetShooterAmp(Math.toRadians(30), 21.27))));
 		// operatorController.y().toggleOnTrue(new OnlyFlyWheels(30));
 
-	//after merge make a parallel command group with turn to speaker
+		// //after merge make a parallel command group with turn to speaker
+		// controller.x().onTrue(new ManualShootSpeaker(10));
 	}
 
-  	/* Currently running auto routine */
+	/* Currently running auto routine */
 
 	private Command autonomousCommand;
 
-  @Override
+	@Override
 	public void autonomousInit() {
 		navX.reset();
 		Command autonomousRoutine = AutonomousProgram.constructSelectedRoutine();
@@ -176,7 +176,7 @@ public class Robot extends LoggedRobot {
 		CommandScheduler.getInstance().schedule(this.autonomousCommand);
 	}
 
-  @Override
+	@Override
 	public void teleopInit() {
 		// This makes sure that the autonomous stops running when teleop starts running.
 		if (autonomousCommand != null) {
@@ -191,8 +191,8 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void robotPeriodic() {
-		//Logger.recordOutput("Example/Mechanism", mechanism);
+		// Logger.recordOutput("Example/Mechanism", mechanism);
 		CommandScheduler.getInstance().run();
-		
+
 	}
 }
