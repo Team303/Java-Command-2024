@@ -51,12 +51,12 @@ public class Shooter extends SubsystemBase {
     public InterpolatingDoubleTreeMap timeInterpolator17 = new InterpolatingDoubleTreeMap();
 
     // Interpolation Table 1: 21.27 meters per second 💀
-    public static double[] interpolationAngles21 = { 0.95, 0.95, 0.876, 0.802, 0.738, 0.683, 0.635, 0.594, 0.559, 0.527,
-            0.500, // 1.00 --> 3.750
-            0.476, 0.454, 0.435, 0.419, 0.404, 0.390, 0.378, 0.367, 0.357, 0.349, 0.341, // 4.00 --> 5.750
-            0.333, 0.327, 0.321, 0.316, 0.311, 0.307, 0.303, 0.299, 0.296, 0.293, 0.291, // 6.00 --> 8.750
-            0.289, 0.287, 0.285, 0.284, 0.282, 0.281, 0.280, 0.280, 0.279, 0.279, 0.278, // 9.00 --> 11.75
-            0.278 }; // 12.0 --> 12.00
+    public static double[] interpolationAngles21 = { 0.95, 0.95, 0.95, 0.95, 0.938, 0.883, 0.835, 0.794, 0.759, 0.727,
+            0.700, // 1.00 --> 3.750
+            0.676, 0.654, 0.635, 0.619, 0.604, 0.590, 0.578, 0.567, 0.557, 0.549, 0.541, // 4.00 --> 5.750
+            0.533, 0.527, 0.521, 0.516, 0.511, 0.507, 0.503, 0.499, 0.946, 0.493, 0.491, // 6.00 --> 8.750
+            0.489, 0.487, 0.485, 0.484, 0.484, 0.481, 0.480, 0.480, 0.479, 0.479, 0.478, // 9.00 --> 11.75
+            0.478 }; // 12.0 --> 12.00
     // Interpolation Table 2: 17 meters per second
     // public static double[] interpolationAngles17 = {1.0642, 0.9670, 0.8827,
     // 0.8103, 0.7481, 0.6949, 0.6491, 0.6097, 0.5756, 0.5461, 0.5204, //1.00 -->
@@ -91,9 +91,9 @@ public class Shooter extends SubsystemBase {
             .withPosition(3, 0).withSize(2, 1).getEntry();
     public static final GenericEntry RIGHT_FLYWHEEL_VOLTAGE_ENTRY = SHOOTER_TAB.add("Right Flywheel Voltage", 0.0)
             .withPosition(3, 2).withSize(2, 1).getEntry();
-    public static final GenericEntry LEFT_PIVOT_VOLTAGE_ENTRY = SHOOTER_TAB.add("Left Flywheel Voltage", 0.0)
+    public static final GenericEntry LEFT_PIVOT_VOLTAGE_ENTRY = SHOOTER_TAB.add("Left Flywheel Pivot", 0.0)
             .withPosition(3, 0).withSize(2, 1).getEntry();
-    public static final GenericEntry RIGHT_PIVOT_VOLTAGE_ENTRY = SHOOTER_TAB.add("Right Flywheel Voltage", 0.0)
+    public static final GenericEntry RIGHT_PIVOT_VOLTAGE_ENTRY = SHOOTER_TAB.add("Right Flywheel Pivot", 0.0)
             .withPosition(3, 2).withSize(2, 1).getEntry();
 
     // Angle Entries

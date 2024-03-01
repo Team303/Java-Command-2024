@@ -46,6 +46,14 @@ import frc.modules.SwerveModule;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.RobotMap.Swerve;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import frc.robot.RobotMap.PhotonvisionConstants;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import java.io.IOException;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 /** Represents a swerve drive style drivetrain. */
 public class DriveSubsystem extends SubsystemBase {
@@ -424,7 +432,7 @@ public class DriveSubsystem extends SubsystemBase {
       Vector<N3> stddevs =  getEstimationStdDevs(visionPoseEstimate.targetsUsed);
       double[] data = stddevs.getData();
       for(int i=0;i<data.length;i++){
-        System.out.println(i+" "+data[i]);
+        // System.out.println(i+" "+data[i]);
       }
       poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
           visionPoseEstimate.timestampSeconds, getEstimationStdDevs(visionPoseEstimate.targetsUsed));
@@ -439,7 +447,7 @@ public class DriveSubsystem extends SubsystemBase {
       Vector<N3> stddevs =  getEstimationStdDevs(visionPoseEstimate.targetsUsed);
       double[] data = stddevs.getData();
       for(int i=0;i<data.length;i++){
-        System.out.println(i+" "+data[i]);
+        // System.out.println(i+" "+data[i]);
       }
       poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
           visionPoseEstimate.timestampSeconds, getEstimationStdDevs(visionPoseEstimate.targetsUsed));
@@ -618,7 +626,7 @@ public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedR
     Pose2d robotPose = getPose();
     Translation2d speakerPose;
 
-    speakerPose = isBlue ? new Translation2d(0.5, 5.5) : new Translation2d(16.2, 5.5);
+    speakerPose = isBlue ? new Translation2d(16.2, 5.5) : new Translation2d(0.5, 5.5);
 
     // add 180 because shooter is on the back of the robot
 

@@ -77,7 +77,7 @@ public class Intake extends SubsystemBase {
 		pivotPIDController.enableContinuousInput(0, 2 * Math.PI);
 
 
-		leftPivotMotor.follow(rightPivotMotor, false);
+		leftPivotMotor.follow(rightPivotMotor, true);
 		// rightPivotMotor.follow(leftPivotMotor, true);
 
 
@@ -156,7 +156,7 @@ public class Intake extends SubsystemBase {
 
 		ACTUAL_PIVOT_ANGLE_ENTRY.setDouble(getAbsolutePivotAngle() * (180/Math.PI));
 		// GROUND_LIMIT_SWITCH_ALAN_SUCKS.setBoolean(atGroundHardLimit());
-		HOME_LIMIT_SWITCH_ALAN_SUCKS.setBoolean(atHomeHardLimit());
+		REVERSE_SWITCH.setBoolean(atHomeHardLimit());
 
 	}
 

@@ -43,6 +43,10 @@ import frc.commands.shooter.ManualShootSpeaker;
 import frc.commands.shooter.SetShooterAmp;
 import frc.commands.drive.TurnToAngle;
 import frc.commands.intake.HomeIntake;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import frc.commands.shooter.DynamicShootSpeaker;
+import frc.commands.amoghbelt.ShootNote;
 
 
 

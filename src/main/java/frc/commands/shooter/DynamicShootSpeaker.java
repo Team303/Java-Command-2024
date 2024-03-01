@@ -22,6 +22,7 @@ public class DynamicShootSpeaker extends Command {
     final double FLYWHEEL_SPEED = 21.27;
     Translation2d target;
     double range;
+    Pose2d curPose;
 
     public DynamicShootSpeaker() {
         addRequirements(shooter);
@@ -42,10 +43,9 @@ public class DynamicShootSpeaker extends Command {
             isBlue = alliance.get() == DriverStation.Alliance.Blue;
         }
 
-        target = isBlue ? FieldConstants.centerSpeakOpenInBlue.getTranslation()
-                : FieldConstants.centerSpeakOpenInRed.getTranslation();
+        target = isBlue ? new Translation2d(16.2, 5.5) : new Translation2d(0.5, 5.5);
 
-        Pose2d curPose = Robot.swerve.getPose();
+        curPose = Robot.swerve.getPose();
 
         range = Math.hypot(target.getX() - curPose.getX(), target.getY() - curPose.getY());
 
@@ -64,6 +64,8 @@ public class DynamicShootSpeaker extends Command {
         DESIRED_RIGHT_RPM_ENTRY.setDouble(desiredVelocityRight / (2 * Math.PI * 0.0508) * 60);
 
         System.out.println("DesiredVelocityLeft: "+((desiredVelocityLeft / (2 * Math.PI * 0.0508))));
+        System.out.println("robotcoords: " + curPose.getX() + " " + curPose.getY());
+        System.out.println("target: " + target.getX() + " " + target.getY());
 
         shooter.leftFlywheelMotor.setControl(shooter.flywheelVoltageLeft.withVelocity((desiredVelocityLeft / (2 * Math.PI * 0.0508))));
         shooter.rightFlywheelMotor.setControl(shooter.flywheelVoltageRight.withVelocity((desiredVelocityRight / (2 * Math.PI * 0.0508))));

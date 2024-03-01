@@ -41,7 +41,7 @@ public class HomeIntake extends Command {
         else {
             // System.out.println("boooo");
             System.out.println("Acceleration Y: " + Robot.navX.getRawAccelY());
-            intake.rightPivotMotor.setVoltage(voltage + (Robot.navX.getRawAccelY() * 0) + Math.abs(Robot.navX.getAngle() * 0)); // increase voltage by 1.5 for each rpm the robot is turning
+            intake.rightPivotMotor.setVoltage(voltage + (Robot.navX.getRawAccelY() * 0) + Math.abs(Robot.navX.getAngle() * 0.1)); // increase voltage by 1.5 for each rpm the robot is turning
         }
 
     }

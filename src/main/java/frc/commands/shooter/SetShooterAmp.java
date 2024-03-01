@@ -16,7 +16,6 @@ public class SetShooterAmp extends Command {
     double desiredVelocityRight;
 
     public SetShooterAmp(double angleRad, double velocityMetersPerSecond) {
-    public SetShooterAmp(double angleRad, double velocityMetersPerSecond) {
         addRequirements(shooter);
 
         desiredVelocityRight = velocityMetersPerSecond;
