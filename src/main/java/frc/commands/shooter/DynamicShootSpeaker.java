@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
+import frc.robot.RobotMap;
 import frc.robot.RobotMap.FieldConstants;
 
 public class DynamicShootSpeaker extends Command {
@@ -43,7 +44,7 @@ public class DynamicShootSpeaker extends Command {
             isBlue = alliance.get() == DriverStation.Alliance.Blue;
         }
 
-        target = isBlue ? new Translation2d(16.2, 5.5) : new Translation2d(0.5, 5.5);
+        target = isBlue ? RobotMap.FieldConstants.centerSpeakOpenInBlue.getTranslation() : RobotMap.FieldConstants.centerSpeakOpenInRed.getTranslation() ;
 
         curPose = Robot.swerve.getPose();
 

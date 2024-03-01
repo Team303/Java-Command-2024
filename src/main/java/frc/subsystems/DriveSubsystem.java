@@ -390,11 +390,6 @@ public class DriveSubsystem extends SubsystemBase {
     // lock onto different field elements (methods will change the anglular
     // velocity)
 
-    if (speakerLock)
-      chassisSpeeds = speakerAlign(chassisSpeeds);
-    else if (ampLock)
-      chassisSpeeds = ampAlign(chassisSpeeds);
-
     var swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
 
     Logger.recordOutput("Swerve Module States", swerveModuleStates);
@@ -477,16 +472,16 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void resetOdometry() {
 
-    boolean isBlue = true;
+    // boolean isBlue = true;
 
     // depending on which alliance, set which global direction to zero to (0 or 180)
 
-    var alliance = DriverStation.getAlliance();
-    if (alliance.isPresent()) {
-      isBlue = alliance.get() == DriverStation.Alliance.Blue;
-    }
+    // var alliance = DriverStation.getAlliance();
+    // if (alliance.isPresent()) {
+    //   isBlue = alliance.get() == DriverStation.Alliance.Blue;
+    // }
 
-    Robot.navX.setAngleAdjustment(isBlue ? 0 : 180);
+    // Robot.navX.setAngleAdjustment(isBlue ? 0 : 180);
     Robot.navX.reset();
 
     poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(),
@@ -520,21 +515,21 @@ public class DriveSubsystem extends SubsystemBase {
     // resets pose based on values inputted on shuffleboard
     // depending on which alliance, set which global direction to zero (0 or 180)
 
-    boolean isBlue = true;
+    // boolean isBlue = true;
     Rotation2d angleAdjustment;
 
-    var alliance = DriverStation.getAlliance();
-    if (alliance.isPresent()) {
-      isBlue = alliance.get() == DriverStation.Alliance.Blue;
-    }
+    // var alliance = DriverStation.getAlliance();
+    // if (alliance.isPresent()) {
+    //   isBlue = alliance.get() == DriverStation.Alliance.Blue;
+    // }
 
-    angleAdjustment = Rotation2d.fromDegrees(isBlue ? 0 : 180);
+    // angleAdjustment = Rotation2d.fromDegrees(isBlue ? 0 : 180);
 
     resetOdometry(new Pose2d(
         new Translation2d(
             resetPoseX.getDouble(0),
             resetPoseY.getDouble(0)),
-        angleAdjustment));
+        new Rotation2d()));
   }
 
   public Vector<N3> getEstimationStdDevs(List<PhotonTrackedTarget> targetList) {
@@ -630,8 +625,7 @@ public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedR
 
     // add 180 because shooter is on the back of the robot
 
-    return -Math.atan2(speakerPose.getY() - robotPose.getY(), speakerPose.getX() - robotPose.getX()) * (180 / Math.PI)
-        + 180;
+    return Math.atan2(speakerPose.getY() - robotPose.getY(), speakerPose.getX() - robotPose.getX()) * (180 / Math.PI);
 
   }
 
