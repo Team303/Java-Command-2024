@@ -73,7 +73,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void robotInit() {
-		photonvision = null; //new PhotonvisionModule();
+		photonvision = new PhotonvisionModule();
 		swerve = new DriveSubsystem();
 		intake = new Intake();
 		belt = new Belt();
@@ -107,6 +107,7 @@ public class Robot extends LoggedRobot {
 
 		Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();
+		swerve.resetOnlyNavX();
 	}
 
 	@Override
@@ -120,7 +121,7 @@ public class Robot extends LoggedRobot {
 	}
 
 	private void configureButtonBindings() {
-		driverController.y().onTrue(new InstantCommand(swerve::resetOdometry));
+		driverController.y().onTrue(Commands.runOnce(() -> swerve.resetOdometry(swerve.getPose())));
 		driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 
 		//for testing only pls
@@ -133,13 +134,13 @@ public class Robot extends LoggedRobot {
 
 		// operatorController.pov(0).whileTrue(new ShootNote());
 		operatorController.y().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 
-		   new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SequentialCommandGroup(new SetShooterAmp(Math.toRadians(50), 17), 
-		   new ParallelCommandGroup(new ShootNote(), new SetShooterAmp(Math.toRadians(50), 17).repeatedly())  
+		   new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SequentialCommandGroup(new DynamicShootSpeaker(), 
+		   new ParallelCommandGroup(new ShootNote(), new DynamicShootSpeaker().repeatedly())  
 		   ))));
 
 		operatorController.a().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 
-		   new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SequentialCommandGroup(new SetShooterAmp(Math.toRadians(30), 17), 
-		   new ParallelCommandGroup(new ShootNote(), new SetShooterAmp(Math.toRadians(30), 17).repeatedly())  
+		   new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SequentialCommandGroup(new DynamicShootSpeaker(), 
+		   new ParallelCommandGroup(new ShootNote(), new DynamicShootSpeaker().repeatedly())  
 		   ))));
 
 		// operatorController.a().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 

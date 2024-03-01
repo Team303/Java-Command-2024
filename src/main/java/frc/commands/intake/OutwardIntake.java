@@ -47,7 +47,7 @@ public class OutwardIntake extends Command {
     // @Override
     // public void end(boolean interrupted) {
     //     // Lock the intake
-    //     intake.leftPivotMotor.setVoltage(0);
+    //     intake.rightPivotMotor.setVoltage(0);
     //     intake.rightPivotMotor.setVoltage(0);
 
     // }

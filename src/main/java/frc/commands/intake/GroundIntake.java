@@ -27,7 +27,6 @@ public class GroundIntake extends Command {
     public void execute() {
 
         double voltage = intake.calculateAngleSpeed(RobotMap.Intake.GROUND_ANGLE);
-        System.out.println("Voltage: " + voltage);
         MOTOR_OUTPUT.setDouble(voltage);
 
         //soft limit 
@@ -47,7 +46,7 @@ public class GroundIntake extends Command {
     // @Override
     // public void end(boolean interrupted) {
     //     // Lock the intake
-    //     intake.leftPivotMotor.setVoltage(0);
+    //     intake.rightPivotMotor.setVoltage(0);
     //     intake.rightPivotMotor.setVoltage(0);
 
     // }

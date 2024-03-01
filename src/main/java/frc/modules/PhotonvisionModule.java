@@ -52,7 +52,7 @@ public class PhotonvisionModule extends SubsystemBase {
         PhotonCamera[] photonCamera = { new PhotonCamera("PhotonVision3"),
                 // new PhotonCamera("PhotonVision2"),
                 // new PhotonCamera("apple"),
-                new PhotonCamera("PhotonVision1") };
+                new PhotonCamera("PhotonVision4") };
         camera = photonCamera;
     }
 

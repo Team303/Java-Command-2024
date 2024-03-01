@@ -36,24 +36,24 @@ public class RobotMap {
  
 		 public static final double SWERVE_CONVERSION_FACTOR = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
  
-		 public static final double PHOTON_STDDEV_SCALING_FACTOR = (1.0/2.0);
+		 public static final double PHOTON_STDDEV_SCALING_FACTOR = 1.0;
 
 		public static final double STEER_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
 	 }
  
 	 public static final class PhotonvisionConstants {
-		 public static final double FRONT_CAMERA_HEIGHT_METERS = 0.171; // NOT FINAL
-		 public static final double BACK_CAMERA_HEIGHT_METERS = 0.146;
-		 public static final double RIGHT_CAMERA_HEIGHT_METERS = 0.146; 
-		 public static final double LEFT_CAMERA_HEIGHT_METERS = 0.146;
+		 public static final double FRONT_LEFT_CAMERA_HEIGHT_METERS = 0.171; // NOT FINAL
+		 public static final double BACK_RIGHT_CAMERA_HEIGHT_METERS = Units.inchesToMeters(8);
+		 public static final double BACK_LEFT_CAMERA_HEIGHT_METERS = Units.inchesToMeters(9);
+		 public static final double FRONT_RIGHT_CAMERA_HEIGHT_METERS = 0.146; //NOT IFNAL
 		 public static final double GRID_TARGET_HEIGHT_METERS = 0.36;
 		 public static final double DOUBLE_SUBSTATION_TARGET_HEIGHT_METERS = 0.59;
-		 public static final double CAMERA_PITCH_RADIANS = 0; // NOT FINAL
+		 public static final double BACK_CAMERA_PITCH_RADIANS = Math.toRadians(30); 
 		
-		 public static final Transform3d ROBOT_TO_FRONT_CAMERA= new Transform3d(new Translation3d(0.381, 0, FRONT_CAMERA_HEIGHT_METERS),new Rotation3d(0.0,0.0,0.0));
-		 public static final Transform3d ROBOT_TO_BACK_CAMERA= new Transform3d(new Translation3d(-0.381,0,BACK_CAMERA_HEIGHT_METERS),new Rotation3d(0,Units.degreesToRadians(180),0));
-		 public static final Transform3d ROBOT_TO_LEFT_CAMERA= new Transform3d(new Translation3d(0,0.381,LEFT_CAMERA_HEIGHT_METERS),new Rotation3d(0,Units.degreesToRadians(90),0));
-		 public static final Transform3d ROBOT_TO_RIGHT_CAMERA= new Transform3d(new Translation3d(0,-0.381,RIGHT_CAMERA_HEIGHT_METERS),new Rotation3d(0,Units.degreesToRadians(270),0));
+		//  public static final Transform3d ROBOT_TO_FRONT_LEFT_CAMERA= new Transform3d(new Translation3d(0.381, 0, FRONT_LEFT_CAMERA_HEIGHT_METERS),new Rotation3d(0.0,0.0,Math.toRadians(45.0)));
+		 public static final Transform3d ROBOT_TO_BACK_RIGHT_CAMERA= new Transform3d(new Translation3d(-Units.inchesToMeters(8.5),-Units.inchesToMeters(12.5),BACK_RIGHT_CAMERA_HEIGHT_METERS),new Rotation3d(0,Math.toRadians(30),Math.toRadians(-135)));
+		 public static final Transform3d ROBOT_TO_BACK_LEFT_CAMERA= new Transform3d(new Translation3d(-Units.inchesToMeters(9),Units.inchesToMeters(11),BACK_LEFT_CAMERA_HEIGHT_METERS),new Rotation3d(0,Math.toRadians(30),Math.toRadians(135)));
+		//  public static final Transform3d ROBOT_TO_FRONT_RIGHT_CAMERA= new Transform3d(new Translation3d(0,-0.381,FRONT_RIGHT_CAMERA_HEIGHT_METERS),new Rotation3d(0,0.0,Math.toRadians(315.0)));
  
 	 }
 	 public static final class DDrive {

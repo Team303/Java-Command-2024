@@ -14,7 +14,6 @@ public class MoveVolts extends Command {
 
     @Override
     public void execute() {
-        System.out.println("Voltage: " + intake.leftPivotMotor.getBusVoltage());
         intake.rightPivotMotor.setVoltage(volts);
 
         

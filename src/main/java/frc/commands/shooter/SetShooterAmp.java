@@ -16,8 +16,7 @@ public class SetShooterAmp extends Command {
     double desiredVelocityLeft;
     double desiredVelocityRight;
 
-    public 
-    SetShooterAmp(double angleRad, double velocityMetersPerSecond) {
+    public SetShooterAmp(double angleRad, double velocityMetersPerSecond) {
         addRequirements(shooter);
 
         desiredVelocityRight = velocityMetersPerSecond;
@@ -47,12 +46,8 @@ public class SetShooterAmp extends Command {
             shooter.leftAngleMotor.setVoltage(voltage);
         }
 
-
-
         shooter.leftFlywheelMotor.setControl(shooter.flywheelVoltageLeft.withVelocity((desiredVelocityLeft / (2 * Math.PI * 0.0508))));
         shooter.rightFlywheelMotor.setControl(shooter.flywheelVoltageRight.withVelocity((desiredVelocityRight / (2 * Math.PI * 0.0508))));
-
-
 
     }
 

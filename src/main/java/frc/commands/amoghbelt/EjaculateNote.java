@@ -24,8 +24,6 @@ public class EjaculateNote extends Command {
     @Override
     public void execute() {
         belt.runBelt(12, -12, -8);
-        System.out.println("Time: " + timer.get());
-
         // if (!belt.getBeam()) {
         // // start =
         // Math.abs(belt.indexerMotor.getPosition().refresh().getValueAsDouble());

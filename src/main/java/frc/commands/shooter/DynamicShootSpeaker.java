@@ -5,6 +5,8 @@ import static frc.subsystems.Shooter.DESIRED_LEFT_RPM_ENTRY;
 import static frc.subsystems.Shooter.DESIRED_RIGHT_RPM_ENTRY;
 import static frc.subsystems.Shooter.INTERPOLATED_DEGREES_ENTRY;
 
+import com.ctre.phoenix6.controls.VelocityVoltage;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -53,23 +55,27 @@ public class DynamicShootSpeaker extends Command {
 
     @Override
     public void execute() {
-
-        System.out.println("Range: " + range);
-        System.out.println("Desired Angle: " + desiredAngle * (180/Math.PI));
-
         desiredVelocityLeft = desiredVelocityRight * shooter.getFactor();
 
         DESIRED_LEFT_RPM_ENTRY.setDouble(desiredVelocityLeft / (2 * Math.PI * 0.0508) * 60);        
         DESIRED_RIGHT_RPM_ENTRY.setDouble(desiredVelocityRight / (2 * Math.PI * 0.0508) * 60);
 
-        shooter.leftFlywheelMotor.setControl(shooter.flywheelVoltageLeft.withVelocity((desiredVelocityLeft / (2 * Math.PI * 0.0508))));
-        shooter.rightFlywheelMotor.setControl(shooter.flywheelVoltageRight.withVelocity((desiredVelocityRight / (2 * Math.PI * 0.0508))));
+        System.out.println("DesiredVelocityLeft: "+((desiredVelocityLeft / (2 * Math.PI * 0.0508))));
 
         double voltage = shooter.calculateAngleSpeed(desiredAngle);
 
-        System.out.println("Voltage:  " + voltage);
+        System.out.println("Range: " + range);
+        System.out.println("Angle: " + desiredAngle);
 
-        shooter.leftAngleMotor.setVoltage(voltage);
+        System.out.println("Voltage:  " + voltage);
+        if (shooter.getAbsoluteShooterAngle() > Math.PI && shooter.getAbsoluteShooterAngle() < Math.toRadians(320) && voltage > 0) {
+            shooter.leftAngleMotor.setVoltage(0);
+        } else {
+            shooter.leftAngleMotor.setVoltage(voltage);
+        }
+
+        shooter.leftFlywheelMotor.setControl(shooter.flywheelVoltageLeft.withVelocity((desiredVelocityLeft / (2 * Math.PI * 0.0508))));
+        shooter.rightFlywheelMotor.setControl(shooter.flywheelVoltageRight.withVelocity((desiredVelocityRight / (2 * Math.PI * 0.0508))));
 
     }
 

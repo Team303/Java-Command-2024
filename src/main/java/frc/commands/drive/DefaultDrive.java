@@ -44,8 +44,6 @@ public class DefaultDrive extends Command {
         double rotation = -MathUtil.applyDeadband(Robot.driverController.getRightX() * percentPower, 0.2) 
             * DriveSubsystem.kMaxAngularSpeed * percentPower;
 
-        System.out.println("DRIVING");
-
         Robot.swerve.drive(translation, rotation, fieldOriented);
     }
 }

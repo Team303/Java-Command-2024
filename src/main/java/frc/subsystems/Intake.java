@@ -76,6 +76,7 @@ public class Intake extends SubsystemBase {
 		leftPivotMotor.setIdleMode(IdleMode.kBrake);
 		rightPivotMotor.setIdleMode(IdleMode.kBrake);
 		rightPivotMotor.setInverted(false);
+		// leftPivotMotor.setInverted(true);
 
 
 		TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(Math.PI, 
@@ -90,7 +91,9 @@ public class Intake extends SubsystemBase {
 		pivotPIDController.enableContinuousInput(0, 2 * Math.PI);
 
 
-		leftPivotMotor.follow(rightPivotMotor, true);
+		leftPivotMotor.follow(rightPivotMotor, false);
+		// rightPivotMotor.follow(leftPivotMotor, true);
+
 
 		pivotAlan = leftPivotMotor.getEncoder();
 		pivotAlan.setPositionConversionFactor(2*Math.PI*RobotMap.Intake.GEAR_RATIO);
@@ -104,7 +107,7 @@ public class Intake extends SubsystemBase {
 
 
 		pivotPIDController.setTolerance(Math.toRadians(2));
-		pivotPIDController.reset(Math.toRadians(110));
+		pivotPIDController.reset(Math.toRadians(115));
 
 		homeLimit = leftPivotMotor.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
 

@@ -28,16 +28,18 @@ public class HomeIntake extends Command {
         double voltage = intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE);
 
         // System.out.println("Voltage: " + voltage);
-        System.out.println("Voltage: " + intake.leftPivotMotor.getBusVoltage());
+        System.out.println("Voltage: " + intake.rightPivotMotor.getBusVoltage());
         MOTOR_OUTPUT.setDouble(voltage);
 
         if (intake.getAbsolutePivotAngle() > Math.PI/2 && intake.getAbsolutePivotAngle() < Math.toRadians(320) && voltage > 0) {
             // System.out.println("yippee");
             intake.rightPivotMotor.setVoltage(0);
-        } else {
+        } 
+        
+        else {
             // System.out.println("boooo");
-            double percentPower = (1-(Robot.driverController.getLeftTriggerAxis()*0.7));
-            intake.rightPivotMotor.setVoltage(voltage + (Robot.driverController.getLeftY() * percentPower * -0.7) + Math.abs(Robot.driverController.getRightX() * percentPower * 1.2)); // increase voltage by 1.5 for each rpm the robot is turning
+            System.out.println("Acceleration Y: " + Robot.navX.getRawAccelY());
+            intake.rightPivotMotor.setVoltage(voltage + (Robot.navX.getRawAccelY() * 0) + Math.abs(Robot.navX.getAngle() * 0)); // increase voltage by 1.5 for each rpm the robot is turning
         }
 
     }
@@ -51,7 +53,7 @@ public class HomeIntake extends Command {
     // @Override
     // public void end(boolean interrupted) {
     //     // Lock the intake
-    //     intake.leftPivotMotor.setVoltage(0);
+    //     intake.rightPivotMotor.setVoltage(0);
     //     intake.rightPivotMotor.setVoltage(0);
     //     intake.pivotAlan.setPosition(0);
         

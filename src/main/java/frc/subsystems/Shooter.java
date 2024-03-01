@@ -90,7 +90,7 @@ public class Shooter extends SubsystemBase {
     public static double[] interpolationTimes21 = new double[interpolationAngles21.length];
     public static double[] interpolationTimes17 = new double[interpolationAngles17.length];
 
-    public DigitalInput ayushBBC;
+    // public DigitalInput ayushBBC;
 
     //Shuffleboard Stuff
     public static final ShuffleboardTab SHOOTER_TAB = Shuffleboard.getTab("Shooter"); //Shuffleboard tab
@@ -116,7 +116,7 @@ public class Shooter extends SubsystemBase {
     public Shooter() {
         //Flywheel Initalization
 
-        ayushBBC = new DigitalInput(8);
+        // ayushBBC = new DigitalInput(8);
 
         leftFlywheelMotor = new TalonFX(RobotMap.Shooter.LEFT_FLYWHEEL_MOTOR_ID);
         rightFlywheelMotor = new TalonFX(RobotMap.Shooter.RIGHT_FLYWHEEL_MOTOR_ID);
@@ -231,9 +231,9 @@ public class Shooter extends SubsystemBase {
         return rightFlywheelMotor.getVelocity().refresh().getValueAsDouble();
     }
 
-    public boolean atShooterLimit() {
-        return ayushBBC.get();
-    }
+    // public boolean atShooterLimit() {
+    //     return ayushBBC.get();
+    // }
 
 
     //Angle Functions

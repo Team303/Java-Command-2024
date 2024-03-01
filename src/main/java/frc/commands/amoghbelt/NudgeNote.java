@@ -18,7 +18,6 @@ public class NudgeNote extends Command {
     @Override
     public void execute() {
         belt.runBelt(0, 0, 8);
-        System.out.println("nudge");
         
         // if (!belt.getBeam()) {
         //     // start = Math.abs(belt.indexerMotor.getPosition().refresh().getValueAsDouble());
