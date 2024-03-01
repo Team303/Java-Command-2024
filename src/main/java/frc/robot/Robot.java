@@ -8,7 +8,7 @@ package frc.robot;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
-
+import edu.wpi.first.wpilibj2.command.Commands;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -42,6 +42,7 @@ import frc.commands.shooter.HomeShooter;
 import frc.commands.shooter.ManualShootSpeaker;
 import frc.commands.shooter.SetShooterAmp;
 import frc.commands.drive.TurnToAngle;
+import frc.commands.drive.TurnToSpeaker;
 import frc.commands.intake.HomeIntake;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
@@ -71,9 +72,12 @@ public class Robot extends LoggedRobot {
 		shooter = new Shooter();
 		// swerve.resetOdometry();
 
-		NamedCommands.registerCommand("PickUpNote", new InstantCommand(() -> {System.out.println("picked up note!");}));
-		// NamedCommands.registerCommand("TurnToSpeaker", new TurnToSpeaker());
-		NamedCommands.registerCommand("Shooting", new InstantCommand(() -> {System.out.println("Shooting note!");}));
+		//NamedCommands.registerCommand("PickUpNote", new InstantCommand(() -> {System.out.println("picked up note!");}));
+		NamedCommands.registerCommand("TurnToSpeaker", new TurnToSpeaker());
+		NamedCommands.registerCommand("Shooting", new SequentialCommandGroup(new OutwardIntake(), 
+		   												new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SequentialCommandGroup(new DynamicShootSpeaker(), 
+		   												new ParallelDeadlineGroup(Commands.waitSeconds(2), new ShootNote(), new DynamicShootSpeaker().repeatedly())  
+		   												))));
 
 		configureButtonBindings();
 

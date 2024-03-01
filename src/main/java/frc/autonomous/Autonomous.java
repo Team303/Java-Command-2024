@@ -46,9 +46,14 @@ public class Autonomous {
         // put this is in RobotContainer along with your subsystems.
 
         public static void init() {
-            create("Test", () -> new InstantCommand(() -> System.out.println("TEST")));
-            create("Alan is a persecuter", () -> Robot.swerve.getAutonomousCommand("Alan is a persecuter"));           
-            create("Alan is not a persecuter", () -> Robot.swerve.getAutonomousCommand("Alan is not a persecuter"));
+            //create("Test", () -> new InstantCommand(() -> System.out.println("TEST")));
+            //create("Alan is a persecuter", () -> Robot.swerve.getAutonomousCommand("Alan is a persecuter"));           
+            //create("Alan is not a persecuter", () -> Robot.swerve.getAutonomousCommand("Alan is not a persecuter"));
+            create("MessUpAmp", () -> Robot.swerve.getAutonomousCommand("MessUpAmp"));
+            create("MessUpMiddle", () -> Robot.swerve.getAutonomousCommand("MessUpMiddle"));
+            create("MessUpStage", () -> Robot.swerve.getAutonomousCommand("MessUpStage"));
+            create("ShootTaxi", () -> Robot.swerve.getAutonomousCommand("ShootTaxi"));
+
 
         }
 }

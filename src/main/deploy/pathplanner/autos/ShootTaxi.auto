@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.9127005338668823,
+      "y": 6.844399929046631
+    },
+    "rotation": 2.045372317878972
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "TurnToSpeaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shooting"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ShootTaxi"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "HHCompAutos",
+  "choreoAuto": true
+}

@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.8701227903366089,
+      "y": 4.105275630950928
+    },
+    "rotation": 0.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "TurnToSpeaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shooting"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MessUpStage"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "HHCompAutos",
+  "choreoAuto": true
+}
