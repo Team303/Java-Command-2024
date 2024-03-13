@@ -103,6 +103,7 @@ public class Robot extends LoggedRobot {
 
 		intake.setDefaultCommand(new HomeIntake());
 		shooter.setDefaultCommand(new HomeShooter());
+		swerve.setDefaultCommand(new DefaultDrive(true));
 		swerve.resetOnlyNavX();
 	}
 
@@ -177,8 +178,6 @@ public class Robot extends LoggedRobot {
 		if (autonomousCommand != null) {
 			autonomousCommand.cancel();
 		}
-
-		swerve.setDefaultCommand(new DefaultDrive(true));
 	}
 
 	@Override

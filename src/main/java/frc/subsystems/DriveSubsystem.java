@@ -224,6 +224,7 @@ public class DriveSubsystem extends SubsystemBase {
       initialLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
       Optional<Alliance> alliance = DriverStation.getAlliance();
       // TODO: Change to make the origin position based off of station rather than
+      // TODO: Make set origin to Blue no matter what for pathplanner compatibility
       // just based off of alliance.
       initialLayout
           .setOrigin(alliance.isPresent() && alliance.get() == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide
@@ -386,8 +387,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
 
-    // lock onto different field elements (methods will change the anglular
-    // velocity)
+    // lock onto different field elements (methods will change the anglular velocity)
 
     var swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
 
@@ -471,68 +471,6 @@ public class DriveSubsystem extends SubsystemBase {
     return poseEstimator.getEstimatedPosition();
   }
 
-  public void resetOdometry() {
-
-    // boolean isBlue = true;
-
-    // depending on which alliance, set which global direction to zero to (0 or 180)
-
-    // var alliance = DriverStation.getAlliance();
-    // if (alliance.isPresent()) {
-    // isBlue = alliance.get() == DriverStation.Alliance.Blue;
-    // }
-
-    // Robot.navX.setAngleAdjustment(isBlue ? 0 : 180);
-    Robot.navX.reset();
-
-    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(),
-        new Pose2d(new Translation2d(), Rotation2d.fromDegrees(Robot.navX.getAngle())));
-
-  }
-
-  public void resetOnlyNavX() {
-
-    // boolean isBlue = true;
-
-    // // depending on which alliance, set which global direction to zero to (0 or
-    // 180)
-
-    // var alliance = DriverStation.getAlliance();
-    // if (alliance.isPresent()) {
-    // isBlue = alliance.get() == DriverStation.Alliance.Blue;
-    // }
-
-    // Robot.navX.setAngleAdjustment(isBlue ? 0 : 180);
-    Robot.navX.reset();
-  }
-
-  public void resetOdometry(Pose2d pose) {
-    Robot.navX.setAngleAdjustment(pose.getRotation().getDegrees());
-    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), pose);
-  }
-
-  public void resetOdometryWidget() {
-
-    // resets pose based on values inputted on shuffleboard
-    // depending on which alliance, set which global direction to zero (0 or 180)
-
-    // boolean isBlue = true;
-    Rotation2d angleAdjustment;
-
-    // var alliance = DriverStation.getAlliance();
-    // if (alliance.isPresent()) {
-    // isBlue = alliance.get() == DriverStation.Alliance.Blue;
-    // }
-
-    // angleAdjustment = Rotation2d.fromDegrees(isBlue ? 0 : 180);
-
-    resetOdometry(new Pose2d(
-        new Translation2d(
-            resetPoseX.getDouble(0),
-            resetPoseY.getDouble(0)),
-        new Rotation2d()));
-  }
-
   public Vector<N3> getEstimationStdDevs(List<PhotonTrackedTarget> targetList) {
     var estStdDevs = kSingleStandardDeviations;
     var targets = targetList;
@@ -592,11 +530,6 @@ public class DriveSubsystem extends SubsystemBase {
     }
   }
 
-  public void resetPose(Pose2d pose) {
-    Robot.navX.reset();
-    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), new Pose2d());
-  }
-
   public ChassisSpeeds getRobotRelativeSpeeds() {
     return kinematics.toChassisSpeeds(getModuleStates());
   }
@@ -610,6 +543,57 @@ public class DriveSubsystem extends SubsystemBase {
     };
   }
 
+  public void resetPose(Pose2d pose) {
+    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), new Pose2d());
+  }
+
+  public void resetOdometry() {
+
+    boolean isBlue = true;
+
+    // depending on which alliance, set which global direction to zero to (0 or 180) BLUE ORIGIN
+
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      isBlue = alliance.get() == DriverStation.Alliance.Blue;
+    }
+
+    Robot.navX.reset();
+
+    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(),
+        new Pose2d(new Translation2d(), Rotation2d.fromDegrees(isBlue ? 0 : 180)));
+
+  }
+
+  public void resetOnlyNavX() {
+    Robot.navX.reset();
+  }
+
+  public void resetOdometry(Pose2d pose) {
+    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), pose);
+  }
+
+  public void resetOdometryWidget() {
+
+    // resets pose based on values inputted on shuffleboard
+    // depending on which alliance, set which global direction to zero (0 or 180) BLUE ORIGIN
+
+    boolean isBlue = true;
+
+    var alliance = DriverStation.getAlliance();
+    if (alliance.isPresent()) {
+      isBlue = alliance.get() == DriverStation.Alliance.Blue;
+    }
+
+    Robot.navX.reset();
+
+    resetOdometry(new Pose2d(
+        new Translation2d(
+            resetPoseX.getDouble(0),
+            resetPoseY.getDouble(0)),
+        Rotation2d.fromDegrees(isBlue ? 0 : 180)));
+  }
+
   public double calculateAngleSpeaker() {
     boolean isBlue = true;
 
@@ -621,11 +605,11 @@ public class DriveSubsystem extends SubsystemBase {
     Pose2d robotPose = getPose();
     Translation2d speakerPose;
 
-    speakerPose = isBlue ? new Translation2d(16.2, 5.5) : new Translation2d(0.5, 5.5);
+    speakerPose = isBlue ? RobotMap.FieldConstants.centerSpeakOpenInBlue.getTranslation() : 
+        RobotMap.FieldConstants.centerSpeakOpenInRed.getTranslation();
 
-    // add 180 because shooter is on the back of the robot
-
-    return Math.atan2(speakerPose.getY() - robotPose.getY(), speakerPose.getX() - robotPose.getX()) * (180 / Math.PI);
+    return Math.atan2(speakerPose.getY() - robotPose.getY(), speakerPose.getX() - robotPose.getX()) * (180 / Math.PI)
+        * (isBlue ? - 1 : 0);
 
   }
 
