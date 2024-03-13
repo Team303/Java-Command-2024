@@ -220,7 +220,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     AprilTagFieldLayout initialLayout;
     try {
-      
+
       initialLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
       Optional<Alliance> alliance = DriverStation.getAlliance();
       // TODO: Change to make the origin position based off of station rather than
@@ -234,7 +234,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
     aprilTagField = initialLayout;
     if (Robot.isReal()) {
-      visionPoseEstimator[0]= new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+      visionPoseEstimator[0] = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
           Robot.photonvision.getCamera(CameraName.CAM3),
           PhotonvisionConstants.ROBOT_TO_BACK_LEFT_CAMERA);
       // visionPoseEstimatorRight = new PhotonPoseEstimator(aprilTagField,
@@ -253,7 +253,6 @@ public class DriveSubsystem extends SubsystemBase {
       visionPoseEstimator[1].setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
       // visionPoseEstimatorLeft.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
-
 
     poseEstimator = new SwerveDrivePoseEstimator(kinematics, Robot.navX.getRotation2d(), getModulePositions(),
         new Pose2d(new Translation2d(), new Rotation2d()),
@@ -327,7 +326,7 @@ public class DriveSubsystem extends SubsystemBase {
     frontLeft.setDesiredState(state[0]);
     frontRight.setDesiredState(state[1]);
     backLeft.setDesiredState(state[2]);
-    backRight.setDesiredState(state[3]);    
+    backRight.setDesiredState(state[3]);
   }
 
   private double normalizeAngle(double angleDeg) {
@@ -414,8 +413,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
-    Optional<EstimatedRobotPose> resultBackLeft = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition(),CameraName.CAM3);
-    Optional<EstimatedRobotPose> resultBackRight = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition(),CameraName.CAM1);
+    Optional<EstimatedRobotPose> resultBackLeft = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition(),
+        CameraName.CAM3);
+    Optional<EstimatedRobotPose> resultBackRight = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition(),
+        CameraName.CAM1);
     poseEstimator.update(Robot.navX.getRotation2d(), getModulePositions());
 
     // Optional<EstimatedRobotPose> resultRight =
@@ -424,9 +425,9 @@ public class DriveSubsystem extends SubsystemBase {
     // getEstimatedGlobalPoseLeft(poseEstimator.getEstimatedPosition());
     if (resultBackLeft.isPresent()) {
       EstimatedRobotPose visionPoseEstimate = resultBackLeft.get();
-      Vector<N3> stddevs =  getEstimationStdDevs(visionPoseEstimate.targetsUsed);
+      Vector<N3> stddevs = getEstimationStdDevs(visionPoseEstimate.targetsUsed);
       double[] data = stddevs.getData();
-      for(int i=0;i<data.length;i++){
+      for (int i = 0; i < data.length; i++) {
         // System.out.println(i+" "+data[i]);
       }
       poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
@@ -439,9 +440,9 @@ public class DriveSubsystem extends SubsystemBase {
     // }
     if (resultBackRight.isPresent()) {
       EstimatedRobotPose visionPoseEstimate = resultBackRight.get();
-      Vector<N3> stddevs =  getEstimationStdDevs(visionPoseEstimate.targetsUsed);
+      Vector<N3> stddevs = getEstimationStdDevs(visionPoseEstimate.targetsUsed);
       double[] data = stddevs.getData();
-      for(int i=0;i<data.length;i++){
+      for (int i = 0; i < data.length; i++) {
         // System.out.println(i+" "+data[i]);
       }
       poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
@@ -478,7 +479,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     // var alliance = DriverStation.getAlliance();
     // if (alliance.isPresent()) {
-    //   isBlue = alliance.get() == DriverStation.Alliance.Blue;
+    // isBlue = alliance.get() == DriverStation.Alliance.Blue;
     // }
 
     // Robot.navX.setAngleAdjustment(isBlue ? 0 : 180);
@@ -493,17 +494,17 @@ public class DriveSubsystem extends SubsystemBase {
 
     // boolean isBlue = true;
 
-    // // depending on which alliance, set which global direction to zero to (0 or 180)
+    // // depending on which alliance, set which global direction to zero to (0 or
+    // 180)
 
     // var alliance = DriverStation.getAlliance();
     // if (alliance.isPresent()) {
-    //     isBlue = alliance.get() == DriverStation.Alliance.Blue;
+    // isBlue = alliance.get() == DriverStation.Alliance.Blue;
     // }
 
     // Robot.navX.setAngleAdjustment(isBlue ? 0 : 180);
     Robot.navX.reset();
   }
-
 
   public void resetOdometry(Pose2d pose) {
     Robot.navX.setAngleAdjustment(pose.getRotation().getDegrees());
@@ -520,7 +521,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     // var alliance = DriverStation.getAlliance();
     // if (alliance.isPresent()) {
-    //   isBlue = alliance.get() == DriverStation.Alliance.Blue;
+    // isBlue = alliance.get() == DriverStation.Alliance.Blue;
     // }
 
     // angleAdjustment = Rotation2d.fromDegrees(isBlue ? 0 : 180);
@@ -560,37 +561,36 @@ public class DriveSubsystem extends SubsystemBase {
     return estStdDevs;
   }
 
-public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose,CameraName camera) {
-  int estimator;
-  switch(camera){
-    case CAM3:
-      estimator=0;
-      break;
-    case CAM1:
-      estimator=1;
-      break;
-    default:
-      System.out.println("DriveSubsystem get global pose is accessing illegal camera.");
-      return Optional.empty();
-  }
-  visionPoseEstimator[estimator].setReferencePose(prevEstimatedRobotPose);
-  if (Robot.photonvision.hasTargets(camera)) {
-    PhotonPipelineResult rawResult = Robot.photonvision.getLatestResult(camera);
-    List<PhotonTrackedTarget> targets = rawResult.targets;
-    for (int i = 0; i < targets.size(); i++) {
-      if (targets.get(i).getPoseAmbiguity() > 0.25) {
-        targets.remove(i);
-        --i;
-      }
+  public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose, CameraName camera) {
+    int estimator;
+    switch (camera) {
+      case CAM3:
+        estimator = 0;
+        break;
+      case CAM1:
+        estimator = 1;
+        break;
+      default:
+        System.out.println("DriveSubsystem get global pose is accessing illegal camera.");
+        return Optional.empty();
     }
-    PhotonPipelineResult cameraResult = new PhotonPipelineResult(rawResult.getLatencyMillis(), targets);
-    cameraResult.setTimestampSeconds(rawResult.getTimestampSeconds());
-    return visionPoseEstimator[estimator].update(cameraResult);
-  } else {
-    return Optional.empty();
+    visionPoseEstimator[estimator].setReferencePose(prevEstimatedRobotPose);
+    if (Robot.photonvision.hasTargets(camera)) {
+      PhotonPipelineResult rawResult = Robot.photonvision.getLatestResult(camera);
+      List<PhotonTrackedTarget> targets = rawResult.targets;
+      for (int i = 0; i < targets.size(); i++) {
+        if (targets.get(i).getPoseAmbiguity() > 0.25) {
+          targets.remove(i);
+          --i;
+        }
+      }
+      PhotonPipelineResult cameraResult = new PhotonPipelineResult(rawResult.getLatencyMillis(), targets);
+      cameraResult.setTimestampSeconds(rawResult.getTimestampSeconds());
+      return visionPoseEstimator[estimator].update(cameraResult);
+    } else {
+      return Optional.empty();
+    }
   }
-}
-
 
   public void resetPose(Pose2d pose) {
     Robot.navX.reset();

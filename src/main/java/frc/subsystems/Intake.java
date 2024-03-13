@@ -41,7 +41,7 @@ public class Intake extends SubsystemBase {
 
 	public static final GenericEntry MOTOR_OUTPUT = INTAKE_TAB.add("Motor Output", 0).getEntry();
 
-	public static final GenericEntry REVERSE_SWITCH = INTAKE_TAB.add("REVERSE SWITCH", false).getEntry();
+	public static final GenericEntry HOME_SWITCH_ALAN_SUCKS = INTAKE_TAB.add("", false).getEntry();
 
 	public double pivotAngle = 0.0;
 
@@ -64,7 +64,6 @@ public class Intake extends SubsystemBase {
 		rightPivotMotor.setInverted(false);
 		// leftPivotMotor.setInverted(true);
 
-
 		TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(Math.PI,
 				Math.PI * 8);
 		// Change: Alan's job
@@ -76,10 +75,7 @@ public class Intake extends SubsystemBase {
 
 		pivotPIDController.enableContinuousInput(0, 2 * Math.PI);
 
-
 		leftPivotMotor.follow(rightPivotMotor, true);
-		// rightPivotMotor.follow(leftPivotMotor, true);
-
 
 		pivotAlan = leftPivotMotor.getEncoder();
 		pivotAlan.setPositionConversionFactor(2 * Math.PI * RobotMap.Intake.GEAR_RATIO);
@@ -107,18 +103,14 @@ public class Intake extends SubsystemBase {
 
 		// pivotPIDController.setConstraints(constrain);
 
+		// TODO: add back feedforward control
+
 		final double pivotOutput = pivotPIDController.calculate(getAbsolutePivotAngle(), angle);
 
 		final double pivotFeedforward = pivotFeedForward.calculate(angle > Math.toRadians(270) ? 0 : angle,
 				pivotPIDController.getSetpoint().velocity);
 
-		// if (angle > Math.toRadians(45) && angle < Math.toRadians(320) &&
-		// getAbsolutePivotAngle() > Math.toRadians(45)) {
-		// return pivotOutput - 3 < 0 ? pivotOutput : pivotOutput - 3;
-		// }
-		// {
-		return pivotOutput;// pivotFeedforward;
-		// }
+		return pivotOutput;
 
 	}
 
@@ -139,10 +131,6 @@ public class Intake extends SubsystemBase {
 		return homeLimit.isPressed();
 	}
 
-	// public boolean atGroundHardLimit() {
-	// 	return groundLimit.get();
-	// }
-
 	public ProfiledPIDController getPivotPIDController() {
 		return pivotPIDController;
 	}
@@ -154,10 +142,8 @@ public class Intake extends SubsystemBase {
 	@Override
 	public void periodic() {
 
-		ACTUAL_PIVOT_ANGLE_ENTRY.setDouble(getAbsolutePivotAngle() * (180/Math.PI));
-		// GROUND_LIMIT_SWITCH_ALAN_SUCKS.setBoolean(atGroundHardLimit());
-		REVERSE_SWITCH.setBoolean(atHomeHardLimit());
-
+		ACTUAL_PIVOT_ANGLE_ENTRY.setDouble(getAbsolutePivotAngle() * (180 / Math.PI));
+		HOME_SWITCH_ALAN_SUCKS.setBoolean(atHomeHardLimit());
 	}
 
 }

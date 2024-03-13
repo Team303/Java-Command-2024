@@ -19,6 +19,7 @@ public class GroundIntake extends Command {
 
     @Override
     public void initialize() {
+        // set Kp to 3 when grounding
         intake.pivotPIDController.setP(3);
     }
 
@@ -28,7 +29,7 @@ public class GroundIntake extends Command {
         double voltage = intake.calculateAngleSpeed(RobotMap.Intake.GROUND_ANGLE);
         MOTOR_OUTPUT.setDouble(voltage);
 
-        // soft limit
+        // Soft Limit
 
         if (intake.getAbsolutePivotAngle() < 3 * Math.PI / 2 || intake.getAbsolutePivotAngle() > Math.toRadians(320))
             intake.rightPivotMotor.setVoltage(voltage);
@@ -38,15 +39,17 @@ public class GroundIntake extends Command {
 
     @Override
     public boolean isFinished() {
-        return (intake.getAbsolutePivotAngle() > Math.toRadians(320)
-                && intake.getAbsolutePivotAngle() < Math.toRadians(350)) || intake.getPivotPIDController().atSetpoint();
+        return (intake.getAbsolutePivotAngle() > Math.toRadians(355)
+                        && intake.getAbsolutePivotAngle() < Math.toRadians(360))
+                || intake.getAbsolutePivotAngle() > Math.toRadians(0)
+                        && intake.getAbsolutePivotAngle() < Math.toRadians(5)
+                || intake.getPivotPIDController().atSetpoint();
     }
 
     // @Override
     // public void end(boolean interrupted) {
-    //     // Lock the intake
-    //     intake.rightPivotMotor.setVoltage(0);
-    //     intake.rightPivotMotor.setVoltage(0);
-
+    // // Lock the intake
+    // intake.rightPivotMotor.setVoltage(0);
+    // intake.rightPivotMotor.setVoltage(0);
     // }
 }

@@ -33,27 +33,28 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
  * Note: Only the first command will finish the group
  */
 public class Autonomous {
-        // This will load the file "FullAuto.path" and generate it with a max velocity
-        // of 4 m/s and a max acceleration of 3 m/s^2
-        // for every path in the group
-        // global event map
+    // This will load the file "FullAuto.path" and generate it with a max velocity
+    // of 4 m/s and a max acceleration of 3 m/s^2
+    // for every path in the group
+    // global event map
 
-        // This is just an example event map. It would be better to have a constant,
-        // in your code that will be used by all path following commands.
+    // This is just an example event map. It would be better to have a constant,
+    // in your code that will be used by all path following commands.
 
-        // Create the AutoBuilder. This only needs to be created once when robot code
-        // starts, not every time you want to create an auto command. A good place to
-        // put this is in RobotContainer along with your subsystems.
+    // Create the AutoBuilder. This only needs to be created once when robot code
+    // starts, not every time you want to create an auto command. A good place to
+    // put this is in RobotContainer along with your subsystems.
 
-        public static void init() {
-            //create("Test", () -> new InstantCommand(() -> System.out.println("TEST")));
-            //create("Alan is a persecuter", () -> Robot.swerve.getAutonomousCommand("Alan is a persecuter"));           
-            //create("Alan is not a persecuter", () -> Robot.swerve.getAutonomousCommand("Alan is not a persecuter"));
-            create("MessUpAmp", () -> Robot.swerve.getAutonomousCommand("MessUpAmp"));
-            create("MessUpMiddle", () -> Robot.swerve.getAutonomousCommand("MessUpMiddle"));
-            create("MessUpStage", () -> Robot.swerve.getAutonomousCommand("MessUpStage"));
-            create("ShootTaxi", () -> Robot.swerve.getAutonomousCommand("ShootTaxi"));
+    public static void init() {
+        // create("Test", () -> new InstantCommand(() -> System.out.println("TEST")));
+        // create("Alan is a persecuter", () -> Robot.swerve.getAutonomousCommand("Alan
+        // is a persecuter"));
+        // create("Alan is not a persecuter", () ->
+        // Robot.swerve.getAutonomousCommand("Alan is not a persecuter"));
+        create("MessUpAmp", () -> Robot.swerve.getAutonomousCommand("MessUpAmp"));
+        create("MessUpMiddle", () -> Robot.swerve.getAutonomousCommand("MessUpMiddle"));
+        create("MessUpStage", () -> Robot.swerve.getAutonomousCommand("MessUpStage"));
+        create("ShootTaxi", () -> Robot.swerve.getAutonomousCommand("ShootTaxi"));
 
-
-        }
+    }
 }

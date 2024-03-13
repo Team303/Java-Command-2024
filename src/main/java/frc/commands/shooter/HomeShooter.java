@@ -19,9 +19,10 @@ public class HomeShooter extends Command {
         double voltage = shooter.calculateAngleSpeed(Math.toRadians(7));
         System.out.println("Voltage Home: " + voltage);
 
-        // if (Math.abs(shooter.getAbsoluteShooterAngle() - Math.toRadians(7)) < Math.toRadians(4)) {
-        //     shooter.leftAngleMotor.setControl(new VelocityVoltage(0));
-        //     System.out.println("close enough!!!");
+        // if (Math.abs(shooter.getAbsoluteShooterAngle() - Math.toRadians(7)) <
+        // Math.toRadians(4)) {
+        // shooter.leftAngleMotor.setControl(new VelocityVoltage(0));
+        // System.out.println("close enough!!!");
         // } else {
         shooter.leftAngleMotor.setVoltage(voltage);
         // }

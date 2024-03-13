@@ -26,21 +26,23 @@ public class DefaultDrive extends Command {
 
         // var alliance = DriverStation.getAlliance();
         // if (alliance.isPresent()) {
-        //     isAlliance = alliance.get() == DriverStation.Alliance.Blue;
+        // isAlliance = alliance.get() == DriverStation.Alliance.Blue;
         // }
 
         // if (isAlliance)
-            translation = new Translation2d(
-                    MathUtil.applyDeadband(-Robot.driverController.getLeftY(), 0.25) * DriveSubsystem.kMaxSpeed
-                            * percentPower,
-                    MathUtil.applyDeadband(-Robot.driverController.getLeftX(), 0.25) * DriveSubsystem.kMaxSpeed
-                            * percentPower);
+        translation = new Translation2d(
+                MathUtil.applyDeadband(-Robot.driverController.getLeftY(), 0.25) * DriveSubsystem.kMaxSpeed
+                        * percentPower,
+                MathUtil.applyDeadband(-Robot.driverController.getLeftX(), 0.25) * DriveSubsystem.kMaxSpeed
+                        * percentPower);
         // else
-        //     translation = new Translation2d(
-        //             MathUtil.applyDeadband(Robot.driverController.getLeftY(), 0.25) * DriveSubsystem.kMaxSpeed
-        //                     * percentPower,
-        //             MathUtil.applyDeadband(Robot.driverController.getLeftX(), 0.25) * DriveSubsystem.kMaxSpeed
-        //                     * percentPower);
+        // translation = new Translation2d(
+        // MathUtil.applyDeadband(Robot.driverController.getLeftY(), 0.25) *
+        // DriveSubsystem.kMaxSpeed
+        // * percentPower,
+        // MathUtil.applyDeadband(Robot.driverController.getLeftX(), 0.25) *
+        // DriveSubsystem.kMaxSpeed
+        // * percentPower);
 
         double rotation = MathUtil.applyDeadband(Robot.driverController.getRightX() * percentPower, 0.2)
                 * DriveSubsystem.kMaxAngularSpeed * percentPower;
