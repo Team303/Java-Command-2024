@@ -80,13 +80,13 @@ public class DriveSubsystem extends SubsystemBase {
   private final SwerveModule frontRight;
   private final SwerveModule backLeft;
   private final SwerveModule backRight;
-  int jump=0;
+  int jump = 0;
   // private final SwerveDriveOdometry odometry;
   private final PIDController m_driftCorrectionPid = new PIDController(0.12, 0, 0);
   // private Pose2d pose = new Pose2d(0.0, 0.0, new Rotation2d());
 
   private ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
-  private ChassisSpeeds relativeSpeeds = new ChassisSpeeds(); 
+  private ChassisSpeeds relativeSpeeds = new ChassisSpeeds();
 
   public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drive Base");
 
@@ -129,10 +129,10 @@ public class DriveSubsystem extends SubsystemBase {
   public static final GenericEntry resetPoseX = DRIVEBASE_TAB.add("resetPoseX", 0).withPosition(0, 4)
       .withSize(1, 1).getEntry();
   public static final GenericEntry resetPoseY = DRIVEBASE_TAB.add("resetPoseY", 0).withPosition(1, 4)
-    .withSize(1, 1).getEntry();
+      .withSize(1, 1).getEntry();
   public static final GenericEntry resetPoseAngle = DRIVEBASE_TAB.add("resetPoseAngle", 0).withPosition(2, 4)
-    .withSize(1, 1).getEntry();
-  
+      .withSize(1, 1).getEntry();
+
   public static final GenericEntry globalAngle = DRIVEBASE_TAB.add("global angle", 0).withPosition(4, 0).getEntry();
   public static final GenericEntry angleVelo = DRIVEBASE_TAB.add("angular velocity", 0).withPosition(4, 1).getEntry();
   // public static final GenericEntry time = DRIVEBASE_TAB.add("Time",
@@ -159,20 +159,20 @@ public class DriveSubsystem extends SubsystemBase {
   // private static final Vector<N3> photonStandardDeviations =
   // VecBuilder.fill(0.25, 0.25, 0);
   private static final Vector<N3> photonStandardDeviations = VecBuilder.fill(5, 5, 100);
-  private static final Vector<N3> kSingleStandardDeviations = VecBuilder.fill(5,5,100);
-  private static final Vector<N3> kMultiTagStandardDeviations = VecBuilder.fill(2.5,2.5,100);
-
+  private static final Vector<N3> kSingleStandardDeviations = VecBuilder.fill(5, 5, 100);
+  private static final Vector<N3> kMultiTagStandardDeviations = VecBuilder.fill(2.5, 2.5, 100);
 
   public CANcoderConfiguration configLeftFront;
   public CANcoderConfiguration configRightFront;
-  public CANcoderConfiguration configLeftBack;  
+  public CANcoderConfiguration configLeftBack;
   public CANcoderConfiguration configRightBack;
 
   public SwerveDrivePoseEstimator poseEstimator;
 
   public DriveSubsystem() {
 
-    Logger.recordOutput("Swerve Module States", new SwerveModuleState[] {new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState()});
+    Logger.recordOutput("Swerve Module States", new SwerveModuleState[] { new SwerveModuleState(),
+        new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState() });
     Robot.navX.reset();
     AVTimer.start();
 
@@ -186,44 +186,38 @@ public class DriveSubsystem extends SubsystemBase {
     configRightBack.MagnetSensor.MagnetOffset = Swerve.RIGHT_BACK_STEER_OFFSET;
 
     PIDController frontLeftPID = new PIDController(6, 0.5, 0);
-    frontLeftPID.setIntegratorRange(0,1);
+    frontLeftPID.setIntegratorRange(0, 1);
 
     PIDController frontRightPID = new PIDController(6, 0.5, 0);
-    frontLeftPID.setIntegratorRange(0,1);
+    frontLeftPID.setIntegratorRange(0, 1);
 
     PIDController backLeftPID = new PIDController(6, 0.5, 0);
-    frontLeftPID.setIntegratorRange(0,1);
+    frontLeftPID.setIntegratorRange(0, 1);
 
     PIDController backRightPID = new PIDController(6, 0.5, 0);
-    frontLeftPID.setIntegratorRange(0,1);
-
-
+    frontLeftPID.setIntegratorRange(0, 1);
 
     frontLeft = new SwerveModule(
-      RobotMap.Swerve.LEFT_FRONT_DRIVE_ID, 
-      RobotMap.Swerve.LEFT_FRONT_STEER_ID,
-      RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID,
-      configLeftFront
-      );
+        RobotMap.Swerve.LEFT_FRONT_DRIVE_ID,
+        RobotMap.Swerve.LEFT_FRONT_STEER_ID,
+        RobotMap.Swerve.LEFT_FRONT_STEER_CANCODER_ID,
+        configLeftFront);
 
     frontRight = new SwerveModule(
-      RobotMap.Swerve.RIGHT_FRONT_DRIVE_ID, 
-      RobotMap.Swerve.RIGHT_FRONT_STEER_ID,
-      RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID,
-      configRightFront
-      );
+        RobotMap.Swerve.RIGHT_FRONT_DRIVE_ID,
+        RobotMap.Swerve.RIGHT_FRONT_STEER_ID,
+        RobotMap.Swerve.RIGHT_FRONT_STEER_CANCODER_ID,
+        configRightFront);
     backLeft = new SwerveModule(
-      RobotMap.Swerve.LEFT_BACK_DRIVE_ID, 
-      RobotMap.Swerve.LEFT_BACK_STEER_ID,
-      RobotMap.Swerve.LEFT_BACK_STEER_CANCODER_ID,
-      configLeftBack
-    );
+        RobotMap.Swerve.LEFT_BACK_DRIVE_ID,
+        RobotMap.Swerve.LEFT_BACK_STEER_ID,
+        RobotMap.Swerve.LEFT_BACK_STEER_CANCODER_ID,
+        configLeftBack);
     backRight = new SwerveModule(
-      RobotMap.Swerve.RIGHT_BACK_DRIVE_ID, 
-      RobotMap.Swerve.RIGHT_BACK_STEER_ID,
-      RobotMap.Swerve.RIGHT_BACK_STEER_CANCODER_ID,
-      configRightBack
-    );
+        RobotMap.Swerve.RIGHT_BACK_DRIVE_ID,
+        RobotMap.Swerve.RIGHT_BACK_STEER_ID,
+        RobotMap.Swerve.RIGHT_BACK_STEER_CANCODER_ID,
+        configRightBack);
 
     // frontLeft.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.LEFT_FRONT_STEER_OFFSET);
     // frontRight.getTurningEncoder().configMagnetOffset(RobotMap.Swerve.RIGHT_FRONT_STEER_OFFSET);
@@ -242,38 +236,45 @@ public class DriveSubsystem extends SubsystemBase {
 
     AprilTagFieldLayout initialLayout;
     // try {
-      
-    //   initialLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
-    //   Optional<Alliance> alliance = DriverStation.getAlliance();
-    //   // TODO: Change to make the origin position based off of station rather than
-    //   // just based off of alliance.
-    //   initialLayout
-    //       .setOrigin(alliance.isPresent() && alliance.get() == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide
-    //           : OriginPosition.kRedAllianceWallRightSide);
+
+    // initialLayout =
+    // AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
+    // Optional<Alliance> alliance = DriverStation.getAlliance();
+    // // TODO: Change to make the origin position based off of station rather than
+    // // just based off of alliance.
+    // initialLayout
+    // .setOrigin(alliance.isPresent() && alliance.get() == Alliance.Blue ?
+    // OriginPosition.kBlueAllianceWallRightSide
+    // : OriginPosition.kRedAllianceWallRightSide);
     // } catch (IOException e) {
-    //   DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
-    //   initialLayout = null;
+    // DriverStation.reportError("Failed to load AprilTagFieldLayout",
+    // e.getStackTrace());
+    // initialLayout = null;
     // }
     // aprilTagField = initialLayout;
     // if (Robot.isReal()) {
-    //   visionPoseEstimatorFront = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-    //       Robot.photonvision.getCamera(CameraName.CAM1),
-    //       PhotonvisionConstants.ROBOT_TO_FRONT_CAMERA);
-    //   // visionPoseEstimatorRight = new PhotonPoseEstimator(aprilTagField,
-    //   // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-    //   // Robot.photonvision.getCamera(CameraName.CAM2),
-    //   // PhotonvisionConstants.ROBOT_TO_RIGHT_CAMERA);
-    //   visionPoseEstimatorBack = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-    //       Robot.photonvision.getCamera(CameraName.CAM3),
-    //       PhotonvisionConstants.ROBOT_TO_BACK_CAMERA);
-    //   // visionPoseEstimatorLeft = new PhotonPoseEstimator(aprilTagField,
-    //   // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-    //   // Robot.photonvision.getCamera(CameraName.CAM4),
-    //   // PhotonvisionConstants.ROBOT_TO_LEFT_CAMERA);
-    //   visionPoseEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-    //   // visionPoseEstimatorRight.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-    //   visionPoseEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-    //   // visionPoseEstimatorLeft.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    // visionPoseEstimatorFront = new PhotonPoseEstimator(aprilTagField,
+    // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+    // Robot.photonvision.getCamera(CameraName.CAM1),
+    // PhotonvisionConstants.ROBOT_TO_FRONT_CAMERA);
+    // // visionPoseEstimatorRight = new PhotonPoseEstimator(aprilTagField,
+    // // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+    // // Robot.photonvision.getCamera(CameraName.CAM2),
+    // // PhotonvisionConstants.ROBOT_TO_RIGHT_CAMERA);
+    // visionPoseEstimatorBack = new PhotonPoseEstimator(aprilTagField,
+    // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+    // Robot.photonvision.getCamera(CameraName.CAM3),
+    // PhotonvisionConstants.ROBOT_TO_BACK_CAMERA);
+    // // visionPoseEstimatorLeft = new PhotonPoseEstimator(aprilTagField,
+    // // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+    // // Robot.photonvision.getCamera(CameraName.CAM4),
+    // // PhotonvisionConstants.ROBOT_TO_LEFT_CAMERA);
+    // visionPoseEstimatorFront.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    // //
+    // visionPoseEstimatorRight.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    // visionPoseEstimatorBack.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    // //
+    // visionPoseEstimatorLeft.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     // }
 
     // odometry = new SwerveDriveOdometry(
@@ -285,29 +286,30 @@ public class DriveSubsystem extends SubsystemBase {
         odometryStandardDeviations, photonStandardDeviations);
 
     AutoBuilder.configureHolonomic(
-            this::getPose, // Robot pose supplier
-            this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
-            this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            this::robotRelativeDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-            new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                    new PIDConstants(5, 0.0, 0.0), // Translation PID constants
-                    new PIDConstants(8, 0, 0), // Rotation PID constants
-                    5.2, // Max module speed, in m/s
-                    0.3302, // Drive base radius in meters. Distance from robot center to furthest module.
-                    new ReplanningConfig() // Default path replanning config. See the API for the options here
-            ),
-            () -> {
-                // Boolean supplier that controls when the path will be mirrored for the red alliance
-                // This will flip the path being followed to the red side of the field.
-                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+        this::getPose, // Robot pose supplier
+        this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+        this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+        this::robotRelativeDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+        new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+            new PIDConstants(5, 0.0, 0.0), // Translation PID constants
+            new PIDConstants(8, 0, 0), // Rotation PID constants
+            5.2, // Max module speed, in m/s
+            0.3302, // Drive base radius in meters. Distance from robot center to furthest module.
+            new ReplanningConfig() // Default path replanning config. See the API for the options here
+        ),
+        () -> {
+          // Boolean supplier that controls when the path will be mirrored for the red
+          // alliance
+          // This will flip the path being followed to the red side of the field.
+          // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-                var alliance = DriverStation.getAlliance();
-                if (alliance.isPresent()) {
-                    return alliance.get() == DriverStation.Alliance.Red;
-                }
-                return false;
-            },
-            this // Reference to this subsystem to set requirements
+          var alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+          }
+          return false;
+        },
+        this // Reference to this subsystem to set requirements
     );
   }
 
@@ -349,7 +351,7 @@ public class DriveSubsystem extends SubsystemBase {
       return chassisSpeeds;
     double translationalVelocity = Math.hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond);
     Logger.recordOutput("translational velocity", translationalVelocity);
-    Logger.recordOutput("turn rate",Robot.navX.getRate());
+    Logger.recordOutput("turn rate", Robot.navX.getRate());
 
     if (Math.abs(Robot.navX.getRate()) > 0.5) {
       m_desiredHeading = Robot.navX.getYaw();
@@ -358,8 +360,7 @@ public class DriveSubsystem extends SubsystemBase {
       double calc = m_driftCorrectionPid.calculate(Robot.navX.getYaw(),
           m_desiredHeading);
 
-      if (Math.abs(calc) >= 0.1) 
-      {
+      if (Math.abs(calc) >= 0.1) {
         chassisSpeeds.omegaRadiansPerSecond -= calc;
       }
     }
@@ -381,9 +382,9 @@ public class DriveSubsystem extends SubsystemBase {
     backRight.setDesiredState(state[3]);
 
     System.out.println("Driving");
-    
+
   }
- 
+
   public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
 
     ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -415,7 +416,7 @@ public class DriveSubsystem extends SubsystemBase {
   /** Updates the field relative position of the robot. */
   public void updateOdometry(boolean jumpFront, boolean jumpBack) {
     poseEstimator.update(Robot.navX.getRotation2d(), getModulePositions());
-    
+
     field2d.setRobotPose(getPose());
   }
 
@@ -438,16 +439,17 @@ public class DriveSubsystem extends SubsystemBase {
 
     var alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
-        isAlliance = alliance.get() == DriverStation.Alliance.Blue;
+      isAlliance = alliance.get() == DriverStation.Alliance.Blue;
     }
 
-    if (isAlliance) 
+    if (isAlliance)
       Robot.navX.setAngleAdjustment(0);
     else
       Robot.navX.setAngleAdjustment(180);
     Robot.navX.reset();
 
-    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), new Pose2d(new Translation2d(), Rotation2d.fromDegrees(Robot.navX.getAngle())));
+    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(),
+        new Pose2d(new Translation2d(), Rotation2d.fromDegrees(Robot.navX.getAngle())));
   }
 
   public void resetOdometry(Pose2d pose) {
@@ -456,7 +458,7 @@ public class DriveSubsystem extends SubsystemBase {
     // odometry.resetPosition(Robot.navX.getRotation2d(), getModulePositions(),
     // pose);
   }
-  
+
   public void resetOdometryWidget() {
 
     boolean isAlliance = true;
@@ -464,14 +466,13 @@ public class DriveSubsystem extends SubsystemBase {
 
     var alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
-        isAlliance = alliance.get() == DriverStation.Alliance.Blue;
+      isAlliance = alliance.get() == DriverStation.Alliance.Blue;
     }
 
-    if (isAlliance) 
+    if (isAlliance)
       angleAdjustment = Rotation2d.fromDegrees(0);
     else
       angleAdjustment = Rotation2d.fromDegrees(180);
-
 
     resetOdometry(new Pose2d(new Translation2d(resetPoseX.getDouble(0), resetPoseY.getDouble(0)), angleAdjustment));
   }
@@ -494,26 +495,25 @@ public class DriveSubsystem extends SubsystemBase {
 
     var alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
-        isAlliance = alliance.get() == DriverStation.Alliance.Blue;
+      isAlliance = alliance.get() == DriverStation.Alliance.Blue;
     }
 
     Pose2d robotPose = getPose();
     Translation2d speakerPose;
 
-    speakerPose = isAlliance ? new Translation2d(0.5, 5.5) :new Translation2d(16.2, 5.5);
+    speakerPose = isAlliance ? new Translation2d(0.5, 5.5) : new Translation2d(16.2, 5.5);
 
     return -Math.atan2(speakerPose.getY() - robotPose.getY(), speakerPose.getX() - robotPose.getX()) * (180 / Math.PI);
 
   }
- 
 
   @Override
   public void periodic() {
 
-    FRONT_LEFT_ENC.setDouble(frontLeft.turningEncoder.getAbsolutePosition().refresh().getValue());
-    FRONT_RIGHT_ENC.setDouble(frontRight.turningEncoder.getAbsolutePosition().refresh().getValue());
-    BACK_LEFT_ENC.setDouble(backLeft.turningEncoder.getAbsolutePosition().refresh().getValue());
-    BACK_RIGHT_ENC.setDouble(backRight.turningEncoder.getAbsolutePosition().refresh().getValue());
+    FRONT_LEFT_ENC.setDouble(frontLeft.turningEncoder.getAbsolutePosition().refresh().getValue() * 360);
+    FRONT_RIGHT_ENC.setDouble(frontRight.turningEncoder.getAbsolutePosition().refresh().getValue() * 360);
+    BACK_LEFT_ENC.setDouble(backLeft.turningEncoder.getAbsolutePosition().refresh().getValue() * 360);
+    BACK_RIGHT_ENC.setDouble(backRight.turningEncoder.getAbsolutePosition().refresh().getValue() * 360);
 
     frontLeftDriveEncoder.setDouble(frontLeft.getPosition().distanceMeters);
     backLeftDriveEncoder.setDouble(backLeft.getPosition().distanceMeters);
@@ -529,10 +529,10 @@ public class DriveSubsystem extends SubsystemBase {
     globalAngle.setDouble(Robot.navX.getAngle() % 360);
     angleVelo.setDouble(Robot.navX.getRate());
     // if(jump<100){
-      updateOdometry(true,true);
-      // jump++;
+    updateOdometry(true, true);
+    // jump++;
     // } else {
-    //   updateOdometry(false,false);
+    // updateOdometry(false,false);
     // }
 
     Logger.recordOutput("Odometry", getPose());
@@ -543,7 +543,6 @@ public class DriveSubsystem extends SubsystemBase {
     Logger.recordOutput("Back Right Aritra", backRight.getPosition().angle.getDegrees());
     Logger.recordOutput("Alan is a persecuter", true);
     Logger.recordOutput("Real Swerve Module States", getModuleStates());
-    
 
     // Logger.recordOuptu("Swervemodule states", Swer)
   }
