@@ -62,20 +62,23 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void robotInit() {
-		photonvision = new PhotonvisionModule();
+		photonvision = null; // new PhotonvisionModule();
 		swerve = new DriveSubsystem();
-		intake = new Intake();
-		belt = new Belt();
-		shooter = new Shooter();
-		// swerve.resetOdometry();
+		intake = null; // new Intake();
+		belt = null; // new Belt();s
+		shooter = null; // new Shooter();
+		swerve.resetOdometry();
 
-		NamedCommands.registerCommand("PickUpNote", new SequentialCommandGroup(new GroundIntake(),
-				new ParallelDeadlineGroup(new SequentialCommandGroup(new IntakeNote(), new NudgeNote()),
-						new GroundIntake().repeatedly())));
-		NamedCommands.registerCommand("TurnToSpeaker", new TurnToSpeaker());
-		NamedCommands.registerCommand("Shooting", new SequentialCommandGroup(new SetShooterAmp(Math.toRadians(50), 18),
-				new ParallelCommandGroup(new ShootNote(),
-						new SetShooterAmp(Math.toRadians(50), 18).repeatedly())));
+		// NamedCommands.registerCommand("PickUpNote", new SequentialCommandGroup(new
+		// GroundIntake(),
+		// new ParallelDeadlineGroup(new SequentialCommandGroup(new IntakeNote(), new
+		// NudgeNote()),
+		// new GroundIntake().repeatedly())));
+		// NamedCommands.registerCommand("TurnToSpeaker", new TurnToSpeaker());
+		// NamedCommands.registerCommand("Shooting", new SequentialCommandGroup(new
+		// SetShooterAmp(Math.toRadians(50), 18),
+		// new ParallelCommandGroup(new ShootNote(),
+		// new SetShooterAmp(Math.toRadians(50), 18).repeatedly())));
 
 		configureButtonBindings();
 
@@ -101,8 +104,8 @@ public class Robot extends LoggedRobot {
 		Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();
 
-		intake.setDefaultCommand(new HomeIntake());
-		shooter.setDefaultCommand(new HomeShooter());
+		// intake.setDefaultCommand(new HomeIntake());
+		// shooter.setDefaultCommand(new HomeShooter());
 		swerve.setDefaultCommand(new DefaultDrive(true));
 		swerve.resetOnlyNavX();
 	}
@@ -121,28 +124,33 @@ public class Robot extends LoggedRobot {
 		driverController.y().onTrue(Commands.runOnce(() -> swerve.resetOdometry(swerve.getPose())));
 		driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 
-		// spin the other way when a note gets stuck
-		operatorController.pov(0).whileTrue(new EjaculateNote());
+		// // spin the other way when a note gets stuck
+		// operatorController.pov(0).whileTrue(new EjaculateNote());
 
-		// set down the intake and then ejaculate
-		operatorController.pov(90).toggleOnTrue(new SequentialCommandGroup(new GroundIntake(),
-				new ParallelDeadlineGroup(new EjaculateNote(), new GroundIntake().repeatedly())));
+		// // set down the intake and then ejaculate
+		// operatorController.pov(90).toggleOnTrue(new SequentialCommandGroup(new
+		// GroundIntake(),
+		// new ParallelDeadlineGroup(new EjaculateNote(), new
+		// GroundIntake().repeatedly())));
 
-		// set down intake and spin indexer until note reaches the bbc
-		operatorController.pov(180).toggleOnTrue(new SequentialCommandGroup(new GroundIntake(),
-				new ParallelDeadlineGroup(new SequentialCommandGroup(new IntakeNote(), new NudgeNote()),
-						new GroundIntake().repeatedly())));
+		// // set down intake and spin indexer until note reaches the bbc
+		// operatorController.pov(180).toggleOnTrue(new SequentialCommandGroup(new
+		// GroundIntake(),
+		// new ParallelDeadlineGroup(new SequentialCommandGroup(new IntakeNote(), new
+		// NudgeNote()),
+		// new GroundIntake().repeatedly())));
 
-		// adjust angle and shoot based on localization data
-		operatorController.y().toggleOnTrue(
-				new SequentialCommandGroup(new DynamicShootSpeaker(),
-						new ParallelCommandGroup(new ShootNote(), new DynamicShootSpeaker().repeatedly())));
+		// // adjust angle and shoot based on localization data
+		// operatorController.y().toggleOnTrue(
+		// new SequentialCommandGroup(new DynamicShootSpeaker(),
+		// new ParallelCommandGroup(new ShootNote(), new
+		// DynamicShootSpeaker().repeatedly())));
 
-		// adjust angle and shoot to a preset angle
-		operatorController.a().toggleOnTrue(
-				new SequentialCommandGroup(new SetShooterAmp(Math.toRadians(50), 18),
-						new ParallelCommandGroup(new ShootNote(),
-								new SetShooterAmp(Math.toRadians(50), 18).repeatedly())));
+		// // adjust angle and shoot to a preset angle
+		// operatorController.a().toggleOnTrue(
+		// new SequentialCommandGroup(new SetShooterAmp(Math.toRadians(50), 18),
+		// new ParallelCommandGroup(new ShootNote(),
+		// new SetShooterAmp(Math.toRadians(50), 18).repeatedly())));
 
 	}
 

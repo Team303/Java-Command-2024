@@ -29,10 +29,10 @@ public class RobotMap {
 		public static final int RIGHT_BACK_STEER_ID = 13;
 
 		/* Steer Motor Offset */
-		public static final double LEFT_BACK_STEER_OFFSET = -1.5730 / 360;
-		public static final double RIGHT_BACK_STEER_OFFSET = 29.44 / 360;
-		public static final double LEFT_FRONT_STEER_OFFSET = -13.183 / 360;
-		public static final double RIGHT_FRONT_STEER_OFFSET = 17.8417 / 360;
+		public static final double LEFT_BACK_STEER_OFFSET = 81.21 / 360;
+		public static final double RIGHT_BACK_STEER_OFFSET = 0;
+		public static final double LEFT_FRONT_STEER_OFFSET = -73.47 / 360;
+		public static final double RIGHT_FRONT_STEER_OFFSET = 118.30 / 360;
 
 		public static final double SWERVE_CONVERSION_FACTOR = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
 

@@ -8,6 +8,7 @@ import static frc.subsystems.Shooter.INTERPOLATED_DEGREES_ENTRY;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
@@ -21,6 +22,8 @@ public class DynamicShootSpeaker extends Command {
     Translation2d target;
     double range;
     Pose2d curPose;
+    double curTime = Integer.MAX_VALUE;
+    Timer timer;
 
     public DynamicShootSpeaker() {
         addRequirements(shooter);
@@ -29,6 +32,7 @@ public class DynamicShootSpeaker extends Command {
 
         INTERPOLATED_DEGREES_ENTRY.setDouble(Math.toDegrees(desiredAngle));
         shooter.pivotAngle = desiredAngle;
+        timer = new Timer();
     }
 
     @Override
@@ -89,15 +93,19 @@ public class DynamicShootSpeaker extends Command {
         shooter.rightFlywheelMotor
                 .setControl(shooter.flywheelVoltageRight.withVelocity((desiredVelocityRight / (2 * Math.PI * 0.0508))));
 
+        if (shooter.atSetpoint()
+                && (shooter.leftFlywheelMotor.getVelocity().refresh().getValueAsDouble() > desiredVelocityLeft
+                        / (2 * Math.PI * 0.0508))
+                && (shooter.rightFlywheelMotor.getVelocity().refresh().getValueAsDouble() > desiredVelocityRight
+                        / (2 * Math.PI * 0.0508))) {
+            curTime = timer.getFPGATimestamp();
+        }
+
     }
 
     @Override
     public boolean isFinished() {
-        return shooter.atSetpoint()
-                && (shooter.leftFlywheelMotor.getVelocity().refresh().getValueAsDouble() > desiredVelocityLeft
-                        / (2 * Math.PI * 0.0508))
-                && (shooter.rightFlywheelMotor.getVelocity().refresh().getValueAsDouble() > desiredVelocityRight
-                        / (2 * Math.PI * 0.0508));
+        return timer.getFPGATimestamp() - curTime > 2;
     }
 
     public void end(boolean interrupted) {

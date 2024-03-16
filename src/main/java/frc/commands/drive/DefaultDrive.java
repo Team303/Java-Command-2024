@@ -22,6 +22,10 @@ public class DefaultDrive extends Command {
     @Override
     public void execute() {
 
+        System.out.println("DRIVING RIGHT NOW!!!!");
+
+        percentPower = (1 - Robot.driverController.getLeftTriggerAxis() * 0.7);
+
         Translation2d translation = new Translation2d(
                 MathUtil.applyDeadband(-Robot.driverController.getLeftY(), 0.25) * DriveSubsystem.kMaxSpeed
                         * percentPower,

@@ -235,23 +235,25 @@ public class DriveSubsystem extends SubsystemBase {
     }
     aprilTagField = initialLayout;
     if (Robot.isReal()) {
-      visionPoseEstimator[0] = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-          Robot.photonvision.getCamera(CameraName.CAM3),
-          PhotonvisionConstants.ROBOT_TO_BACK_LEFT_CAMERA);
+      // visionPoseEstimator[0] = new PhotonPoseEstimator(aprilTagField,
+      // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+      // Robot.photonvision.getCamera(CameraName.CAM3),
+      // PhotonvisionConstants.ROBOT_TO_BACK_LEFT_CAMERA);
       // visionPoseEstimatorRight = new PhotonPoseEstimator(aprilTagField,
       // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
       // Robot.photonvision.getCamera(CameraName.CAM2),
       // PhotonvisionConstants.ROBOT_TO_RIGHT_CAMERA);
-      visionPoseEstimator[1] = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-          Robot.photonvision.getCamera(CameraName.CAM1),
-          PhotonvisionConstants.ROBOT_TO_BACK_RIGHT_CAMERA);
+      // visionPoseEstimator[1] = new PhotonPoseEstimator(aprilTagField,
+      // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+      // Robot.photonvision.getCamera(CameraName.CAM1),
+      // PhotonvisionConstants.ROBOT_TO_BACK_RIGHT_CAMERA);
       // visionPoseEstimatorLeft = new PhotonPoseEstimator(aprilTagField,
       // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
       // Robot.photonvision.getCamera(CameraName.CAM4),
       // PhotonvisionConstants.ROBOT_TO_BACK_RIGHT_CAMERA);
-      visionPoseEstimator[0].setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+      // visionPoseEstimator[0].setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
       // visionPoseEstimatorRight.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-      visionPoseEstimator[1].setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+      // visionPoseEstimator[1].setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
       // visionPoseEstimatorLeft.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 
@@ -387,7 +389,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
 
-    // lock onto different field elements (methods will change the anglular velocity)
+    // lock onto different field elements (methods will change the anglular
+    // velocity)
 
     var swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
 
@@ -411,43 +414,48 @@ public class DriveSubsystem extends SubsystemBase {
     return new PathPlannerAuto(autoName);
   }
 
-  /** Updates the field relative position of the robot. */
+  // /** Updates the field relative position of the robot. */
   public void updateOdometry() {
-    Optional<EstimatedRobotPose> resultBackLeft = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition(),
-        CameraName.CAM3);
-    Optional<EstimatedRobotPose> resultBackRight = getEstimatedGlobalPose(poseEstimator.getEstimatedPosition(),
-        CameraName.CAM1);
-    poseEstimator.update(Robot.navX.getRotation2d(), getModulePositions());
+    // Optional<EstimatedRobotPose> resultBackLeft =
+    // getEstimatedGlobalPose(poseEstimator.getEstimatedPosition(),
+    // CameraName.CAM3);
+    // Optional<EstimatedRobotPose> resultBackRight =
+    // getEstimatedGlobalPose(poseEstimator.getEstimatedPosition(),
+    // CameraName.CAM1);
+    // poseEstimator.update(Robot.navX.getRotation2d(), getModulePositions());
 
-    // Optional<EstimatedRobotPose> resultRight =
-    // getEstimatedGlobalPoseRight(poseEstimator.getEstimatedPosition());
-    // Optional<EstimatedRobotPose> resultLeft =
-    // getEstimatedGlobalPoseLeft(poseEstimator.getEstimatedPosition());
-    if (resultBackLeft.isPresent()) {
-      EstimatedRobotPose visionPoseEstimate = resultBackLeft.get();
-      Vector<N3> stddevs = getEstimationStdDevs(visionPoseEstimate.targetsUsed);
-      double[] data = stddevs.getData();
-      for (int i = 0; i < data.length; i++) {
-        // System.out.println(i+" "+data[i]);
-      }
-      poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-          visionPoseEstimate.timestampSeconds, getEstimationStdDevs(visionPoseEstimate.targetsUsed));
-    }
-    // if (resultRight.isPresent()) {
-    // EstimatedRobotPose visionPoseEstimate = resultRight.get();
-    // poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-    // visionPoseEstimate.timestampSeconds);
+    // // Optional<EstimatedRobotPose> resultRight =
+    // // getEstimatedGlobalPoseRight(poseEstimator.getEstimatedPosition());
+    // // Optional<EstimatedRobotPose> resultLeft =
+    // // getEstimatedGlobalPoseLeft(poseEstimator.getEstimatedPosition());
+    // if (resultBackLeft.isPresent()) {
+    // EstimatedRobotPose visionPoseEstimate = resultBackLeft.get();
+    // Vector<N3> stddevs = getEstimationStdDevs(visionPoseEstimate.targetsUsed);
+    // double[] data = stddevs.getData();
+    // for (int i = 0; i < data.length; i++) {
+    // // System.out.println(i+" "+data[i]);
     // }
-    if (resultBackRight.isPresent()) {
-      EstimatedRobotPose visionPoseEstimate = resultBackRight.get();
-      Vector<N3> stddevs = getEstimationStdDevs(visionPoseEstimate.targetsUsed);
-      double[] data = stddevs.getData();
-      for (int i = 0; i < data.length; i++) {
-        // System.out.println(i+" "+data[i]);
-      }
-      poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
-          visionPoseEstimate.timestampSeconds, getEstimationStdDevs(visionPoseEstimate.targetsUsed));
-    }
+    // poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+    // visionPoseEstimate.timestampSeconds,
+    // getEstimationStdDevs(visionPoseEstimate.targetsUsed));
+    // }
+    // // if (resultRight.isPresent()) {
+    // // EstimatedRobotPose visionPoseEstimate = resultRight.get();
+    // //
+    // poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+    // // visionPoseEstimate.timestampSeconds);
+    // // }
+    // if (resultBackRight.isPresent()) {
+    // EstimatedRobotPose visionPoseEstimate = resultBackRight.get();
+    // Vector<N3> stddevs = getEstimationStdDevs(visionPoseEstimate.targetsUsed);
+    // double[] data = stddevs.getData();
+    // for (int i = 0; i < data.length; i++) {
+    // // System.out.println(i+" "+data[i]);
+    // }
+    // poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(),
+    // visionPoseEstimate.timestampSeconds,
+    // getEstimationStdDevs(visionPoseEstimate.targetsUsed));
+    // }
     // if (resultLeft.isPresent()) {
 
     // EstimatedRobotPose visionPoseEstimate = resultLeft.get();
@@ -471,64 +479,71 @@ public class DriveSubsystem extends SubsystemBase {
     return poseEstimator.getEstimatedPosition();
   }
 
-  public Vector<N3> getEstimationStdDevs(List<PhotonTrackedTarget> targetList) {
-    var estStdDevs = kSingleStandardDeviations;
-    var targets = targetList;
-    int numTags = 0;
-    double avgDist = 0;
-    for (var tgt : targets) {
-      var tagPose = visionPoseEstimator[0].getFieldTags().getTagPose(tgt.getFiducialId());
-      if (tagPose.isEmpty())
-        continue;
-      numTags++;
-      avgDist += tagPose.get().toPose2d().getTranslation().getDistance(getPose().getTranslation());
-    }
-    if (numTags == 0)
-      return VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-    ;
-    avgDist /= numTags;
-    // Decrease std devs if multiple targets are visible
-    if (numTags > 1)
-      estStdDevs = kMultiTagStandardDeviations;
-    // Increase std devs based on (average) distance
-    // if (numTags == 1 && avgDist > 4)
-    // estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE,
-    // Double.MAX_VALUE);
-    estStdDevs = estStdDevs.times(1 + (avgDist * avgDist * RobotMap.Swerve.PHOTON_STDDEV_SCALING_FACTOR));
+  // public Vector<N3> getEstimationStdDevs(List<PhotonTrackedTarget> targetList)
+  // {
+  // var estStdDevs = kSingleStandardDeviations;
+  // var targets = targetList;
+  // int numTags = 0;
+  // double avgDist = 0;
+  // for (var tgt : targets) {
+  // var tagPose =
+  // visionPoseEstimator[0].getFieldTags().getTagPose(tgt.getFiducialId());
+  // if (tagPose.isEmpty())
+  // continue;
+  // numTags++;
+  // avgDist +=
+  // tagPose.get().toPose2d().getTranslation().getDistance(getPose().getTranslation());
+  // }
+  // if (numTags == 0)
+  // return VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+  // ;
+  // avgDist /= numTags;
+  // // Decrease std devs if multiple targets are visible
+  // if (numTags > 1)
+  // estStdDevs = kMultiTagStandardDeviations;
+  // // Increase std devs based on (average) distance
+  // // if (numTags == 1 && avgDist > 4)
+  // // estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE,
+  // // Double.MAX_VALUE);
+  // estStdDevs = estStdDevs.times(1 + (avgDist * avgDist *
+  // RobotMap.Swerve.PHOTON_STDDEV_SCALING_FACTOR));
 
-    return estStdDevs;
-  }
+  // return estStdDevs;
+  // }
 
-  public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose, CameraName camera) {
-    int estimator;
-    switch (camera) {
-      case CAM3:
-        estimator = 0;
-        break;
-      case CAM1:
-        estimator = 1;
-        break;
-      default:
-        System.out.println("DriveSubsystem get global pose is accessing illegal camera.");
-        return Optional.empty();
-    }
-    visionPoseEstimator[estimator].setReferencePose(prevEstimatedRobotPose);
-    if (Robot.photonvision.hasTargets(camera)) {
-      PhotonPipelineResult rawResult = Robot.photonvision.getLatestResult(camera);
-      List<PhotonTrackedTarget> targets = rawResult.targets;
-      for (int i = 0; i < targets.size(); i++) {
-        if (targets.get(i).getPoseAmbiguity() > 0.25) {
-          targets.remove(i);
-          --i;
-        }
-      }
-      PhotonPipelineResult cameraResult = new PhotonPipelineResult(rawResult.getLatencyMillis(), targets);
-      cameraResult.setTimestampSeconds(rawResult.getTimestampSeconds());
-      return visionPoseEstimator[estimator].update(cameraResult);
-    } else {
-      return Optional.empty();
-    }
-  }
+  // public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d
+  // prevEstimatedRobotPose, CameraName camera) {
+  // int estimator;
+  // switch (camera) {
+  // case CAM3:
+  // estimator = 0;
+  // break;
+  // case CAM1:
+  // estimator = 1;
+  // break;
+  // default:
+  // System.out.println("DriveSubsystem get global pose is accessing illegal
+  // camera.");
+  // return Optional.empty();
+  // }
+  // visionPoseEstimator[estimator].setReferencePose(prevEstimatedRobotPose);
+  // if (Robot.photonvision.hasTargets(camera)) {
+  // PhotonPipelineResult rawResult = Robot.photonvision.getLatestResult(camera);
+  // List<PhotonTrackedTarget> targets = rawResult.targets;
+  // for (int i = 0; i < targets.size(); i++) {
+  // if (targets.get(i).getPoseAmbiguity() > 0.25) {
+  // targets.remove(i);
+  // --i;
+  // }
+  // }
+  // PhotonPipelineResult cameraResult = new
+  // PhotonPipelineResult(rawResult.getLatencyMillis(), targets);
+  // cameraResult.setTimestampSeconds(rawResult.getTimestampSeconds());
+  // return visionPoseEstimator[estimator].update(cameraResult);
+  // } else {
+  // return Optional.empty();
+  // }
+  // }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
     return kinematics.toChassisSpeeds(getModuleStates());
@@ -551,7 +566,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     boolean isBlue = true;
 
-    // depending on which alliance, set which global direction to zero to (0 or 180) BLUE ORIGIN
+    // depending on which alliance, set which global direction to zero to (0 or 180)
+    // BLUE ORIGIN
 
     var alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
@@ -576,7 +592,8 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetOdometryWidget() {
 
     // resets pose based on values inputted on shuffleboard
-    // depending on which alliance, set which global direction to zero (0 or 180) BLUE ORIGIN
+    // depending on which alliance, set which global direction to zero (0 or 180)
+    // BLUE ORIGIN
 
     boolean isBlue = true;
 
@@ -605,11 +622,11 @@ public class DriveSubsystem extends SubsystemBase {
     Pose2d robotPose = getPose();
     Translation2d speakerPose;
 
-    speakerPose = isBlue ? RobotMap.FieldConstants.centerSpeakOpenInBlue.getTranslation() : 
-        RobotMap.FieldConstants.centerSpeakOpenInRed.getTranslation();
+    speakerPose = isBlue ? RobotMap.FieldConstants.centerSpeakOpenInBlue.getTranslation()
+        : RobotMap.FieldConstants.centerSpeakOpenInRed.getTranslation();
 
     return Math.atan2(speakerPose.getY() - robotPose.getY(), speakerPose.getX() - robotPose.getX()) * (180 / Math.PI)
-        * (isBlue ? - 1 : 0);
+        * (isBlue ? -1 : 0);
 
   }
 
@@ -622,18 +639,21 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // periodicReset();
+    periodicReset();
 
-    // FRONT_LEFT_ENC.setDouble(frontLeft.turningEncoder.getAbsolutePosition().refresh().getValue());
-    // FRONT_RIGHT_ENC.setDouble(frontRight.turningEncoder.getAbsolutePosition().refresh().getValue());
-    // BACK_LEFT_ENC.setDouble(backLeft.turningEncoder.getAbsolutePosition().refresh().getValue());
-    // BACK_RIGHT_ENC.setDouble(backRight.turningEncoder.getAbsolutePosition().refresh().getValue());
+    FRONT_LEFT_ENC.setDouble(frontLeft.turningEncoder.getAbsolutePosition().refresh().getValue() * 360);
+    FRONT_RIGHT_ENC.setDouble(frontRight.turningEncoder.getAbsolutePosition().refresh().getValue() * 360);
+    BACK_LEFT_ENC.setDouble(backLeft.turningEncoder.getAbsolutePosition().refresh().getValue() * 360);
+    BACK_RIGHT_ENC.setDouble(backRight.turningEncoder.getAbsolutePosition().refresh().getValue() * 360);
 
-    FRONT_LEFT_ENC.setDouble(SwerveModule.normalizeAngle2(frontLeft.turningNeoEncoder.getPosition()) * (180 / Math.PI));
-    FRONT_RIGHT_ENC
-        .setDouble(SwerveModule.normalizeAngle2(frontRight.turningNeoEncoder.getPosition()) * (180 / Math.PI));
-    BACK_LEFT_ENC.setDouble(SwerveModule.normalizeAngle2(backLeft.turningNeoEncoder.getPosition()) * (180 / Math.PI));
-    BACK_RIGHT_ENC.setDouble(SwerveModule.normalizeAngle2(backRight.turningNeoEncoder.getPosition()) * (180 / Math.PI));
+    // FRONT_LEFT_ENC.setDouble(SwerveModule.normalizeAngle2(frontLeft.turningNeoEncoder.getPosition())
+    // * (180 / Math.PI));
+    // FRONT_RIGHT_ENC.setDouble(SwerveModule.normalizeAngle2(frontRight.turningNeoEncoder.getPosition())
+    // * (180 / Math.PI));
+    // BACK_LEFT_ENC.setDouble(SwerveModule.normalizeAngle2(backLeft.turningNeoEncoder.getPosition())
+    // * (180 / Math.PI));
+    // BACK_RIGHT_ENC.setDouble(SwerveModule.normalizeAngle2(backRight.turningNeoEncoder.getPosition())
+    // * (180 / Math.PI));
 
     frontLeftDriveEncoder.setDouble(frontLeft.getPosition().distanceMeters);
     backLeftDriveEncoder.setDouble(backLeft.getPosition().distanceMeters);
