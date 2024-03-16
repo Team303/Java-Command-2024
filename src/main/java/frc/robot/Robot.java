@@ -39,18 +39,18 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.commands.DriveWait;
 import frc.commands.TurnToSpeaker;
 import frc.subsystems.DriveSubsystem;
-import frc.modules.PhotonvisionModule;
+// import frc.modules.PhotonvisionModule;
 
 public class Robot extends LoggedRobot {
 	public static final CommandXboxController controller = new CommandXboxController(0);
 	public static final AHRS navX = new AHRS();
-	public static PhotonvisionModule photonvision;
+	// public static PhotonvisionModule photonvision;
 	public static DriveSubsystem swerve;
 	// public static Logger logger;
 
 	@Override
 	public void robotInit() {
-		photonvision = null; //new PhotonvisionModule();
+		// photonvision = null; //new PhotonvisionModule();
 		swerve = new DriveSubsystem();
 		swerve.resetOdometry();
 

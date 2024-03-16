@@ -10,11 +10,6 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import org.littletonrobotics.junction.Logger;
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 
@@ -66,7 +61,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import frc.robot.RobotMap.Swerve;
 
 import frc.robot.SwerveModule;
-import frc.modules.PhotonvisionModule.CameraName;
+// import frc.modules.PhotonvisionModule.CameraName;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 // import frc.robot.RobotMap.PhotonvisionConstants;
