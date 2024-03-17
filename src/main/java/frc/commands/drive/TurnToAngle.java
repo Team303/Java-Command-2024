@@ -28,14 +28,7 @@ public class TurnToAngle extends Command {
         controller.enableContinuousInput(-180, 180);
         controller.setTolerance(2);
 
-        boolean isBlue = true;
-
-        var alliance = DriverStation.getAlliance();
-        if (alliance.isPresent()) {
-            isBlue = alliance.get() == DriverStation.Alliance.Blue;
-        }
-
-        this.angle = isBlue ? normalizeAngle(angle) : normalizeAngle(angle + 180);
+        this.angle = normalizeAngle(angle);
     }
 
     @Override
@@ -46,11 +39,7 @@ public class TurnToAngle extends Command {
 
     @Override
     public boolean isFinished() {
-        return controller.atSetpoint()
-                || !(Robot.intake.getAbsolutePivotAngle() > Math.toRadians(45)
-                        && Robot.intake.getAbsolutePivotAngle() < Math.toRadians(180))
-                || !(Robot.shooter.getAbsoluteShooterAngle() > Math.toRadians(350)
-                        || Robot.shooter.getAbsoluteShooterAngle() < Math.toRadians(10));
+        return controller.atSetpoint();// || Math.abs(normalizeAngle(Robot.navX.getAngle()) - angle) < 2;
     }
 
     @Override

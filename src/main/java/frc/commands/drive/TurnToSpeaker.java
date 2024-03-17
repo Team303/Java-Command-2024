@@ -40,7 +40,7 @@ public class TurnToSpeaker extends Command {
 
   @Override
   public boolean isFinished() {
-    return controller.atSetpoint();
+    return controller.atSetpoint();// || Math.abs(normalizeAngle(Robot.navX.getAngle()) - angle) < 2;
   }
 
   @Override

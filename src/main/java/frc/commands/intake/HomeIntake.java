@@ -4,6 +4,7 @@ import static frc.robot.Robot.intake;
 import static frc.subsystems.Intake.DESIRED_PIVOT_ANGLE_ENTRY;
 import static frc.subsystems.Intake.MOTOR_OUTPUT;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
@@ -57,11 +58,11 @@ public class HomeIntake extends Command {
 
     // @Override
     // public void end(boolean interrupted) {
-    //     // Lock the intake
-    //     intake.rightPivotMotor.setVoltage(0);
-    //     intake.rightPivotMotor.setVoltage(0);
-    //     intake.pivotAlan.setPosition(0);
-        
+    // // Lock the intake
+    // intake.rightPivotMotor.setVoltage(0);
+    // intake.rightPivotMotor.setVoltage(0);
+    // intake.pivotAlan.setPosition(0);
+
     // }
 
 }

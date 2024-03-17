@@ -44,14 +44,12 @@ import frc.subsystems.Intake;
 import frc.subsystems.Belt;
 import frc.commands.intake.GroundIntake;
 //import frc.commands.intake.HomeIntake;
-import frc.commands.intake.OutwardIntake;
 import frc.commands.shooter.HomeShooter;
 import frc.commands.shooter.ManualShootSpeaker;
 import frc.commands.shooter.SetShooterAmp;
 import frc.commands.drive.TurnToAngle;
 import frc.commands.drive.TurnToSpeaker;
 import frc.commands.intake.HomeIntake;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import frc.commands.shooter.DynamicShootSpeaker;
 import frc.commands.amoghbelt.ShootNote;
@@ -73,7 +71,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void robotInit() {
-		photonvision = new PhotonvisionModule();
+		photonvision = null; // new PhotonvisionModule();
 		swerve = new DriveSubsystem();
 		intake = new Intake();
 		belt = new Belt();
@@ -113,6 +111,10 @@ public class Robot extends LoggedRobot {
 
 		Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();
+
+		// intake.setDefaultCommand(new HomeIntake());
+		// shooter.setDefaultCommand(new HomeShooter());
+		swerve.setDefaultCommand(new DefaultDrive(true));
 		swerve.resetOnlyNavX();
 		CameraServer.startAutomaticCapture();
 		// CvSink cvSink = CameraServer.getVideo();
@@ -146,16 +148,16 @@ public class Robot extends LoggedRobot {
 		   new ParallelDeadlineGroup(new SequentialCommandGroup(new IntakeNote(), new NudgeNote()), new GroundIntake().repeatedly())));
 
 
-		operatorController.y().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 
-		   new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SequentialCommandGroup(new DynamicShootSpeaker(), 
-		   new ParallelCommandGroup(new ShootNote(), new DynamicShootSpeaker().repeatedly())  
-		   ))));
+		// operatorController.y().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 
+		//    new ParallelCommandGroup(new OutwardIntake().repeatedly(), new SequentialCommandGroup(new DynamicShootSpeaker(), 
+		//    new ParallelCommandGroup(new ShootNote(), new DynamicShootSpeaker().repeatedly())  
+		//    ))));
 
-		operatorController.a().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(),
-				new ParallelCommandGroup(new OutwardIntake().repeatedly(),
-						new SequentialCommandGroup(new SetShooterAmp(Math.toRadians(50), 18),
-								new ParallelCommandGroup(new ShootNote(),
-										new SetShooterAmp(Math.toRadians(50), 18).repeatedly())))));
+		// operatorController.a().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(),
+		// 		new ParallelCommandGroup(new OutwardIntake().repeatedly(),
+		// 				new SequentialCommandGroup(new SetShooterAmp(Math.toRadians(50), 18),
+		// 						new ParallelCommandGroup(new ShootNote(),
+		// 								new SetShooterAmp(Math.toRadians(50), 18).repeatedly())))));
 			
 
 		// operatorController.rightBumper().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(),
@@ -207,7 +209,6 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void robotPeriodic() {
-		// Logger.recordOutput("Example/Mechanism", mechanism);
 		CommandScheduler.getInstance().run();
 
 	}

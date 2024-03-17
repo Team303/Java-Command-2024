@@ -112,7 +112,7 @@ public class Shooter extends SubsystemBase {
     public double pivotAngle = 0.0;
 
     public Shooter() {
-        //Flywheel Initalization
+        // Flywheel Initalization
 
         // ayushBBC = new DigitalInput(8);
 
@@ -124,8 +124,6 @@ public class Shooter extends SubsystemBase {
 
         leftFlywheelMotor.setInverted(false);
         rightFlywheelMotor.setInverted(true);
-
-
 
         TalonFXConfiguration flywheelConfigs = new TalonFXConfiguration();
 
@@ -225,11 +223,10 @@ public class Shooter extends SubsystemBase {
     }
 
     // public boolean atShooterLimit() {
-    //     return ayushBBC.get();
+    // return ayushBBC.get();
     // }
 
-
-    //Angle Functions
+    // Angle Functions
     public double calculateAngleSpeed(double angleRad) {
         if (angleRad > Math.PI * 2)
             throw new IllegalArgumentException("Radians  bitch");
