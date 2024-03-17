@@ -5,26 +5,23 @@ import static frc.robot.Robot.belt;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class EjaculateNote extends Command {
+public class roll extends Command {
     Timer timer = new Timer();
 
     double start = Integer.MAX_VALUE;
 
-    public EjaculateNote() {
+    public roll() {
         addRequirements(belt);
     }
 
     @Override
     public void initialize() {
-        start = belt.indexerMotor.getPosition().refresh().getValueAsDouble();
-        timer.reset();
-        timer.start();
-    }
+
+        }
 
     @Override
     public void execute() {
-        belt.runBeltInReverse();
-        System.out.println("Time: " + timer.get());
+        belt.runRollers();
 
         // if (!belt.getBeam()) {
         // // start =
@@ -36,10 +33,6 @@ public class EjaculateNote extends Command {
 
     }
 
-    @Override
-    public boolean isFinished() {
-        return timer.get() > 2.0;
-    }
 
     @Override
     public void end(boolean interrupted) {

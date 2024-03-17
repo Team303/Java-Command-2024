@@ -132,7 +132,7 @@ public class Intake extends SubsystemBase {
 	}
 
 	public double getAbsolutePivotAngle() {
-		return normalizeAngle(pivotEncoder.getAbsolutePosition() * 2 * Math.PI - Math.toRadians(47));
+		return normalizeAngle(pivotEncoder.getAbsolutePosition() * 2 * Math.PI - Math.toRadians(47+308));
 	}
 
 	public boolean atHomeHardLimit() {

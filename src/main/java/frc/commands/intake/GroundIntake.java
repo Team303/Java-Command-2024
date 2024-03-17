@@ -19,27 +19,30 @@ public class GroundIntake extends Command {
 
     @Override
     public void initialize() {
-        intake.pivotPIDController.setP(3);
+        intake.pivotPIDController.setP(1);
     }
 
     @Override
     public void execute() {
-
+        System.out.println("Ground Intake");
         double voltage = intake.calculateAngleSpeed(RobotMap.Intake.GROUND_ANGLE);
-        MOTOR_OUTPUT.setDouble(voltage);
+        MOTOR_OUTPUT.setDouble(-voltage);
 
         // soft limit
 
-        if (intake.getAbsolutePivotAngle() < 3 * Math.PI / 2 || intake.getAbsolutePivotAngle() > Math.toRadians(320))
-            intake.rightPivotMotor.setVoltage(voltage);
-        else
+        if (intake.getAbsolutePivotAngle() > 3 * Math.PI / 2 || intake.getAbsolutePivotAngle() < Math.toRadians(15)) {
+            intake.rightPivotMotor.setVoltage(-voltage);
+            System.out.println("Voltage: " + -voltage);
+        }
+        else {
             intake.rightPivotMotor.setVoltage(0);
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return (intake.getAbsolutePivotAngle() > Math.toRadians(320)
-                && intake.getAbsolutePivotAngle() < Math.toRadians(350)) || intake.getPivotPIDController().atSetpoint();
+        return (intake.getAbsolutePivotAngle() > Math.toRadians(350)
+                && intake.getAbsolutePivotAngle() < Math.toRadians(10)) || intake.getPivotPIDController().atSetpoint();
     }
 
     // @Override

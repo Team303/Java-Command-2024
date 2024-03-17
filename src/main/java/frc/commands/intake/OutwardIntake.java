@@ -19,13 +19,13 @@ public class OutwardIntake extends Command {
 
     @Override
     public void initialize() {
-        intake.pivotPIDController.setP(3);
+        intake.pivotPIDController.setP(2);
     }
 
     @Override
     public void execute() {
-
-        double voltage = intake.calculateAngleSpeed(Math.toRadians(80));
+        System.out.println("OutwardIntake");
+        double voltage = intake.calculateAngleSpeed(Math.toRadians(70));
         System.out.println("Voltage: " + voltage);
         MOTOR_OUTPUT.setDouble(voltage);
 

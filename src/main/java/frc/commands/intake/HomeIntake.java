@@ -19,20 +19,22 @@ public class HomeIntake extends Command {
 
     @Override
     public void initialize() {
-        intake.pivotPIDController.setP(3);
+        intake.pivotPIDController.setP(10);
     }
 
     @Override
     public void execute() {
+        System.out.println("HomeIntake");
+
         double voltage = intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE);
+        System.out.println("Voltage: " + -(voltage));
+
+
 
         // System.out.println("Voltage: " + voltage);
-        System.out.println("Voltage: " + intake.rightPivotMotor.getBusVoltage());
         MOTOR_OUTPUT.setDouble(voltage);
 
-        if (intake.atHomeHardLimit()) {
-            intake.rightPivotMotor.setVoltage(-voltage);
-        } else if (intake.getAbsolutePivotAngle() > Math.PI / 2 && intake.getAbsolutePivotAngle() < Math.toRadians(320)
+        if (intake.getAbsolutePivotAngle() > Math.PI / 2 && intake.getAbsolutePivotAngle() < Math.toRadians(320)
                 && voltage > 0) {
             // System.out.println("yippee");
             intake.rightPivotMotor.setVoltage(0);
@@ -40,18 +42,18 @@ public class HomeIntake extends Command {
         
         else {
             // System.out.println("boooo");
-            System.out.println("Acceleration Y: " + Robot.navX.getRawAccelY());
-            intake.rightPivotMotor.setVoltage(voltage + (Robot.navX.getRawAccelY() * 0) + Math.abs(Robot.navX.getAngle() * 0.1)); // increase voltage by 1.5 for each rpm the robot is turning
-        }
+            intake.leftPivotMotor.setVoltage(-(voltage)); // increase voltage by 1.5 for each rpm the robot is turning
+            intake.rightPivotMotor.setVoltage(-(voltage)); // increase voltage by 1.5 for each rpm the robot is turning
+         }
 
     }
 
-    // @Override
-    // public boolean isFinished() {
-    // return (intake.getAbsolutePivotAngle() > Math.PI/2 &&
-    // intake.getAbsolutePivotAngle() < Math.PI) ||
-    // Robot.intake.pivotPIDController.atSetpoint();
-    // }
+    @Override
+    public boolean isFinished() {
+    return (intake.getAbsolutePivotAngle() > Math.toRadians(75)&&
+        intake.getAbsolutePivotAngle() < Math.PI) ||
+        Robot.intake.pivotPIDController.atSetpoint();
+    }
 
     // @Override
     // public void end(boolean interrupted) {

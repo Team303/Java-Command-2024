@@ -22,7 +22,7 @@ public class DefaultDrive extends Command {
     @Override
     public void execute() {
 
-        // percentPower = (1 - (Robot.driverController.getLeftTriggerAxis() * 0.7));
+        percentPower = (1 - (Robot.driverController.getLeftTriggerAxis() * 0.7));
 
         // var alliance = DriverStation.getAlliance();
         // if (alliance.isPresent()) {

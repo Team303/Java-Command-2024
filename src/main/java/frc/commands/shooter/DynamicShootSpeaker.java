@@ -55,7 +55,7 @@ public class DynamicShootSpeaker extends Command {
 
     @Override
     public void execute() {
-
+        System.out.println("DyanmicShootSpeaker");
         System.out.println("Range: " + range);
         System.out.println("Desired Angle: " + desiredAngle * (180 / Math.PI));
 

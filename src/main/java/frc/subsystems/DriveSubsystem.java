@@ -385,7 +385,7 @@ public class DriveSubsystem extends SubsystemBase {
             Rotation2d.fromDegrees(-Robot.navX.getAngle()))
         : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 
-    chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
+   // chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
 
     // lock onto different field elements (methods will change the anglular
     // velocity)
@@ -646,8 +646,7 @@ public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedR
     // BACK_RIGHT_ENC.setDouble(backRight.turningEncoder.getAbsolutePosition().refresh().getValue());
 
     FRONT_LEFT_ENC.setDouble(SwerveModule.normalizeAngle2(frontLeft.turningNeoEncoder.getPosition()) * (180 / Math.PI));
-    FRONT_RIGHT_ENC
-        .setDouble(SwerveModule.normalizeAngle2(frontRight.turningNeoEncoder.getPosition()) * (180 / Math.PI));
+    FRONT_RIGHT_ENC.setDouble(SwerveModule.normalizeAngle2(frontRight.turningNeoEncoder.getPosition()) * (180 / Math.PI));
     BACK_LEFT_ENC.setDouble(SwerveModule.normalizeAngle2(backLeft.turningNeoEncoder.getPosition()) * (180 / Math.PI));
     BACK_RIGHT_ENC.setDouble(SwerveModule.normalizeAngle2(backRight.turningNeoEncoder.getPosition()) * (180 / Math.PI));
 

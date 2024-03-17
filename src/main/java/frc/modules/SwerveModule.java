@@ -144,7 +144,7 @@ public class SwerveModule {
 
     m_turnPidController = turningMotor.getPIDController();
 
-    m_turnPidController.setP(3);
+    m_turnPidController.setP(1);
     m_turnPidController.setI(0);
     m_turnPidController.setD(0);
     m_turnPidController.setFF(0.01);
@@ -288,7 +288,7 @@ public class SwerveModule {
 
     driveMotor.setControl(voltageVelocityDriveControl
         .withVelocity(
-            state.speedMetersPerSecond / (2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR))
+            (state.speedMetersPerSecond *2)/ (2 * Math.PI * kWheelRadius * RobotMap.Swerve.SWERVE_CONVERSION_FACTOR))
         .withAcceleration(10));
 
     turningMotor.getPIDController().setReference(normalizeAngle2(state.angle.getRadians()),

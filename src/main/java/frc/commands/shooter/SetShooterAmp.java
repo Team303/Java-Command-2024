@@ -27,6 +27,7 @@ public class SetShooterAmp extends Command {
 
     @Override
     public void execute() {
+        System.out.println("SetShooterAmp");
         desiredVelocityLeft = desiredVelocityRight * shooter.getFactor();
 
         DESIRED_LEFT_RPM_ENTRY.setDouble(desiredVelocityLeft / (2 * Math.PI * 0.0508) * 60);
