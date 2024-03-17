@@ -97,7 +97,7 @@ public class RobotMap {
 		public static final int INDEX_MOTOR_ID = 22;
 		public static final int BELT_MOTOR_ID = 21;
 		public static final int CENTER_ID = 20;
-		public static final int PIVOT_ENCODER_ID = 9;
+		public static final int PIVOT_ENCODER_ID = 5;
 
 		public static final int BEAM_PORT = 7;
 		public static final int LEFT_PIVOT_MOTOR_ID = 18; // NEED TO CHANGE
