@@ -15,13 +15,14 @@ public class ShootNote extends Command {
 
     @Override
     public void execute() {
-        belt.shoot();
+        belt.runIndexer();
     }
 
     @Override
     public void end(boolean interrupted) {
         belt.stopMotors();
     }
+
 
     // @Override
     // public void end(boolean interrupted) {

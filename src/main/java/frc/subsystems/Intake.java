@@ -87,7 +87,7 @@ public class Intake extends SubsystemBase {
 		// homeLimit = new DigitalInput(RobotMap.Intake.HOME_LIMIT_SWITCH_ID);
 
 		pivotPIDController.setTolerance(Math.toRadians(2));
-		pivotPIDController.reset(Math.toRadians(115));
+		pivotPIDController.reset(Math.toRadians(270));
 
 		homeLimit = leftPivotMotor.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
 

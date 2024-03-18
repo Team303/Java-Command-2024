@@ -28,12 +28,12 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.autonomous.Autonomous;
 import frc.autonomous.AutonomousProgram;
-import frc.commands.amoghbelt.EjectNote;
+import frc.commands.amoghbelt.Ejaculate;
 import frc.commands.amoghbelt.IntakeNote;
 import frc.commands.amoghbelt.NudgeNote;
 import frc.commands.drive.DefaultDrive;
 import frc.commands.drive.DriveWait;
-import frc.commands.amoghbelt.EjectNote;
+import frc.commands.amoghbelt.Ejaculate;
 // import frc.commands.drive.TurnToSpeaker;
 import frc.subsystems.DriveSubsystem;
 import frc.subsystems.Shooter;
@@ -93,7 +93,7 @@ public class Robot extends LoggedRobot {
 		Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
 
 		if (isReal()) {
-			Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+			// Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
 			Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
 			new PowerDistribution(13, ModuleType.kRev); // Enables power distribution logging
 		} else {
@@ -101,7 +101,8 @@ public class Robot extends LoggedRobot {
 			String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from
 			// AdvantageScope (or prompt the
 			// // user)
-			Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+			//
+			 Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
 			// Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath,
 			// "_sim"))); // Save outputs to a
 			Logger.addDataReceiver(new NT4Publisher()); // new log
@@ -138,14 +139,16 @@ public class Robot extends LoggedRobot {
 		// driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 
 		// spin the other way when a note gets stuck 
-		operatorController.b().toggleOnTrue(new roll());
-		operatorController.pov(0).toggleOnTrue(new SequentialCommandGroup(new GroundIntake(), new ParallelCommandGroup(new GroundIntake().repeatedly(), new EjectNote())));
-		// operatorController.pov(180).whileTrue(new ShootNote());
-		// operatorController.pov(90).toggleOnTrue(new HomeIntake());
-		// operatorController.b().toggleOnTrue(new HomeIntake());
-		
-		operatorController.pov(180).toggleOnTrue(new SequentialCommandGroup(new GroundIntake(),
-		   new ParallelDeadlineGroup(new SequentialCommandGroup(new IntakeNote(), new NudgeNote()), new GroundIntake().repeatedly())));
+		operatorController.b().toggleOnTrue(new IntakeNote());
+		operatorController.rightBumper().toggleOnTrue(new Ejaculate());
+		operatorController.leftBumper().toggleOnTrue(new GroundIntake());
+		operatorController.pov(0).toggleOnTrue(new SequentialCommandGroup(new GroundIntake(), new ParallelCommandGroup(new GroundIntake().repeatedly(), new Ejaculate())));
+
+
+		// operatorController.pov(180).toggleOnTrue(new SequentialCommandGroup(new GroundIntake(),
+		//    new ParallelDeadlineGroup(new SequentialCommandGroup(new IntakeNote(), new NudgeNote()), new GroundIntake().repeatedly())));
+
+		operatorController.pov(180).toggleOnTrue(new SequentialCommandGroup(new ShootNote(), new SetShooterAmp(Math.toDegrees(45), 18))); //only rollers/indexer
 
 
 		// operatorController.y().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(), 
@@ -153,11 +156,10 @@ public class Robot extends LoggedRobot {
 		//    new ParallelCommandGroup(new ShootNote(), new DynamicShootSpeaker().repeatedly())  
 		//    ))));
 
-		// operatorController.a().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(),
-		// 		new ParallelCommandGroup(new OutwardIntake().repeatedly(),
-		// 				new SequentialCommandGroup(new SetShooterAmp(Math.toRadians(50), 18),
-		// 						new ParallelCommandGroup(new ShootNote(),
-		// 								new SetShooterAmp(Math.toRadians(50), 18).repeatedly())))));
+		operatorController.a().toggleOnTrue(
+						new SequentialCommandGroup(new IntakeNote(), new SetShooterAmp(Math.toRadians(30), 18),
+								new ParallelCommandGroup(new ShootNote(),
+										new SetShooterAmp(Math.toRadians(30), 18).repeatedly())));
 			
 
 		// operatorController.rightBumper().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(),
@@ -202,7 +204,7 @@ public class Robot extends LoggedRobot {
 		}
 		intake.setDefaultCommand(new HomeIntake());
 		swerve.setDefaultCommand(new DefaultDrive(true));
-		//shooter.setDefaultCommand(new HomeShooter());
+		shooter.setDefaultCommand(new HomeShooter());
 
 
 	}

@@ -223,9 +223,9 @@ public class SwerveModule {
   // blah blah
 
   public void periodicReset() {
-    System.out.println("resetIteration: " + resetIteration);
-    System.out.println("turning velocity: " + turningNeoEncoder.getVelocity());
-    System.out.println("max vel: " + ENCODER_RESET_MAX_ANGULAR_VELOCITY);
+    // System.out.println("resetIteration: " + resetIteration);
+    // System.out.println("turning velocity: " + turningNeoEncoder.getVelocity());
+    // System.out.println("max vel: " + ENCODER_RESET_MAX_ANGULAR_VELOCITY);
     if (Math.abs(turningNeoEncoder.getVelocity()) < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
 
       if (++resetIteration >= ENCODER_RESET_ITERATIONS) {

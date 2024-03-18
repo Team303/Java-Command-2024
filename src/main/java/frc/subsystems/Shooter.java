@@ -253,13 +253,14 @@ public class Shooter extends SubsystemBase {
 
         // get angular position in rad
 
-        return normalizeAngle(angleEncoder.getAbsolutePosition() * 2 * Math.PI - Math.toRadians(140));
+        return normalizeAngle(angleEncoder.getAbsolutePosition() * 2 * Math.PI - Math.toRadians(140+205));
 
     }
 
     public double getAngleMotorVelocity() {
 
         // get angular velocity in rad/sec
+        
 
         return leftAngleMotor.getVelocity().refresh().getValueAsDouble() * RobotMap.Shooter.ANGLE_CONVERSION_FACTOR * 2
                 * Math.PI;

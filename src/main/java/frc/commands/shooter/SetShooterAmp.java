@@ -27,6 +27,7 @@ public class SetShooterAmp extends Command {
 
     @Override
     public void execute() {
+        System.out.println("At Setpoint: " + shooter.atSetpoint());
         System.out.println("SetShooterAmp");
         desiredVelocityLeft = desiredVelocityRight * shooter.getFactor();
 
@@ -55,10 +56,7 @@ public class SetShooterAmp extends Command {
 
     @Override
     public boolean isFinished() {
-        return shooter.atSetpoint()
-                && (shooter.leftFlywheelMotor.getVelocity().refresh().getValueAsDouble() > desiredVelocityLeft
-                        / (2 * Math.PI * 0.0508))
-                && (shooter.rightFlywheelMotor.getVelocity().refresh().getValueAsDouble() > desiredVelocityRight
+        return shooter.atSetpoint()  && (shooter.rightFlywheelMotor.getVelocity().refresh().getValueAsDouble() > desiredVelocityRight
                         / (2 * Math.PI * 0.0508));
     }
 

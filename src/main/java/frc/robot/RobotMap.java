@@ -86,7 +86,7 @@ public class RobotMap {
 		public static final double ANGLE_PID_CONTROLLER_I = 0.0; // NEED TO CHANGE
 		public static final double ANGLE_PID_CONTROLLER_D = 0.0; // NEED TO CHANGE
 
-		public static final int ANGLE_ENCODER_ID = 8; // wtf is this
+		public static final int ANGLE_ENCODER_ID = 6; // wtf is this
 
 		public static final double ANGLE_CONVERSION_FACTOR = 1 / 35.04;
 
@@ -94,12 +94,10 @@ public class RobotMap {
 
 	public static final class Intake {
 
-		public static final int INDEX_MOTOR_ID = 22;
-		public static final int BELT_MOTOR_ID = 21;
-		public static final int CENTER_ID = 20;
+		public static final int INDEX_MOTOR_ID = 21;
+		public static final int BELT_MOTOR_ID = 20;
 		public static final int PIVOT_ENCODER_ID = 5;
-
-		public static final int BEAM_PORT = 7;
+		public static final int BEAM_PORT = 3;
 		public static final int LEFT_PIVOT_MOTOR_ID = 18; // NEED TO CHANGE
 		public static final int RIGHT_PIVOT_MOTOR_ID = 19; // NEED TO CHANGE
 		// NEED TO CHANGE
@@ -120,7 +118,7 @@ public class RobotMap {
 		public static final double SIMULATION_SCALE = 0.0; // NEED TO CHANGE
 		public static final double INTAKE_SIM_LENGTH = 0.0; // NEED TO CHANGE
 
-		public static final double HOME_ANGLE = Math.toRadians(275);
+		public static final double HOME_ANGLE = Math.toRadians(270);
 		public static final double GROUND_ANGLE = Math.toRadians(10);// GET ANGLE FROM JOHN
 
 		public static final double GEAR_RATIO = ((double) 1 / 25); // GET FROM SOMEONE

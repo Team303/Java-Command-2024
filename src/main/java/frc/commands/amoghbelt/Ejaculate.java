@@ -5,12 +5,12 @@ import static frc.robot.Robot.belt;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class EjectNote extends Command {
+public class Ejaculate extends Command {
     Timer timer = new Timer();
 
     double start = Integer.MAX_VALUE;
 
-    public EjectNote() {
+    public Ejaculate() {
         addRequirements(belt);
     }
 

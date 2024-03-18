@@ -10,7 +10,9 @@ import frc.robot.RobotMap;
 
 public class GroundIntake extends Command {
 
-    public GroundIntake() {
+    public 
+    
+    GroundIntake() {
         addRequirements(intake);
 
         DESIRED_PIVOT_ANGLE_ENTRY.setDouble(RobotMap.Intake.GROUND_ANGLE);
@@ -19,7 +21,7 @@ public class GroundIntake extends Command {
 
     @Override
     public void initialize() {
-        intake.pivotPIDController.setP(1);
+        intake.pivotPIDController.setP(3);
     }
 
     @Override
@@ -31,9 +33,7 @@ public class GroundIntake extends Command {
         // Soft Limit
 
         if (intake.getAbsolutePivotAngle() > 3 * Math.PI / 2 || intake.getAbsolutePivotAngle() < Math.toRadians(15)) {
-            intake.rightPivotMotor.setVoltage(-voltage);
-            System.out.println("Voltage: " + -voltage);
-        }
+            intake.rightPivotMotor.setVoltage(-voltage);        }
         else {
             intake.rightPivotMotor.setVoltage(0);
         }
@@ -41,8 +41,8 @@ public class GroundIntake extends Command {
 
     @Override
     public boolean isFinished() {
-        return (intake.getAbsolutePivotAngle() > Math.toRadians(350)
-                && intake.getAbsolutePivotAngle() < Math.toRadians(10)) || intake.getPivotPIDController().atSetpoint();
+        return (intake.getAbsolutePivotAngle() > Math.toRadians(355)
+                && intake.getAbsolutePivotAngle() < Math.toRadians(5)) || intake.getPivotPIDController().atSetpoint();
     }
 
     // @Override
