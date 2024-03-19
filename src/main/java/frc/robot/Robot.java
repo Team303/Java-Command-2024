@@ -73,9 +73,9 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		photonvision = null; // new PhotonvisionModule();
 		swerve = new DriveSubsystem();
-		intake = null; //new Intake();
-		belt = null; //new Belt();
-		shooter = null; //new Shooter();
+		intake = new Intake();
+		belt = new Belt();
+		shooter = new Shooter();
 		swerve.resetOdometry();
 
 		//NamedCommands.registerCommand("PickUpNote", new InstantCommand(() -> {System.out.println("picked up note!");}));
@@ -139,15 +139,15 @@ public class Robot extends LoggedRobot {
 		// driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 
 		// spin the other way when a note gets stuck 
-		///////
-		// operatorController.b().toggleOnTrue(new IntakeNote());
-		// operatorController.rightBumper().toggleOnTrue(new Ejaculate());
-		// operatorController.leftBumper().toggleOnTrue(new GroundIntake());
-		// operatorController.pov(0).toggleOnTrue(new SequentialCommandGroup(new GroundIntake(), new ParallelCommandGroup(new GroundIntake().repeatedly(), new Ejaculate())));
+		/////
+		operatorController.b().toggleOnTrue(new IntakeNote());
+		operatorController.rightBumper().toggleOnTrue(new Ejaculate());
+		operatorController.leftBumper().toggleOnTrue(new GroundIntake());
+		operatorController.pov(0).toggleOnTrue(new SequentialCommandGroup(new GroundIntake(), new ParallelCommandGroup(new GroundIntake().repeatedly(), new Ejaculate())));
 
 
-		// operatorController.pov(180).toggleOnTrue(new SequentialCommandGroup(new GroundIntake(),
-		//    new ParallelDeadlineGroup(new SequentialCommandGroup(new IntakeNote(), new NudgeNote()), new GroundIntake().repeatedly())));
+		operatorController.pov(180).toggleOnTrue(new SequentialCommandGroup(new GroundIntake(),
+		   new ParallelDeadlineGroup(new IntakeNote(), new GroundIntake().repeatedly())));
 
 		////////
 		// operatorController.pov(180).toggleOnTrue(new SequentialCommandGroup(new ShootNote(), new SetShooterAmp(Math.toDegrees(45), 18))); //only rollers/indexer
@@ -159,10 +159,10 @@ public class Robot extends LoggedRobot {
 		//    ))));
 
 		////////
-		// operatorController.a().toggleOnTrue(
-		// 				new SequentialCommandGroup(new IntakeNote(), new SetShooterAmp(Math.toRadians(30), 18),
-		// 						new ParallelCommandGroup(new ShootNote(),
-		// 								new SetShooterAmp(Math.toRadians(30), 18).repeatedly())));
+		operatorController.a().toggleOnTrue(
+						new SequentialCommandGroup(new SetShooterAmp(Math.toRadians(50), 18),
+								new ParallelCommandGroup(new ShootNote(),
+										new SetShooterAmp(Math.toRadians(30), 18).repeatedly())));
 			
 
 		// operatorController.rightBumper().toggleOnTrue(new SequentialCommandGroup(new OutwardIntake(),
@@ -205,9 +205,9 @@ public class Robot extends LoggedRobot {
 		if (autonomousCommand != null) {
 			autonomousCommand.cancel();
 		}
-		// intake.setDefaultCommand(new HomeIntake());
+		intake.setDefaultCommand(new HomeIntake());
 		swerve.setDefaultCommand(new DefaultDrive(true));
-		// shooter.setDefaultCommand(new HomeShooter());
+		shooter.setDefaultCommand(new HomeShooter());
 
 
 	}

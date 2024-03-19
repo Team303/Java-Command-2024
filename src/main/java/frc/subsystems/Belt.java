@@ -56,7 +56,7 @@ public class Belt extends SubsystemBase {
     }
 
     public void runBelt() {
-        beltMotor.setControl(flywheelVoltage.withVelocity(-5500));
+        beltMotor.setControl(flywheelVoltage.withVelocity(10));
         Logger.recordOutput("belt speed", beltMotor.getVelocity().refresh().getValueAsDouble());
         indexerMotor.setVoltage(12);
     }

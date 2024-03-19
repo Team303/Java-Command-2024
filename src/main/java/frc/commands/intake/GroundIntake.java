@@ -32,7 +32,7 @@ public class GroundIntake extends Command {
 
         // Soft Limit
 
-        if (intake.getAbsolutePivotAngle() > 3 * Math.PI / 2 || intake.getAbsolutePivotAngle() < Math.toRadians(15)) {
+        if (intake.getAbsolutePivotAngle() > Math.toRadians(265) || intake.getAbsolutePivotAngle() < Math.toRadians(15)) {
             intake.rightPivotMotor.setVoltage(-voltage);        }
         else {
             intake.rightPivotMotor.setVoltage(0);

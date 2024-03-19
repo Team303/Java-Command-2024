@@ -23,7 +23,7 @@ public class IntakeNote extends Command {
 
     @Override
     public void execute() {
-        belt.runIndexer();
+        belt.runBelt();
 
         // if (!belt.getBeam()) {
         // start =
