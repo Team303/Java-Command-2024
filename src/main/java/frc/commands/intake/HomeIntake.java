@@ -35,16 +35,10 @@ public class HomeIntake extends Command {
         // System.out.println("Voltage: " + voltage);
         MOTOR_OUTPUT.setDouble(voltage);
 
-        if (intake.getAbsolutePivotAngle() > Math.PI / 2 && intake.getAbsolutePivotAngle() < Math.toRadians(320)
-                && voltage > 0) {
-            // System.out.println("yippee");
-            intake.rightPivotMotor.setVoltage(0);
-        } 
-        
-        else {
+
+
             // System.out.println("boooo");
-            intake.rightPivotMotor.setVoltage(-voltage); // increase voltage by 1.5 for each rpm the robot is turning
-         }
+        intake.rightPivotMotor.setVoltage(-voltage); // increase voltage by 1.5 for each rpm the robot is turning
 
     }
 

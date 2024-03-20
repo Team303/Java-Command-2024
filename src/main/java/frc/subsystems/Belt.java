@@ -28,6 +28,7 @@ public class Belt extends SubsystemBase {
     public static final ShuffleboardTab INTAKE_TAB = Shuffleboard.getTab("Amogh Belt"); // Shuffleboard tab
     public static final GenericEntry BELT_SPEED_ENTRY = INTAKE_TAB.add("Belt Speed", 0.0).getEntry();
     public static final GenericEntry BBC_ENTRY = INTAKE_TAB.add("BBC Status", false).getEntry();
+    public static final GenericEntry ROLLER_SPEED = INTAKE_TAB.add("Roller Speed", 0).getEntry();
 
     public Belt() {
         indexerMotor = new TalonFX(Intake.INDEX_MOTOR_ID);
@@ -39,7 +40,7 @@ public class Belt extends SubsystemBase {
         TalonFXConfiguration flywheelConfigs = new TalonFXConfiguration();
 
         flywheelConfigs.Slot0.kP = 0.3;
-        flywheelConfigs.Slot0.kI = 40;
+        flywheelConfigs.Slot0.kI = 20;
         flywheelConfigs.Slot0.kD = 0.0000;
         flywheelConfigs.Slot0.kV = 0;
 
@@ -56,9 +57,9 @@ public class Belt extends SubsystemBase {
     }
 
     public void runBelt() {
-        beltMotor.setControl(flywheelVoltage.withVelocity(10));
+        beltMotor.setControl(flywheelVoltage.withVelocity(5000));
         Logger.recordOutput("belt speed", beltMotor.getVelocity().refresh().getValueAsDouble());
-        indexerMotor.setVoltage(12);
+        indexerMotor.setControl(flywheelVoltage.withVelocity(5000));
     }
 
     public void runBeltInReverse() {
@@ -73,7 +74,7 @@ public class Belt extends SubsystemBase {
     }
 
     public void runIndexer() {
-        indexerMotor.setVoltage(12);
+        indexerMotor.setControl(flywheelVoltage.withVelocity(5000));
     }
 
     public void runRollers() {
@@ -92,6 +93,7 @@ public class Belt extends SubsystemBase {
     @Override
     public void periodic() {
         BBC_ENTRY.setBoolean(getBeam());
+        ROLLER_SPEED.setDouble(beltMotor.getVelocity().refresh().getValueAsDouble());
     }
 
 }

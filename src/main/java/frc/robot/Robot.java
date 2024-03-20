@@ -145,6 +145,7 @@ public class Robot extends LoggedRobot {
 		/////
 		operatorController.b().toggleOnTrue(new IntakeNote());
 		operatorController.leftBumper().toggleOnTrue(new Ejaculate());
+		operatorController.rightBumper().toggleOnTrue(new ShootNote());
 		operatorController.pov(0).toggleOnTrue(new SequentialCommandGroup(new GroundIntake(),
 				new ParallelCommandGroup(new GroundIntake().repeatedly(), new Ejaculate())));
 
@@ -169,7 +170,7 @@ public class Robot extends LoggedRobot {
 				new SequentialCommandGroup(
 						new SetShooterAmp(Math.toRadians(50), 18).withTimeout(6),
 						new ParallelCommandGroup(new ShootNote(),
-								new SetShooterAmp(Math.toRadians(30), 18).repeatedly())));
+								new SetShooterAmp(Math.toRadians(50), 18).repeatedly())));
 
 		// operatorController.rightBumper().toggleOnTrue(new SequentialCommandGroup(new
 		// OutwardIntake(),
