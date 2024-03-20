@@ -10,10 +10,11 @@ public class IntakeNote extends Command {
 
     Timer timer = new Timer();
     double start;
+    int count = 0;
 
     public IntakeNote() {
         addRequirements(belt);
-
+        count = 0;
         BELT_SPEED_ENTRY.setDouble(belt.beltMotor.getVelocity().refresh().getValueAsDouble());
     }
 
@@ -24,6 +25,10 @@ public class IntakeNote extends Command {
     @Override
     public void execute() {
         belt.runBelt();
+
+        if (!belt.getBeam()) {
+            count++;
+        }
 
         // if (!belt.getBeam()) {
         // start =
@@ -37,7 +42,7 @@ public class IntakeNote extends Command {
 
     @Override
     public boolean isFinished() {
-        return !belt.getBeam();
+        return count > 10;
     }
 
     @Override

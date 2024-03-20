@@ -64,8 +64,8 @@ public class Intake extends SubsystemBase {
 		rightPivotMotor.setInverted(false);
 		// leftPivotMotor.setInverted(true);
 
-		TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(Math.PI,
-				Math.PI * 8);
+		TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(Math.PI * 1.5,
+				Math.PI * 4);
 		// Change: Alan's job
 
 		pivotPIDController = new ProfiledPIDController(RobotMap.Intake.PIVOT_PID_CONTROLLER_P,
@@ -124,7 +124,7 @@ public class Intake extends SubsystemBase {
 	}
 
 	public double getAbsolutePivotAngle() {
-		return normalizeAngle(pivotEncoder.getAbsolutePosition() * 2 * Math.PI - Math.toRadians(47+308));
+		return normalizeAngle(pivotEncoder.getAbsolutePosition() * 2 * Math.PI - Math.toRadians(47 + 308));
 	}
 
 	public boolean atHomeHardLimit() {

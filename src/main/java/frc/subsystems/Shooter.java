@@ -97,6 +97,7 @@ public class Shooter extends SubsystemBase {
     public static final GenericEntry RIGHT_PIVOT_VOLTAGE_ENTRY = SHOOTER_TAB.add("Right Flywheel Pivot", 0.0)
             .withPosition(3, 2).withSize(2, 1).getEntry();
 
+    public static final GenericEntry ANGLE_ENTRY_PIVOT = SHOOTER_TAB.add("Angle Entry Pivot", 0.0).getEntry();
     // Angle Entries
     public static final GenericEntry INTERPOLATED_DEGREES_ENTRY = SHOOTER_TAB.add("Desired Degrees", 0.0)
             .withPosition(2, 1).withSize(1, 1).getEntry();
@@ -172,7 +173,7 @@ public class Shooter extends SubsystemBase {
                 RobotMap.Shooter.ANGLE_FEED_FORWARD_KA);
 
         // go up to 90 degrees in one second 1/4 second to accelerate to max speed
-        TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(Math.PI / 2,
+        TrapezoidProfile.Constraints pidConstraints = new TrapezoidProfile.Constraints(Math.PI,
                 Math.PI * 4);
 
         anglePIDController = new ProfiledPIDController(RobotMap.Shooter.ANGLE_PID_CONTROLLER_P,
@@ -253,14 +254,13 @@ public class Shooter extends SubsystemBase {
 
         // get angular position in rad
 
-        return normalizeAngle(angleEncoder.getAbsolutePosition() * 2 * Math.PI - Math.toRadians(140+205));
+        return normalizeAngle(angleEncoder.getAbsolutePosition() * 2 * Math.PI - Math.toRadians(140 + 205));
 
     }
 
     public double getAngleMotorVelocity() {
 
         // get angular velocity in rad/sec
-        
 
         return leftAngleMotor.getVelocity().refresh().getValueAsDouble() * RobotMap.Shooter.ANGLE_CONVERSION_FACTOR * 2
                 * Math.PI;
@@ -330,6 +330,7 @@ public class Shooter extends SubsystemBase {
 
         // Limit Entries
         ANGLE_LIMIT_SWITCH_STATUS_ENTRY.setBoolean(atHardLimit());
+        ANGLE_ENTRY_PIVOT.setDouble(getAbsoluteShooterAngle());
     }
 
 }
