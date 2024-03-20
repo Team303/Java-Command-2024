@@ -42,6 +42,7 @@ public class IntakeNote extends Command {
 
     @Override
     public boolean isFinished() {
+        System.out.println("Count: "+count);
         return count > 2;
     }
 
@@ -49,6 +50,7 @@ public class IntakeNote extends Command {
     public void end(boolean interrupted) {
         // Commands.waitSeconds(0.4);
         belt.stopMotors();
+        count=0;
     }
 
 }

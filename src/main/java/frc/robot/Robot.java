@@ -152,6 +152,9 @@ public class Robot extends LoggedRobot {
 		operatorController.pov(180).toggleOnTrue(new SequentialCommandGroup(new GroundIntake(),
 				new ParallelDeadlineGroup(new IntakeNote(), new GroundIntake().repeatedly())));
 
+
+		
+
 		////////
 		// operatorController.pov(180).toggleOnTrue(new SequentialCommandGroup(new
 		//////// ShootNote(), new SetShooterAmp(Math.toDegrees(45), 18))); //only
@@ -168,9 +171,9 @@ public class Robot extends LoggedRobot {
 		////////
 		operatorController.a().toggleOnTrue(
 				new SequentialCommandGroup(
-						new SetShooterAmp(Math.toRadians(50), 18).withTimeout(6),
+						new SetShooterAmp(Math.toRadians(60), 18).withTimeout(6),
 						new ParallelCommandGroup(new ShootNote(),
-								new SetShooterAmp(Math.toRadians(50), 18).repeatedly())));
+								new SetShooterAmp(Math.toRadians(60), 18).repeatedly())));
 
 		// operatorController.rightBumper().toggleOnTrue(new SequentialCommandGroup(new
 		// OutwardIntake(),
@@ -216,7 +219,7 @@ public class Robot extends LoggedRobot {
 			autonomousCommand.cancel();
 		}
 		intake.setDefaultCommand(new HomeIntake());
-		swerve.setDefaultCommand(new DefaultDrive(true));
+		swerve.setDefaultCommand(new DefaultDrive(false));
 		shooter.setDefaultCommand(new HomeShooter());
 
 	}

@@ -57,13 +57,13 @@ public class Belt extends SubsystemBase {
     }
 
     public void runBelt() {
-        beltMotor.setControl(flywheelVoltage.withVelocity(5000));
+        beltMotor.setControl(flywheelVoltage.withVelocity(15));
         Logger.recordOutput("belt speed", beltMotor.getVelocity().refresh().getValueAsDouble());
-        indexerMotor.setControl(flywheelVoltage.withVelocity(5000));
+        indexerMotor.setControl(flywheelVoltage.withVelocity(1500));
     }
 
     public void runBeltInReverse() {
-        beltMotor.setControl(flywheelVoltage.withVelocity(5500));
+        beltMotor.setControl(flywheelVoltage.withVelocity(30));
         Logger.recordOutput("belt speed", beltMotor.getVelocity().refresh().getValueAsDouble());
         indexerMotor.setVoltage(-10);
     }
