@@ -53,32 +53,19 @@ public class Autonomous {
     // put this is in RobotContainer along with your subsystems.
 
     public static void init() {
-        // create("Test", () -> new InstantCommand(() -> System.out.println("TEST")));
-        // create("Alan is a persecuter", () -> Robot.swerve.getAutonomousCommand("Alan
-        // is a persecuter"));
-        // create("Alan is not a persecuter", () ->
-        // Robot.swerve.getAutonomousCommand("Alan is not a persecuter"));
-        create("test",
-                () -> new ParallelDeadlineGroup(Commands.waitSeconds(2), new SetShooterAmp(Math.toRadians(45), 2)));
-        create("IndexerShootLeft", () -> new SequentialCommandGroup(
-                new ParallelDeadlineGroup(Commands.waitSeconds(2), new ShootNote(),
-                        new SetShooterAmp(50,21).repeatedly()),
-                Robot.swerve.getAutonomousCommand("Taxileft")));
-        create("IndexerShootMid", () -> new SequentialCommandGroup(
-                new ParallelDeadlineGroup(Commands.waitSeconds(2), new ShootNote(),
-                        new SetShooterAmp(50,21.0).repeatedly()),
-                Robot.swerve.getAutonomousCommand("Taxicenter")));
-        create("IndexerShootRight", () -> new SequentialCommandGroup(
-                new ParallelDeadlineGroup(Commands.waitSeconds(2), new ShootNote(),
-                        new SetShooterAmp(50,21).repeatedly()),
-                Robot.swerve.getAutonomousCommand("Taxiright")));
-        create("MessUpAmp", () -> Robot.swerve.getAutonomousCommand("MessUpAmp"));
-        create("MessUpMiddle", () -> Robot.swerve.getAutonomousCommand("MessUpMiddle"));
-        create("MessUpStage", () -> Robot.swerve.getAutonomousCommand("MessUpStage"));
-        create("ShootTaxi", () -> Robot.swerve.getAutonomousCommand("ShootTaxi"));
-        create("AutoMoveTest", () -> Robot.swerve.getAutonomousCommand("AutoMoveTest"));
-        create("Taxileft",() -> Robot.swerve.getAutonomousCommand("Taxileft"));
-        create("Taximid",() -> Robot.swerve.getAutonomousCommand("Taxicenter"));
-        create("Taxiright",() -> Robot.swerve.getAutonomousCommand("Taxiright"));
+        create("SourceShootForward", () -> Autonomous.setAngleAdjustmentStart(60.46, "SourceForwardShoot"));
+        create("AmpShootForward", () -> Autonomous.setAngleAdjustmentStart(-56.31, "AmpForwardShoot"));
+        create("MiddleShootForward", () -> Autonomous.setAngleAdjustmentStart(0, "MiddleForwardShoot"));
+
+        create("Messsource", () -> Autonomous.setAngleAdjustmentStart(60.46, "MessSource"));
+        create("MessAmp", () -> Autonomous.setAngleAdjustmentStart(-56.31, "MessAmp"));
+        create("MessMiddle", () -> Autonomous.setAngleAdjustmentStart(0, "MessMiddle"));
+
+
+        
     }
+        public static SequentialCommandGroup setAngleAdjustmentStart(double angleDeg, String commandName) {
+        return new SequentialCommandGroup(new InstantCommand(() -> Robot.navX.setAngleAdjustment(angleDeg)), Robot.swerve.getAutonomousCommand(commandName));
+    }
+    
 }

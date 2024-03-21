@@ -78,15 +78,10 @@ public class Robot extends LoggedRobot {
 		// NamedCommands.registerCommand("PickUpNote", new InstantCommand(() ->
 		// {System.out.println("picked up note!");}));
 		// NamedCommands.registerCommand("TurnToSpeaker", new TurnToSpeaker());
-		// NamedCommands.registerCommand("Shooting", new SequentialCommandGroup(new
-		// OutwardIntake(),
-		// new ParallelCommandGroup(new
-		// ParallelDeadlineGroup(Commands.waitSeconds(2),new
-		// OutwardIntake().repeatedly()), new SequentialCommandGroup(new
-		// DynamicShootSpeaker(),
-		// new ParallelDeadlineGroup(Commands.waitSeconds(2), new ShootNote(), new
-		// DynamicShootSpeaker().repeatedly())
-		// ))));
+		NamedCommands.registerCommand("Shooting", new SequentialCommandGroup(
+						new SetShooterAmp(Math.toRadians(60), 18).withTimeout(6),
+						new ParallelCommandGroup(new ShootNote(),
+						new SetShooterAmp(Math.toRadians(60), 18).repeatedly()).withTimeout(2.5)));
 		// // NamedCommands.registerCommand("Shoottest", new
 		// SetShooterAmp(Math.toRadians(45),2));
 
@@ -115,8 +110,8 @@ public class Robot extends LoggedRobot {
 		Autonomous.init();
 		AutonomousProgram.addAutosToShuffleboard();
 
-		// intake.setDefaultCommand(new HomeIntake());
-		// shooter.setDefaultCommand(new HomeShooter());
+		intake.setDefaultCommand(new HomeIntake());
+		shooter.setDefaultCommand(new HomeShooter());
 		swerve.setDefaultCommand(new DefaultDrive(true));
 		swerve.resetOnlyNavX();
 		CameraServer.startAutomaticCapture();
@@ -139,6 +134,9 @@ public class Robot extends LoggedRobot {
 		// swerve.resetOdometry(swerve.getPose())));
 
 		driverController.y().onTrue(new InstantCommand(swerve::resetOnlyNavX));
+		driverController.pov(180).onTrue(new TurnToAngle(0));
+		driverController.pov(90).onTrue(new TurnToAngle(60));
+		driverController.pov(270).onTrue(new TurnToAngle(-60));
 		// driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 
 		// spin the other way when a note gets stuck
@@ -218,9 +216,6 @@ public class Robot extends LoggedRobot {
 		if (autonomousCommand != null) {
 			autonomousCommand.cancel();
 		}
-		intake.setDefaultCommand(new HomeIntake());
-		swerve.setDefaultCommand(new DefaultDrive(false));
-		shooter.setDefaultCommand(new HomeShooter());
 
 	}
 
@@ -229,4 +224,6 @@ public class Robot extends LoggedRobot {
 		CommandScheduler.getInstance().run();
 
 	}
+
+
 }

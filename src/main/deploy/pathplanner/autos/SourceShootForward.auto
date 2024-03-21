@@ -6,14 +6,20 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Shooting"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "RightSubwoofer"
           }
         }
       ]
     }
   },
-  "folder": "HHCompAutos",
+  "folder": "WHCompAutos",
   "choreoAuto": false
 }
