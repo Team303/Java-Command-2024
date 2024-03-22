@@ -134,7 +134,7 @@ public class RobotMap {
 	public static final class FieldConstants {
 		public static double fieldLength = Units.inchesToMeters(651.223);
 		public static double fieldWidth = Units.inchesToMeters(323.277);
-		public static Pose2d centerSpeakOpenInBlue = new Pose2d(0.0, fieldWidth - Units.inchesToMeters(104.0),
+		public static Pose2d centerSpeakOpenInBlue = new Pose2d(0.0, Units.inchesToMeters(323.277) - Units.inchesToMeters(104.0),
 				new Rotation2d());
 
 		public static Pose2d centerSpeakOpenInRed = new Pose2d(fieldLength, fieldWidth - Units.inchesToMeters(104.0),

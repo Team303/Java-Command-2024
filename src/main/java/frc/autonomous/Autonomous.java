@@ -1,5 +1,8 @@
 package frc.autonomous;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -11,6 +14,7 @@ import frc.commands.shooter.SetShooterAmp;
 import frc.robot.Robot;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 
 
@@ -53,19 +57,24 @@ public class Autonomous {
     // put this is in RobotContainer along with your subsystems.
 
     public static void init() {
-        create("SourceShootForward", () -> Autonomous.setAngleAdjustmentStart(60.46, "SourceShootForward"));
-        create("AmpShootForward", () -> Autonomous.setAngleAdjustmentStart(-56.31, "AmpShootForward"));
-        create("MiddleShootForward", () -> Autonomous.setAngleAdjustmentStart(0, "MiddleShootForward"));
+        double xPos = 1.0;
+        double yPos = Units.inchesToMeters(323.277) - Units.inchesToMeters(104.0);
+        create("SourceShootForward", () -> Autonomous.setAngleAdjustmentStart(60.46,xPos, yPos, "SourceShootForward"));
+        create("AmpShootForward", () -> Autonomous.setAngleAdjustmentStart(-56.31,xPos, yPos, "AmpShootForward"));
+        create("MiddleShootForward", () -> Autonomous.setAngleAdjustmentStart(0,xPos, yPos, "MiddleShootForward"));
 
-        create("Messsource", () -> Autonomous.setAngleAdjustmentStart(60.46, "MessSource"));
-        create("MessAmp", () -> Autonomous.setAngleAdjustmentStart(-56.31, "MessAmp"));
-        create("MessMiddle", () -> Autonomous.setAngleAdjustmentStart(0, "MessMiddle"));
+        create("Messsource", () -> Autonomous.setAngleAdjustmentStart(60.46,xPos, yPos, "MessSource"));
+        create("MessAmp", () -> Autonomous.setAngleAdjustmentStart(-56.31,xPos, yPos, "MessAmp"));
+        create("MessMiddle", () -> Autonomous.setAngleAdjustmentStart(0,xPos, yPos, "MessMiddle"));
+
+        create("wesuck", () -> Autonomous.setAngleAdjustmentStart(0, xPos, yPos, "wesuck"));
 
 
         
     }
-        public static SequentialCommandGroup setAngleAdjustmentStart(double angleDeg, String commandName) {
+public static SequentialCommandGroup setAngleAdjustmentStart(double angleDeg, double xPos, double yPos, String commandName) {
         Robot.navX.reset();
+        Robot.swerve.resetPose(new Pose2d(new Translation2d(xPos, yPos), new Rotation2d(angleDeg)));
         return new SequentialCommandGroup(new InstantCommand(() -> Robot.navX.setAngleAdjustment(angleDeg)), Robot.swerve.getAutonomousCommand(commandName));
     }
     

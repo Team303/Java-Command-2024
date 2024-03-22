@@ -463,6 +463,7 @@ public class DriveSubsystem extends SubsystemBase {
     // visionPoseEstimate.timestampSeconds);
     // }
 
+    poseEstimator.update(Robot.navX.getRotation2d(), getModulePositions());
     field2d.setRobotPose(getPose());
   }
 
@@ -559,7 +560,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void resetPose(Pose2d pose) {
-    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), new Pose2d());
+    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), pose);
   }
 
   public void resetOdometry() {

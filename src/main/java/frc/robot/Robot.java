@@ -149,9 +149,9 @@ public class Robot extends LoggedRobot {
 		//Intake From Source
 		operatorController.start().toggleOnTrue(
 				new SequentialCommandGroup(
-						new SetShooterAmp(Math.toRadians(50), -18).withTimeout(6),
+						new SetShooterAmp(Math.toRadians(45), -18).withTimeout(6),
 						new ParallelDeadlineGroup(new ReverseIntakeBBC(),
-								new SetShooterAmp(Math.toRadians(50), -18).repeatedly()),
+								new SetShooterAmp(Math.toRadians(45), -18).repeatedly()),
 						new NudgeNoteReverse()));
 
 
