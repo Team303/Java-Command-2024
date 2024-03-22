@@ -53,9 +53,9 @@ public class Autonomous {
     // put this is in RobotContainer along with your subsystems.
 
     public static void init() {
-        create("SourceShootForward", () -> Autonomous.setAngleAdjustmentStart(60.46, "SourceForwardShoot"));
-        create("AmpShootForward", () -> Autonomous.setAngleAdjustmentStart(-56.31, "AmpForwardShoot"));
-        create("MiddleShootForward", () -> Autonomous.setAngleAdjustmentStart(0, "MiddleForwardShoot"));
+        create("SourceShootForward", () -> Autonomous.setAngleAdjustmentStart(60.46, "SourceShootForward"));
+        create("AmpShootForward", () -> Autonomous.setAngleAdjustmentStart(-56.31, "AmpShootForward"));
+        create("MiddleShootForward", () -> Autonomous.setAngleAdjustmentStart(0, "MiddleShootForward"));
 
         create("Messsource", () -> Autonomous.setAngleAdjustmentStart(60.46, "MessSource"));
         create("MessAmp", () -> Autonomous.setAngleAdjustmentStart(-56.31, "MessAmp"));
@@ -65,6 +65,7 @@ public class Autonomous {
         
     }
         public static SequentialCommandGroup setAngleAdjustmentStart(double angleDeg, String commandName) {
+        Robot.navX.reset();
         return new SequentialCommandGroup(new InstantCommand(() -> Robot.navX.setAngleAdjustment(angleDeg)), Robot.swerve.getAutonomousCommand(commandName));
     }
     

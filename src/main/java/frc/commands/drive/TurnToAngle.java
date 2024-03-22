@@ -24,9 +24,9 @@ public class TurnToAngle extends Command {
     public TurnToAngle(double angle) {
         addRequirements(Robot.swerve);
 
-        controller = new PIDController(0.07, 0, 0.01);
+        controller = new PIDController(0.1, 0, 0.01);
         controller.enableContinuousInput(-180, 180);
-        controller.setTolerance(2);
+        controller.setTolerance(3.5);
 
         this.angle = normalizeAngle(angle);
     }

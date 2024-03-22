@@ -78,6 +78,8 @@ public class Shooter extends SubsystemBase {
     public static final ShuffleboardTab SHOOTER_TAB = Shuffleboard.getTab("Shooter"); // Shuffleboard tab
 
     // Flywheel Entries
+    public static final GenericEntry AT_SETPOINT = SHOOTER_TAB.add("At Setpoint", false)
+            .withPosition(0, 0).getEntry();
     public static final GenericEntry DESIRED_LEFT_RPM_ENTRY = SHOOTER_TAB.add("Desired Left RPM", 0.0)
             .withPosition(0, 0).withSize(2, 1).getEntry();
     public static final GenericEntry DESIRED_RIGHT_RPM_ENTRY = SHOOTER_TAB.add("Desired Right RPM", 0.0)
@@ -107,6 +109,8 @@ public class Shooter extends SubsystemBase {
     // Limit Entries
     public static final GenericEntry ANGLE_LIMIT_SWITCH_STATUS_ENTRY = SHOOTER_TAB.add("Angle Hard Limit", false)
             .withPosition(0, 0).getEntry();
+    
+    public static final GenericEntry LERPING_ANGLE_ENTRY = SHOOTER_TAB.add("Lerping Angle (< 56)", 1).getEntry();
 
     // Extras
     public double diffFactor = 0.8;
@@ -251,11 +255,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public double getAbsoluteShooterAngle() {
-
-        // get angular position in rad
-
-        return normalizeAngle(angleEncoder.getAbsolutePosition() * 2 * Math.PI - Math.toRadians(140 + 205));
-
+        return normalizeAngle(angleEncoder.getAbsolutePosition() * 2 * Math.PI - Math.toRadians(140 + 205 - 8));
     }
 
     public double getAngleMotorVelocity() {
@@ -331,6 +331,8 @@ public class Shooter extends SubsystemBase {
         // Limit Entries
         ANGLE_LIMIT_SWITCH_STATUS_ENTRY.setBoolean(atHardLimit());
         ANGLE_ENTRY_PIVOT.setDouble(getAbsoluteShooterAngle());
+
+        AT_SETPOINT.setBoolean(atSetpoint());
     }
 
 }

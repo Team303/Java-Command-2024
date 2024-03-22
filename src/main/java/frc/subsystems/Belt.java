@@ -57,15 +57,15 @@ public class Belt extends SubsystemBase {
     }
 
     public void runBelt() {
-        beltMotor.setControl(flywheelVoltage.withVelocity(15));
+        beltMotor.setControl(flywheelVoltage.withVelocity(100));
         Logger.recordOutput("belt speed", beltMotor.getVelocity().refresh().getValueAsDouble());
         indexerMotor.setControl(flywheelVoltage.withVelocity(1500));
     }
 
     public void runBeltInReverse() {
-        beltMotor.setControl(flywheelVoltage.withVelocity(30));
+        beltMotor.setControl(flywheelVoltage.withVelocity(-100));
         Logger.recordOutput("belt speed", beltMotor.getVelocity().refresh().getValueAsDouble());
-        indexerMotor.setVoltage(-10);
+        indexerMotor.setControl(flywheelVoltage.withVelocity(-1500));
     }
 
     public void runBelt(double belt, double center, double indexer) {
@@ -75,6 +75,10 @@ public class Belt extends SubsystemBase {
 
     public void runIndexer() {
         indexerMotor.setControl(flywheelVoltage.withVelocity(5000));
+    }
+
+    public void runIndexerInReverse() {
+        indexerMotor.setControl(flywheelVoltage.withVelocity(-5000));
     }
 
     public void runRollers() {

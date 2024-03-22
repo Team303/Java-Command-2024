@@ -30,7 +30,10 @@ import frc.autonomous.Autonomous;
 import frc.autonomous.AutonomousProgram;
 import frc.commands.amoghbelt.Ejaculate;
 import frc.commands.amoghbelt.IntakeNote;
+import frc.commands.amoghbelt.NinjaIndexOnly;
 import frc.commands.amoghbelt.NudgeNote;
+import frc.commands.amoghbelt.NudgeNoteReverse;
+import frc.commands.amoghbelt.ReverseIntakeBBC;
 import frc.commands.drive.DefaultDrive;
 import frc.commands.drive.DriveWait;
 // import frc.commands.drive.TurnToSpeaker;
@@ -38,6 +41,7 @@ import frc.subsystems.DriveSubsystem;
 import frc.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.subsystems.DriveSubsystem;
+import frc.commands.shooter.LerpingShooterTest;
 import frc.modules.PhotonvisionModule;
 import frc.subsystems.Intake;
 import frc.subsystems.Belt;
@@ -79,9 +83,9 @@ public class Robot extends LoggedRobot {
 		// {System.out.println("picked up note!");}));
 		// NamedCommands.registerCommand("TurnToSpeaker", new TurnToSpeaker());
 		NamedCommands.registerCommand("Shooting", new SequentialCommandGroup(
-						new SetShooterAmp(Math.toRadians(60), 18).withTimeout(6),
+						new SetShooterAmp(Math.toRadians(55), 18).withTimeout(6),
 						new ParallelCommandGroup(new ShootNote(),
-						new SetShooterAmp(Math.toRadians(60), 18).repeatedly()).withTimeout(2.5)));
+						new SetShooterAmp(Math.toRadians(55), 18).repeatedly()).withTimeout(2.5)));
 		// // NamedCommands.registerCommand("Shoottest", new
 		// SetShooterAmp(Math.toRadians(45),2));
 
@@ -133,22 +137,51 @@ public class Robot extends LoggedRobot {
 		// driverControllr.y().onTrue(Commands.runOnce(() ->
 		// swerve.resetOdometry(swerve.getPose())));
 
-		driverController.y().onTrue(new InstantCommand(swerve::resetOnlyNavX));
-		driverController.pov(180).onTrue(new TurnToAngle(0));
-		driverController.pov(90).onTrue(new TurnToAngle(60));
-		driverController.pov(270).onTrue(new TurnToAngle(-60));
+		operatorController.y().onTrue(new InstantCommand(swerve::resetOnlyNavX));
+		operatorController.pov(180).onTrue(new TurnToAngle(0));
+		operatorController.pov(90).onTrue(new TurnToAngle(60));
+		operatorController.pov(270).onTrue(new TurnToAngle(-60));
 		// driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 
 		// spin the other way when a note gets stuck
 		/////
+
+		//Intake From Source
+		operatorController.start().toggleOnTrue(
+				new SequentialCommandGroup(
+						new SetShooterAmp(Math.toRadians(50), -18).withTimeout(6),
+						new ParallelDeadlineGroup(new ReverseIntakeBBC(),
+								new SetShooterAmp(Math.toRadians(50), -18).repeatedly()),
+						new NudgeNoteReverse()));
+
+
+								
 		operatorController.b().toggleOnTrue(new IntakeNote());
 		operatorController.leftBumper().toggleOnTrue(new Ejaculate());
-		operatorController.rightBumper().toggleOnTrue(new ShootNote());
-		operatorController.pov(0).toggleOnTrue(new SequentialCommandGroup(new GroundIntake(),
+		operatorController.rightBumper().toggleOnTrue(new NinjaIndexOnly());
+		operatorController.leftTrigger().toggleOnTrue(new SequentialCommandGroup(new GroundIntake(),
 				new ParallelCommandGroup(new GroundIntake().repeatedly(), new Ejaculate())));
 
-		operatorController.pov(180).toggleOnTrue(new SequentialCommandGroup(new GroundIntake(),
+
+		//Intake from floor
+		operatorController.rightTrigger().toggleOnTrue(new SequentialCommandGroup(new GroundIntake(),
 				new ParallelDeadlineGroup(new IntakeNote(), new GroundIntake().repeatedly())));
+
+
+		//Shuffleboard Wigit Shoot
+		operatorController.x().toggleOnTrue(
+				new SequentialCommandGroup(
+						new LerpingShooterTest(18).withTimeout(6),
+						new ParallelCommandGroup(new ShootNote(),
+								new LerpingShooterTest(18).repeatedly())));
+
+
+		//Shoot Manual Setpoint
+		operatorController.a().toggleOnTrue(
+				new SequentialCommandGroup(
+						new SetShooterAmp(Math.toRadians(56), 18).withTimeout(6),
+						new ParallelCommandGroup(new ShootNote(),
+								new SetShooterAmp(Math.toRadians(56), 18).repeatedly())));
 
 
 		
@@ -167,12 +200,7 @@ public class Robot extends LoggedRobot {
 		// ))));
 
 		////////
-		operatorController.a().toggleOnTrue(
-				new SequentialCommandGroup(
-						new SetShooterAmp(Math.toRadians(60), 18).withTimeout(6),
-						new ParallelCommandGroup(new ShootNote(),
-								new SetShooterAmp(Math.toRadians(60), 18).repeatedly())));
-
+		
 		// operatorController.rightBumper().toggleOnTrue(new SequentialCommandGroup(new
 		// OutwardIntake(),
 		// new ParallelCommandGroup(new OutwardIntake().repeatedly(), new
