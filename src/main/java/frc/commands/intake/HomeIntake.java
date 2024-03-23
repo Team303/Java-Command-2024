@@ -25,7 +25,7 @@ public class HomeIntake extends Command {
 
     @Override
     public void execute() {
-        // System.out.println("HomeIntake");
+        System.out.println("HomeIntake");
 
         double voltage = intake.calculateAngleSpeed(RobotMap.Intake.HOME_ANGLE);
         // System.out.println("Voltage: " + -(voltage));

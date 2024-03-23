@@ -26,7 +26,7 @@ public class GroundIntake extends Command {
 
     @Override
     public void execute() {
-        // System.out.println("Ground Intake");
+        System.out.println("Ground Intake");
         double voltage = intake.calculateAngleSpeed(RobotMap.Intake.GROUND_ANGLE);
         MOTOR_OUTPUT.setDouble(-voltage);
 

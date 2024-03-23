@@ -164,7 +164,6 @@ public class Robot extends LoggedRobot {
 
 
 								
-		operatorController.b().toggleOnTrue(new IntakeNote());
 		operatorController.leftBumper().toggleOnTrue(new EjaculateNote());
 		operatorController.rightBumper().toggleOnTrue(new RunIndexer());
 		operatorController.leftTrigger().toggleOnTrue(new SequentialCommandGroup(new GroundIntake(),
@@ -184,13 +183,19 @@ public class Robot extends LoggedRobot {
 								new LerpingShooterTest(18).repeatedly())));
 
 
-		//Shoot Manual Setpoint
+		//Shoot Setpoint From Subwoofer
 		operatorController.a().toggleOnTrue(
 				new SequentialCommandGroup(
 						new SetShooterAmp(Math.toRadians(56), 18).withTimeout(6),
 						new ParallelCommandGroup(new SendToShooter(),
 								new SetShooterAmp(Math.toRadians(56), 18).repeatedly())));
 
+		//Shoot Setpoint From Podium
+		operatorController.b().toggleOnTrue(
+				new SequentialCommandGroup(
+						new SetShooterAmp(Math.toRadians(33), 18).withTimeout(6),
+						new ParallelCommandGroup(new SendToShooter(),
+								new SetShooterAmp(Math.toRadians(33), 18).repeatedly())));
 
 		
 
