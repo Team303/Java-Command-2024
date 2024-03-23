@@ -5,12 +5,12 @@ import static frc.robot.Robot.belt;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class roll extends Command {
+public class RunRoller extends Command {
     Timer timer = new Timer();
 
     double start = Integer.MAX_VALUE;
 
-    public roll() {
+    public RunRoller() {
         addRequirements(belt);
     }
 

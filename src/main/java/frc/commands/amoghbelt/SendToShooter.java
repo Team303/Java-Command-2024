@@ -5,9 +5,9 @@ import static frc.subsystems.Belt.BELT_SPEED_ENTRY;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class ShootNote extends Command {
+public class SendToShooter extends Command {
 
-    public ShootNote() {
+    public SendToShooter() {
         addRequirements(belt);
 
         BELT_SPEED_ENTRY.setDouble(belt.beltMotor.getVelocity().refresh().getValueAsDouble());

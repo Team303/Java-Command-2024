@@ -164,7 +164,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     Logger.recordOutput("Swerve Module States", new SwerveModuleState[] { new SwerveModuleState(),
         new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState() });
-    Robot.navX.reset();
+    Robot.lloydkaijaycolezanenyaNAVX.reset();
     AVTimer.start();
 
     configLeftFront = new CANcoderConfiguration();
@@ -257,7 +257,7 @@ public class DriveSubsystem extends SubsystemBase {
       // visionPoseEstimatorLeft.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 
-    poseEstimator = new SwerveDrivePoseEstimator(kinematics, Robot.navX.getRotation2d(), getModulePositions(),
+    poseEstimator = new SwerveDrivePoseEstimator(kinematics, Robot.lloydkaijaycolezanenyaNAVX.getRotation2d(), getModulePositions(),
         new Pose2d(new Translation2d(), new Rotation2d()),
         odometryStandardDeviations, photonStandardDeviations);
 
@@ -297,17 +297,17 @@ public class DriveSubsystem extends SubsystemBase {
    * @return the corrected chassisspeeds
    */
   private ChassisSpeeds translationalDriftCorrection(ChassisSpeeds chassisSpeeds) {
-    if (!Robot.navX.isConnected())
+    if (!Robot.lloydkaijaycolezanenyaNAVX.isConnected())
       return chassisSpeeds;
     double translationalVelocity = Math.hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond);
     Logger.recordOutput("translational velocity", translationalVelocity);
-    Logger.recordOutput("turn rate", Robot.navX.getRate());
+    Logger.recordOutput("turn rate", Robot.lloydkaijaycolezanenyaNAVX.getRate());
 
-    if (Math.abs(Robot.navX.getRate()) > 0.5) {
-      m_desiredHeading = Robot.navX.getYaw();
+    if (Math.abs(Robot.lloydkaijaycolezanenyaNAVX.getRate()) > 0.5) {
+      m_desiredHeading = Robot.lloydkaijaycolezanenyaNAVX.getYaw();
     } else if (Math.abs(translationalVelocity) > 1) {
 
-      double calc = driftCorrectionPid.calculate(Robot.navX.getYaw(),
+      double calc = driftCorrectionPid.calculate(Robot.lloydkaijaycolezanenyaNAVX.getYaw(),
           m_desiredHeading);
 
       if (Math.abs(calc) >= 0.1) {
@@ -346,7 +346,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     double angle = normalizeAngle(calculateAngleSpeaker());
 
-    chassisSpeeds.omegaRadiansPerSecond -= speakerAlignPid.calculate(Robot.navX.getYaw(), angle);
+    chassisSpeeds.omegaRadiansPerSecond -= speakerAlignPid.calculate(Robot.lloydkaijaycolezanenyaNAVX.getYaw(), angle);
 
     return chassisSpeeds;
   }
@@ -362,7 +362,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     double angle = isBlue ? -90 : 90;
 
-    chassisSpeeds.omegaRadiansPerSecond -= speakerAlignPid.calculate(Robot.navX.getYaw(), angle);
+    chassisSpeeds.omegaRadiansPerSecond -= speakerAlignPid.calculate(Robot.lloydkaijaycolezanenyaNAVX.getYaw(), angle);
 
     return chassisSpeeds;
   }
@@ -384,7 +384,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     ChassisSpeeds chassisSpeeds = fieldOriented
         ? ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
-            Rotation2d.fromDegrees(-Robot.navX.getAngle()))
+            Rotation2d.fromDegrees(-Robot.lloydkaijaycolezanenyaNAVX.getAngle()))
         : new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 
    // chassisSpeeds = translationalDriftCorrection(chassisSpeeds);
@@ -463,7 +463,7 @@ public class DriveSubsystem extends SubsystemBase {
     // visionPoseEstimate.timestampSeconds);
     // }
 
-    poseEstimator.update(Robot.navX.getRotation2d(), getModulePositions());
+    poseEstimator.update(Robot.lloydkaijaycolezanenyaNAVX.getRotation2d(), getModulePositions());
     field2d.setRobotPose(getPose());
   }
 
@@ -560,7 +560,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void resetPose(Pose2d pose) {
-    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), pose);
+    poseEstimator.resetPosition(Robot.lloydkaijaycolezanenyaNAVX.getRotation2d(), getModulePositions(), pose);
   }
 
   public void resetOdometry() {
@@ -575,19 +575,19 @@ public class DriveSubsystem extends SubsystemBase {
       isBlue = alliance.get() == DriverStation.Alliance.Blue;
     }
 
-    Robot.navX.reset();
+    Robot.lloydkaijaycolezanenyaNAVX.reset();
 
-    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(),
+    poseEstimator.resetPosition(Robot.lloydkaijaycolezanenyaNAVX.getRotation2d(), getModulePositions(),
         new Pose2d(new Translation2d(), Rotation2d.fromDegrees(isBlue ? 0 : 180)));
 
   }
 
   public void resetOnlyNavX() {
-    Robot.navX.reset();
+    Robot.lloydkaijaycolezanenyaNAVX.reset();
   }
 
   public void resetOdometry(Pose2d pose) {
-    poseEstimator.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), pose);
+    poseEstimator.resetPosition(Robot.lloydkaijaycolezanenyaNAVX.getRotation2d(), getModulePositions(), pose);
   }
 
   public void resetOdometryWidget() {
@@ -603,7 +603,7 @@ public class DriveSubsystem extends SubsystemBase {
       isBlue = alliance.get() == DriverStation.Alliance.Blue;
     }
 
-    Robot.navX.reset();
+    Robot.lloydkaijaycolezanenyaNAVX.reset();
 
     resetOdometry(new Pose2d(
         new Translation2d(
@@ -663,12 +663,12 @@ public class DriveSubsystem extends SubsystemBase {
     backRightTurnOutput.setDouble(backRight.getMainTurnOutput());
     angleToSpeaker.setDouble(calculateAngleSpeaker());
 
-    globalAngle.setDouble(Robot.navX.getAngle() % 360);
-    angleVelo.setDouble(Robot.navX.getRate());
+    globalAngle.setDouble(Robot.lloydkaijaycolezanenyaNAVX.getAngle() % 360);
+    angleVelo.setDouble(Robot.lloydkaijaycolezanenyaNAVX.getRate());
     updateOdometry();
 
     Logger.recordOutput("Odometry", getPose());
-    Logger.recordOutput("angular velocity", Robot.navX.getRate());
+    Logger.recordOutput("angular velocity", Robot.lloydkaijaycolezanenyaNAVX.getRate());
     Logger.recordOutput("Front Left Arya", frontLeft.getPosition().angle.getDegrees());
     Logger.recordOutput("Back Left Arav", backLeft.getPosition().angle.getDegrees());
     Logger.recordOutput("Front Right Alan", frontRight.getPosition().angle.getDegrees());

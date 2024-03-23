@@ -1,20 +1,26 @@
 {
   "version": 1.0,
-  "startingPose": {
-    "position": {
-      "x": 1.8417383432388303,
-      "y": 5.638049602508545
-    },
-    "rotation": 0.0
-  },
+  "startingPose": null,
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Source2NotePt1"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "TurnToSpeaker"
+            "name": "PickUpNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source2NotePt2"
           }
         },
         {
@@ -26,12 +32,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "TaxiSource"
           }
         }
       ]
     }
   },
-  "folder": "HHCompAutos",
-  "choreoAuto": true
+  "folder": "WHCompAutos",
+  "choreoAuto": false
 }

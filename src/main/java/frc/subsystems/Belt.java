@@ -37,6 +37,7 @@ public class Belt extends SubsystemBase {
         beltMotor = new TalonFX(Intake.BELT_MOTOR_ID);
         beltMotor.setInverted(true);
         beltMotor.setNeutralMode(NeutralModeValue.Coast);
+        indexerMotor.setNeutralMode(NeutralModeValue.Coast);
         TalonFXConfiguration flywheelConfigs = new TalonFXConfiguration();
 
         flywheelConfigs.Slot0.kP = 0.3;
@@ -59,7 +60,8 @@ public class Belt extends SubsystemBase {
     public void runBelt() {
         beltMotor.setControl(flywheelVoltage.withVelocity(100));
         Logger.recordOutput("belt speed", beltMotor.getVelocity().refresh().getValueAsDouble());
-        indexerMotor.setControl(flywheelVoltage.withVelocity(1500));
+        // indexerMotor.setControl(flywheelVoltage.withVelocity(1500));
+        indexerMotor.setVoltage(12);
     }
 
     public void runBeltInReverse() {
@@ -70,7 +72,8 @@ public class Belt extends SubsystemBase {
 
     public void runBelt(double belt, double center, double indexer) {
         beltMotor.setVoltage(belt);
-        indexerMotor.setVoltage(indexer);
+        indexerMotor
+        .setVoltage(indexer);
     }
 
     public void runIndexer() {
@@ -96,7 +99,6 @@ public class Belt extends SubsystemBase {
 
     @Override
     public void periodic() {
-        BBC_ENTRY.setBoolean(getBeam());
         ROLLER_SPEED.setDouble(beltMotor.getVelocity().refresh().getValueAsDouble());
     }
 

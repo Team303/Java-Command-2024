@@ -3,10 +3,12 @@ package frc.autonomous;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import static frc.robot.Robot.belt;
 
 public class AutonomousProgram {
 
@@ -14,6 +16,7 @@ public class AutonomousProgram {
 	public static final ShuffleboardTab AUTO_TAB = Shuffleboard.getTab("Autonomous");
 	public static SendableChooser<AutonomousProgram> autoChooser = new SendableChooser<>();
 	public static SendableChooser<Double> autoDelayChooser = new SendableChooser<>();
+
 
 	static {
 		/**

@@ -1,33 +1,37 @@
 package frc.commands.amoghbelt;
 
 import static frc.robot.Robot.belt;
+import static frc.subsystems.Belt.BELT_SPEED_ENTRY;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class Ejaculate extends Command {
+public class RunIndexer extends Command {
+
     Timer timer = new Timer();
+    double start;
+    int count = 0;
 
-    double start = Integer.MAX_VALUE;
-
-    public Ejaculate() {
+    public RunIndexer() {
         addRequirements(belt);
+        count = 0;
+        BELT_SPEED_ENTRY.setDouble(belt.beltMotor.getVelocity().refresh().getValueAsDouble());
     }
 
-    @Override
-    public void initialize() {
-        start = belt.indexerMotor.getPosition().refresh().getValueAsDouble();
-        timer.reset();
-        timer.start();
-    }
+    // @Override
+    // public void initialize() {
+    // }
 
     @Override
     public void execute() {
-        belt.runBeltInReverse();
-        System.out.println("Time: " + timer.get());
+        belt.runIndexer();
+
+        if (!belt.getBeam()) {
+            count++;
+        }
 
         // if (!belt.getBeam()) {
-        // // start =
+        // start =
         // Math.abs(belt.indexerMotor.getPosition().refresh().getValueAsDouble());
         // }
 
@@ -38,12 +42,15 @@ public class Ejaculate extends Command {
 
     @Override
     public boolean isFinished() {
-        return timer.get() > 2.0;
+        System.out.println("Count: "+count);
+        return count > 2;
     }
 
     @Override
     public void end(boolean interrupted) {
+        // Commands.waitSeconds(0.4);
         belt.stopMotors();
+        count=0;
     }
 
 }

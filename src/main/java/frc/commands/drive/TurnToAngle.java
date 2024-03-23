@@ -33,7 +33,7 @@ public class TurnToAngle extends Command {
 
     @Override
     public void execute() {
-        Robot.swerve.drive(new Translation2d(), -controller.calculate(normalizeAngle(Robot.navX.getAngle()), angle),
+        Robot.swerve.drive(new Translation2d(), -controller.calculate(normalizeAngle(Robot.lloydkaijaycolezanenyaNAVX.getAngle()), angle),
                 true);
     }
 

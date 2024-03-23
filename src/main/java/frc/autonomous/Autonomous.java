@@ -4,14 +4,17 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.commands.amoghbelt.ShootNote;
+import frc.commands.amoghbelt.SendToShooter;
 import frc.commands.shooter.DynamicShootSpeaker;
 import frc.commands.shooter.SetShooterAmp;
 import frc.robot.Robot;
+import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.math.util.Units;
@@ -57,25 +60,31 @@ public class Autonomous {
     // put this is in RobotContainer along with your subsystems.
 
     public static void init() {
-        double xPos = 1.0;
+        double xPos = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? 1.0 : RobotMap.FieldConstants.fieldLength - 1;
         double yPos = Units.inchesToMeters(323.277) - Units.inchesToMeters(104.0);
+
+        create("Source2NoteNinjago", () -> Autonomous.setAngleAdjustmentStart(60.46,xPos, yPos, "Source2NoteNinjago"));
+        create("Mid2NoteNinjago", () -> Autonomous.setAngleAdjustmentStart(-56.31,xPos, yPos, "Mid2NoteNinjago"));
+        create("Amp2NoteNinjago", () -> Autonomous.setAngleAdjustmentStart(0,xPos, yPos, "Amp2NoteNinjago"));
+
+
         create("SourceShootForward", () -> Autonomous.setAngleAdjustmentStart(60.46,xPos, yPos, "SourceShootForward"));
         create("AmpShootForward", () -> Autonomous.setAngleAdjustmentStart(-56.31,xPos, yPos, "AmpShootForward"));
-        create("MiddleShootForward", () -> Autonomous.setAngleAdjustmentStart(0,xPos, yPos, "MiddleShootForward"));
+        create("MidShootForward", () -> Autonomous.setAngleAdjustmentStart(0,xPos, yPos, "MidShootForward"));
 
         create("Messsource", () -> Autonomous.setAngleAdjustmentStart(60.46,xPos, yPos, "MessSource"));
         create("MessAmp", () -> Autonomous.setAngleAdjustmentStart(-56.31,xPos, yPos, "MessAmp"));
-        create("MessMiddle", () -> Autonomous.setAngleAdjustmentStart(0,xPos, yPos, "MessMiddle"));
+        create("MessMid", () -> Autonomous.setAngleAdjustmentStart(0,xPos, yPos, "MessMid"));
 
-        create("wesuck", () -> Autonomous.setAngleAdjustmentStart(0, xPos, yPos, "wesuck"));
+        create("wesuckatgoingforward", () -> Autonomous.setAngleAdjustmentStart(0, xPos, yPos, "wesuck"));
 
 
         
     }
 public static SequentialCommandGroup setAngleAdjustmentStart(double angleDeg, double xPos, double yPos, String commandName) {
-        Robot.navX.reset();
+        Robot.lloydkaijaycolezanenyaNAVX.reset();
         Robot.swerve.resetPose(new Pose2d(new Translation2d(xPos, yPos), new Rotation2d(angleDeg)));
-        return new SequentialCommandGroup(new InstantCommand(() -> Robot.navX.setAngleAdjustment(angleDeg)), Robot.swerve.getAutonomousCommand(commandName));
+        return new SequentialCommandGroup(new InstantCommand(() -> Robot.lloydkaijaycolezanenyaNAVX.setAngleAdjustment(angleDeg)), Robot.swerve.getAutonomousCommand(commandName));
     }
     
 }

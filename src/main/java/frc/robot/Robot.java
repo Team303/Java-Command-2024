@@ -18,6 +18,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -28,14 +29,15 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.autonomous.Autonomous;
 import frc.autonomous.AutonomousProgram;
-import frc.commands.amoghbelt.Ejaculate;
+import frc.commands.amoghbelt.EjaculateNote;
 import frc.commands.amoghbelt.IntakeNote;
-import frc.commands.amoghbelt.NinjaIndexOnly;
+import frc.commands.amoghbelt.RunIndexer;
 import frc.commands.amoghbelt.NudgeNote;
 import frc.commands.amoghbelt.NudgeNoteReverse;
 import frc.commands.amoghbelt.ReverseIntakeBBC;
 import frc.commands.drive.DefaultDrive;
 import frc.commands.drive.DriveWait;
+import frc.commands.drive.GoForward;
 // import frc.commands.drive.TurnToSpeaker;
 import frc.subsystems.DriveSubsystem;
 import frc.subsystems.Shooter;
@@ -55,19 +57,23 @@ import frc.commands.drive.TurnToSpeaker;
 import frc.commands.intake.HomeIntake;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import frc.commands.shooter.DynamicShootSpeaker;
-import frc.commands.amoghbelt.ShootNote;
-import frc.commands.amoghbelt.roll;
+import frc.commands.amoghbelt.SendToShooter;
+import frc.commands.amoghbelt.RunRoller;
+import static frc.autonomous.AutonomousProgram.AUTO_TAB;
+
 
 public class Robot extends LoggedRobot {
 	public static final CommandXboxController driverController = new CommandXboxController(0);
 	public static final CommandXboxController operatorController = new CommandXboxController(1);
 
-	public static final AHRS navX = new AHRS();
+	public static final AHRS lloydkaijaycolezanenyaNAVX = new AHRS();
 	public static PhotonvisionModule photonvision;
 	public static DriveSubsystem swerve;
 	public static Intake intake;
 	public static Belt belt;
 	public static Shooter shooter;
+	public static GenericEntry BBCStats;
+
 	// public static Logger logger;
 
 	@Override
@@ -78,15 +84,14 @@ public class Robot extends LoggedRobot {
 		belt = new Belt();
 		shooter = new Shooter();
 		swerve.resetOdometry();
-
-		// NamedCommands.registerCommand("PickUpNote", new InstantCommand(() ->
-		// {System.out.println("picked up note!");}));
-		// NamedCommands.registerCommand("TurnToSpeaker", new TurnToSpeaker());
+		NamedCommands.registerCommand("PickUpNote",new SequentialCommandGroup(new GroundIntake(),
+				new ParallelCommandGroup(new ParallelDeadlineGroup(new IntakeNote(), new GroundIntake().repeatedly())), new GoForward(1)));
+		NamedCommands.registerCommand("TurnToSpeaker", new TurnToSpeaker());
 		NamedCommands.registerCommand("Shooting", new SequentialCommandGroup(
 						new SetShooterAmp(Math.toRadians(55), 18).withTimeout(6),
-						new ParallelCommandGroup(new ShootNote(),
+						new ParallelCommandGroup(new SendToShooter(),
 						new SetShooterAmp(Math.toRadians(55), 18).repeatedly()).withTimeout(2.5)));
-		// // NamedCommands.registerCommand("Shoottest", new
+		// NamedCommands.registerCommand("Shoottest", new
 		// SetShooterAmp(Math.toRadians(45),2));
 
 		configureButtonBindings();
@@ -119,8 +124,11 @@ public class Robot extends LoggedRobot {
 		swerve.setDefaultCommand(new DefaultDrive(true));
 		swerve.resetOnlyNavX();
 		CameraServer.startAutomaticCapture();
-		// CvSink cvSink = CameraServer.getVideo();
-		// CvSource outputStream = CameraServer.putVideo("Blur",1280,720);
+		CvSink cvSink = CameraServer.getVideo();
+		CvSource outputStream = CameraServer.putVideo("Blur",1280,720);
+
+		BBCStats = AUTO_TAB.add("aritraBBC", false).withPosition(1, 0)
+		.getEntry();
 	}
 
 	@Override
@@ -137,17 +145,17 @@ public class Robot extends LoggedRobot {
 		// driverControllr.y().onTrue(Commands.runOnce(() ->
 		// swerve.resetOdometry(swerve.getPose())));
 
-		operatorController.y().onTrue(new InstantCommand(swerve::resetOnlyNavX));
-		operatorController.pov(180).onTrue(new TurnToAngle(0));
-		operatorController.pov(90).onTrue(new TurnToAngle(60));
-		operatorController.pov(270).onTrue(new TurnToAngle(-60));
+		driverController.y().onTrue(new InstantCommand(swerve::resetOnlyNavX));
+		driverController.pov(180).onTrue(new TurnToAngle(0));
+		driverController.pov(90).onTrue(new TurnToAngle(60));
+		driverController.pov(270).onTrue(new TurnToAngle(-60));
 		// driverController.a().toggleOnTrue(new TurnToAngle(0).repeatedly());
 
 		// spin the other way when a note gets stuck
 		/////
 
 		//Intake From Source
-		operatorController.start().toggleOnTrue(
+		operatorController.pov(0).toggleOnTrue(
 				new SequentialCommandGroup(
 						new SetShooterAmp(Math.toRadians(45), -18).withTimeout(6),
 						new ParallelDeadlineGroup(new ReverseIntakeBBC(),
@@ -157,10 +165,10 @@ public class Robot extends LoggedRobot {
 
 								
 		operatorController.b().toggleOnTrue(new IntakeNote());
-		operatorController.leftBumper().toggleOnTrue(new Ejaculate());
-		operatorController.rightBumper().toggleOnTrue(new NinjaIndexOnly());
+		operatorController.leftBumper().toggleOnTrue(new EjaculateNote());
+		operatorController.rightBumper().toggleOnTrue(new RunIndexer());
 		operatorController.leftTrigger().toggleOnTrue(new SequentialCommandGroup(new GroundIntake(),
-				new ParallelCommandGroup(new GroundIntake().repeatedly(), new Ejaculate())));
+				new ParallelCommandGroup(new GroundIntake().repeatedly(), new EjaculateNote())));
 
 
 		//Intake from floor
@@ -172,7 +180,7 @@ public class Robot extends LoggedRobot {
 		operatorController.x().toggleOnTrue(
 				new SequentialCommandGroup(
 						new LerpingShooterTest(18).withTimeout(6),
-						new ParallelCommandGroup(new ShootNote(),
+						new ParallelCommandGroup(new SendToShooter(),
 								new LerpingShooterTest(18).repeatedly())));
 
 
@@ -180,7 +188,7 @@ public class Robot extends LoggedRobot {
 		operatorController.a().toggleOnTrue(
 				new SequentialCommandGroup(
 						new SetShooterAmp(Math.toRadians(56), 18).withTimeout(6),
-						new ParallelCommandGroup(new ShootNote(),
+						new ParallelCommandGroup(new SendToShooter(),
 								new SetShooterAmp(Math.toRadians(56), 18).repeatedly())));
 
 
@@ -218,7 +226,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void autonomousInit() {
-		navX.reset();
+		lloydkaijaycolezanenyaNAVX.reset();
 		Command autonomousRoutine = AutonomousProgram.constructSelectedRoutine();
 
 		// Home the arm while waiting for the drivebase delay
@@ -250,6 +258,9 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void robotPeriodic() {
 		CommandScheduler.getInstance().run();
+		BBCStats.setBoolean(belt.getBeam());
+
+
 
 	}
 

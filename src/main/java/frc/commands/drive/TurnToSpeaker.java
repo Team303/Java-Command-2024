@@ -35,7 +35,7 @@ public class TurnToSpeaker extends Command {
 
   @Override
   public void execute() {
-    Robot.swerve.drive(new Translation2d(), -controller.calculate(normalizeAngle(Robot.navX.getAngle()), angle), true);
+    Robot.swerve.drive(new Translation2d(), -controller.calculate(normalizeAngle(Robot.lloydkaijaycolezanenyaNAVX.getAngle()), angle), true);
   }
 
   @Override
