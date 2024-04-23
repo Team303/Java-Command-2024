@@ -68,7 +68,7 @@ public class Robot extends LoggedRobot {
 	controller.y().onTrue(new SetShooterAmp(Math.toRadians(90), 21.27));
 
 	//after merge make a parallel command group with turn to speaker
-	controller.x().onTrue(new ManualShootSpeaker(10));
+	controller.x().onTrue(new ManualShootSpeaker(20));
 
 
 }
