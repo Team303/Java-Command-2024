@@ -6,6 +6,7 @@ package frc.modules;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+// import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -92,13 +93,15 @@ public class SwerveModule {
     turningMotor.setIdleMode(IdleMode.kCoast);
 
     driveMotor.setPosition(0);
-    CurrentLimitsConfigs clc = new CurrentLimitsConfigs().withStatorCurrentLimit(40).withSupplyCurrentLimit(40);
+    //  CurrentLimitsConfigs clc = new CurrentLimitsConfigs().withStatorCurrentLimit(40).withSupplyCurrentLimit(40);
 
-    driveMotor.getConfigurator().apply(clc);
-    turningMotor.setSmartCurrentLimit(40);
+    //driveMotor.getConfigurator().apply(clc);
+    // turningMotor.setSmartCurrentLimit(40);
 
     turningEncoder = new CANcoder(turningEncoderChannelA);
     turningEncoder.getConfigurator().apply(config);
+
+    
 
     turningNeoEncoder = turningMotor.getEncoder();
 
@@ -122,6 +125,18 @@ public class SwerveModule {
     configs.Voltage.PeakReverseVoltage = -12;
 
     driveMotor.getConfigurator().apply(configs);
+
+    var talonFXConfigurator = driveMotor.getConfigurator();
+    var limitConfigs = new CurrentLimitsConfigs();
+
+    // enable stator current limit
+    limitConfigs.StatorCurrentLimit = 80;
+    limitConfigs.StatorCurrentLimitEnable = true;
+
+    limitConfigs.SupplyCurrentLimit = 50;
+    limitConfigs.SupplyCurrentLimitEnable = true;
+
+    talonFXConfigurator.apply(limitConfigs);
 
     m_turnPidController = turningMotor.getPIDController();
 

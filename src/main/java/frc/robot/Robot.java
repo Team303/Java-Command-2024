@@ -86,9 +86,8 @@ public class Robot extends LoggedRobot {
 						new SetShooterAmp(Math.toRadians(55), 18).withTimeout(6),
 						new ParallelCommandGroup(new ShootNote(),
 						new SetShooterAmp(Math.toRadians(55), 18).repeatedly()).withTimeout(2.5)));
-		// // NamedCommands.registerCommand("Shoottest", new
+		// NamedCommands.registerCommand("Shoottest", new
 		// SetShooterAmp(Math.toRadians(45),2));
-
 		configureButtonBindings();
 
 		Logger.recordMetadata("Java-Command-2024", "robot"); // Set a metadata value
@@ -137,7 +136,7 @@ public class Robot extends LoggedRobot {
 		// driverControllr.y().onTrue(Commands.runOnce(() ->
 		// swerve.resetOdometry(swerve.getPose())));
 
-		operatorController.y().onTrue(new InstantCommand(swerve::resetOnlyNavX));
+		driverController.y().onTrue(new InstantCommand(swerve::resetOnlyNavX));
 		operatorController.pov(180).onTrue(new TurnToAngle(0));
 		operatorController.pov(90).onTrue(new TurnToAngle(60));
 		operatorController.pov(270).onTrue(new TurnToAngle(-60));
@@ -153,7 +152,6 @@ public class Robot extends LoggedRobot {
 						new ParallelDeadlineGroup(new ReverseIntakeBBC(),
 								new SetShooterAmp(Math.toRadians(45), -18).repeatedly()),
 						new NudgeNoteReverse()));
-
 
 								
 		operatorController.b().toggleOnTrue(new IntakeNote());
