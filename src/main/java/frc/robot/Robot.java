@@ -18,6 +18,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -61,6 +62,10 @@ import frc.commands.amoghbelt.roll;
 public class Robot extends LoggedRobot {
 	public static final CommandXboxController driverController = new CommandXboxController(0);
 	public static final CommandXboxController operatorController = new CommandXboxController(1);
+	public static final Joystick leftJoystick = new Joystick(2);
+	public static final Joystick rightJoystick = new Joystick(3);
+
+
 
 	public static final AHRS navX = new AHRS();
 	public static PhotonvisionModule photonvision;
